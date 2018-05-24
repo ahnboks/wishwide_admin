@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
 
 @Log
 @Controller
-public class TestController {
+public class DefaultController {
     @GetMapping("/")
     public String index(HttpServletRequest request) {
         log.info("index");
