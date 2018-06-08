@@ -1,0 +1,290 @@
+<div th:insert="~{layout/head::head}"/>
+<div id="wrapper">
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"/>
+    <!-- 사이드바 END -->
+
+    <div id="page-wrapper" class="gray-bg">
+        <!-- 헤더 START -->
+        <div th:insert="~{layout/header::header}"/>
+        <!-- 헤더 END -->
+
+        <!-- 콘텐츠 START -->
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>고객 관리</h2>
+                </div>
+                <div class="ibox-content">
+                    <div class="col-lg-10">
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">가맹점명</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select data-placeholder="가맹점 선택" class="chosen-select" id="userId" tabindex="2">
+                                                <option value="ALL" >전체</option>
+                                                <option th:each="store:${storeNameList}" name="storeName" th:value="${store[0]}"
+                                                        th:selected="${pageVO.userId} == ${store[0]}">[[${store[1]}]]</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">고객유형</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="customerGradeTypeCode">
+                                                <option value="ALL" th:selected="${pageVO.customerGradeTypeCode} == 'ALL'">전체</option>
+                                                <option value="BASIC" th:selected="${pageVO.customerGradeTypeCode} == 'BASIC'">일반</option>
+                                                <option value="NEW" th:selected="${pageVO.customerGradeTypeCode} == 'NEW'">신규</option>
+                                                <option value="VIP" th:selected="${pageVO.customerGradeTypeCode} == 'VIP'">단골</option>
+                                                <option value="NONE" th:selected="${pageVO.customerGradeTypeCode} == 'NONE'">비멤버십</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">혜택타입</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select class="input-sm form-control input-s-sm inline" id="customerBenefitTypeCode">
+                                                <option value="ALL" th:selected="${pageVO.customerBenefitTypeCode} == 'ALL'">전체</option>
+                                                <option value="S" th:selected="${pageVO.customerBenefitTypeCode} == 'S'">도장</option>
+                                                <option value="P" th:selected="${pageVO.customerBenefitTypeCode} == 'P'">포인트</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <!--<tr>-->
+                                    <!--<th class="col-sm-3 m-b-xs">발급경로</th>-->
+                                    <!--<td>-->
+                                        <!--<div class="col-sm-12 m-b-xs text-left">-->
+                                            <!--<select class="input-sm form-control input-s-sm inline" id="couponPublishTypeCode">-->
+                                                <!--<option value="ALL" th:selected="${pageVO.couponPublishTypeCode} == 'ALL'">전체</option>-->
+                                                <!--<option value="AR" th:selected="${pageVO.couponPublishTypeCode} == 'AR'">AR게임</option>-->
+                                                <!--<option value="CB" th:selected="${pageVO.couponPublishTypeCode} == 'CB'">쿠폰함</option>-->
+                                            <!--</select>-->
+                                        <!--</div>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<th class="col-sm-3 m-b-xs">사용여부</th>-->
+                                    <!--<td>-->
+                                        <!--<div class="col-sm-12 m-b-xs text-left">-->
+                                            <!--<select class="input-sm form-control input-s-sm inline" id="couponUseCode">-->
+                                                <!--<option value="2" th:selected="${pageVO.couponUseCode} == '2'">전체</option>-->
+                                                <!--<option value="1" th:selected="${pageVO.couponUseCode} == '1'">사용</option>-->
+                                                <!--<option value="0" th:selected="${pageVO.couponUseCode} == '0'">미사용</option>-->
+                                            <!--</select>-->
+                                        <!--</div>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">검색대상</th>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="searchType">
+                                                <option value="ALL" th:selected="${pageVO.type} == 'ALL'">전체</option>
+                                                <option value="customerPhone" th:selected="${pageVO.type} == 'customerPhone'">전화번호</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs input-group">
+                                            <input type="text" placeholder="키워드 입력" class="input-sm form-control"
+                                                   id="searchKeyword" th:value="${pageVO.keyword}">
+                                            <span class="input-group-btn">
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                                id="searchButton">검색</button>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!--테이블-->
+                    <div class="row" th:with="customer=${customerVO.result}">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <th sec:authorize="hasRole('MA')">가맹점명</th>
+                                <th>전화번호</th>
+                                <th>등급</th>
+                                <th>방문횟수</th>
+                                <th>선물구매</th>
+                                <th>선물수신</th>
+                                <th>쿠폰(사용/수신)</th>
+                                <th>적립수</th>
+                                <th>생년</th>
+                                <th>생월일</th>
+                                <th>등록일시</th>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vo:${customer.content}" name="table">
+                                    <td sec:authorize="hasRole('MA')">[[${vo[3]}]]</td>
+                                    <td>
+                                        <span th:if="${#strings.length(vo[1])} == 10">[[${#strings.substring(vo[1], 0, 3)}]] - [[${#strings.substring(vo[1], 3, 6)}]] - [[${#strings.substring(vo[1], 6, 10)}]]</span>
+                                        <span th:if="${#strings.length(vo[1])} == 11">[[${#strings.substring(vo[1], 0, 3)}]] - [[${#strings.substring(vo[1], 3, 7)}]] - [[${#strings.substring(vo[1], 7, 11)}]]</span>
+                                    </td>
+                                    <td>
+                                        <span th:switch="${vo[4]}">
+                                            <span th:case="BASIC">일반</span>
+                                            <span th:case="NEW">신규</span>
+                                            <span th:case="VIP">단골</span>
+                                            <span th:case="NONE">비멤버십</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${vo[5]} != null"><a href="#" name="a">[[${vo[5]}]]</a></span>
+                                        <span th:if="${vo[5]} == null">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${vo[6]} != null"><a href="#" name="a">[[${vo[6]}]]</a></span>
+                                        <span th:if="${vo[6]} == null">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${vo[7]} != null"><a href="#" name="a">[[${vo[7]}]]</a></span>
+                                        <span th:if="${vo[7]} == null">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${vo[8]} != null"><a href="#" name="a">[[${vo[8]}]]/[[${vo[9]}]]</a></span>
+                                        <span th:if="${vo[8]} == null">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:switch="${vo[10]}">
+                                            <span th:case="S"><a href="#" name="a">[[${vo[11]}]]개</a></span>
+                                            <span th:case="P"><a href="#" name="a">[[${vo[11]}]]P</a></span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>[[${#strings.substring(vo[12], 0, 4)}]]년</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${#strings.substring(vo[12], 4, 5)} == 0">
+                                            [[${#strings.substring(vo[12], 5, 6)}]]월<span th:if="${#strings.substring(vo[12], 6, 7)} == 0"> [[${#strings.substring(vo[12], 7, 8)}]]일</span><span th:if="${#strings.substring(vo[12], 6, 7)} != 0"> [[${#strings.substring(vo[12], 6, 8)}]]일</span>
+                                        </span>
+                                        <span th:if="${#strings.substring(vo[12], 4, 5)} != 0">
+                                            [[${#strings.substring(vo[12], 4, 6)}]]월<span th:if="${#strings.substring(vo[12], 6, 7)} == 0"> [[${#strings.substring(vo[12], 7, 8)}]]일</span><span th:if="${#strings.substring(vo[12], 6, 7)} != 0"> [[${#strings.substring(vo[12], 6, 8)}]]일</span>
+                                        </span>
+                                    </td>
+                                    <td>[[${#temporals.format(vo[13], 'yyyy-MM-dd HH:mm:ss', locale)}]]</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--페이징-->
+                <nav class="text-center">
+                    <div>
+                        <!--현재 페이지 번호 구분 : th:classappend="${page.pageNumber == productVO.currentPageNum - 1}?active : ''"-->
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${customerVO.prevPage}"><a th:href="${customerVO.prevPage.pageNumber} + 1">이전[[${customerVO.prevPage.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:each="page:${customerVO.pageList}" th:classappend="${page.pageNumber == (customerVO.currentPageNum - 1)}?active : ''"><a th:href="${page.pageNumber} + 1" id="currentPage">[[${page.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:if="${customerVO.nextPage}"><a th:href="${customerVO.nextPage.pageNumber} + 1">다음[[${customerVO.nextPage.pageNumber} + 1]]</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <!--페이지 및 검색조건 get방식으로 넘김-->
+                <form id="pageInfo" th:action="@{listCustomer}" method="get">
+                    <input type="hidden" name="page" th:value="${customerVO.currentPageNum}"/>
+                    <input type="hidden" name="size" th:value="${customerVO.currentPage.pageSize}"/>
+                    <input type="hidden" name="type" th:value="${pageVO.type}"/>
+                    <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    <input type="hidden" name="userId" th:value="${pageVO.userId}"/>
+                    <input type="hidden" name="customerBenefitTypeCode" th:value="${pageVO.customerBenefitTypeCode}"/>
+                    <input type="hidden" name="customerGradeTypeCode" th:value="${pageVO.customerGradeTypeCode}"/>
+                </form>
+            </div>
+        </div>
+        <!-- 콘텐츠 END -->
+
+        <!-- 푸터 START -->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+</div>
+<!-- The Gallery as lightbox dialog, should be a child element of the document body -->
+<div id="blueimp-gallery" class="blueimp-gallery">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+</div>
+<th:block >
+    <script th:inline="javascript">
+        $(window).on('load', function() {
+            var message = /*[[${message}]]*/'fail';
+
+            if (message == "successRegister"){
+                alert('등록이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successUpdate"){
+                alert('수정이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successDelete"){
+                alert('삭제가 정상적으로 처리되었습니다.');
+            }
+        });
+
+        $(document).ready(function () {
+            var pageSize = /*[[${totalPages}]]*/'';
+
+            console.log(pageSize);
+
+            $('.chosen-select').chosen({width: "100%"});
+
+            $('#storeNameList').on('change', function(){
+                console.log('dddd');
+                table.search(this.value).draw();
+            });
+
+            $('a[name="updateCustomerVisibleCode"]').click(function (e) {
+                e.preventDefault();
+
+                console.log($(this));
+
+                var node = $(this);
+                var updateCustomerVisibleCode = $(this).children().eq(0).attr('value');
+                var parentNode = $(this).parent().parent();
+                var customerNo = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log('디바이스 번호 : '+customerNo +' 활성화코드 : ' +updateCustomerVisibleCode);
+
+                $.ajax({
+                    url: "/wishwide/customer/updateCustomerVisibleCode/" + customerNo + "/" + updateCustomerVisibleCode,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log("변경 성공" + data);
+                        if (data == '1') {
+                            console.log(node);
+                            node.empty();
+                            node.html('<span class="use" value="1" >사용</span>');
+                            alert('디바이스 사용 상태로 변경되었습니다.');
+                        }
+                        else {
+                            console.log(node);
+                            node.empty();
+                            node.html('<span class="not-use" value="0" >미사용</span>');
+                            alert('디바이스 미사용 상태로 변경되었습니다.')
+                        }
+                    }
+                });
+
+
+            });
+        });
+
+    </script>
+</th:block>

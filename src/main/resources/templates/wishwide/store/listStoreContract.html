@@ -1,0 +1,257 @@
+<div th:insert="~{layout/head::head}"/>
+<div id="wrapper">
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"/>
+    <!-- 사이드바 END -->
+
+    <div id="page-wrapper" class="gray-bg">
+        <!-- 헤더 START -->
+        <div th:insert="~{layout/header::header}"/>
+        <!-- 헤더 END -->
+
+        <!-- 콘텐츠 START -->
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>계약 조회</h2>
+                </div>
+                <div class="ibox-content">
+                    <div class="col-lg-10">
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">가맹점명</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select data-placeholder="가맹점 선택" class="chosen-select" id="userId" tabindex="2">
+                                                <option value="ALL" >전체</option>
+                                                <option th:each="storeContract:${storeContractNameList}" name="storeName" th:value="${store[0]}"
+                                                        th:selected="${pageVO.userId} == ${store[0]}">[[${store[1]}]]</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">서비스 상태</th>
+                                    <td>
+                                        <div class="col-sm-5 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="serviceOperationCode">
+                                                <option value="ALL" th:selected="${pageVO.serviceOperationCode} == 'ALL'">전체</option>
+                                                <option value="PREACTIVE" th:selected="${pageVO.serviceOperationCode} == 'PREACTIVE'">운영전</option>
+                                                <option value="ACTIVE" th:selected="${pageVO.serviceOperationCode} == 'ACTIVE'">운영중</option>
+                                                <option value="TERMINATE" th:selected="${pageVO.serviceOperationCode} == 'TERMINATE'">해지</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">검색대상</th>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="searchType">
+                                                <option value="ALL" th:selected="${pageVO.type} == 'ALL'">전체</option>
+                                                <option value="storeName" th:selected="${pageVO.type} == 'storeName'" >가맹점명</option>
+                                                <option value="storeBusinessRegistrationNumber" th:selected="${pageVO.type} == 'storeBusinessRegistrationNumber'" >사업자번호</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs input-group">
+                                            <input type="text" placeholder="키워드 입력" class="input-sm form-control"
+                                                   id="searchKeyword" th:value="${pageVO.keyword}">
+                                            <span class="input-group-btn">
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                                id="searchButton">검색</button>
+                                                    </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!--테이블-->
+                    <div class="row" th:with="storeContract=${storeContractVO.result}">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <th>가맹점명</th>
+                                <th>사업자 번호</th>
+                                <th>계약상태</th>
+                                <th>계약시작일</th>
+                                <th>계약만료일</th>
+                                <th>서비스 상태</th>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vo:${storeContract.content}" name="table">
+                                    <td>[[${vo[2]}]]</td>
+                                    <td>
+                                        [[${#strings.substring(vo[3], 0, 3)}]] - [[${#strings.substring(vo[3], 3, 8)}]] - [[${#strings.substring(vo[3], 8, 10)}]]
+                                    </td>
+                                    <td>
+                                         <span th:switch="${vo[4]}">
+                                            <span th:case="CW" th:value="${vo[4]}">계약대기</span>
+                                            <span th:case="CY" th:value="${vo[4]}">계약중</span>
+                                            <span th:case="CC" th:value="${vo[4]}">계약취소</span>
+                                            <span th:case="CE" th:value="${vo[4]}">계약만료</span>
+                                         </span>
+                                    </td>
+                                    <td>[[${#temporals.format(vo[5], 'yyyy-MM-dd', locale)}]]</td>
+                                    <td>[[${#temporals.format(vo[6], 'yyyy-MM-dd', locale)}]]</td>
+                                    <td>
+                                         <span th:switch="${vo[7]}">
+                                            <span th:case="PREACTIVE" th:value="${vo[7]}">운영전</span>
+                                            <span th:case="ACTIVE" th:value="${vo[7]}">운영중</span>
+                                            <span th:case="TERMINATE" th:value="${vo[7]}" >해지</span>
+                                         </span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--페이징-->
+                <nav class="text-center">
+                    <div>
+                        <!--현재 페이지 번호 구분 : th:classappend="${page.pageNumber == productVO.currentPageNum - 1}?active : ''"-->
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${storeContractVO.prevPage}"><a th:href="${storeContractVO.prevPage.pageNumber} + 1">이전[[${storeContractVO.prevPage.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:each="page:${storeContractVO.pageList}" th:classappend="${page.pageNumber == (storeContractVO.currentPageNum - 1)}?active : ''"><a th:href="${page.pageNumber} + 1" id="currentPage">[[${page.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:if="${storeContractVO.nextPage}"><a th:href="${storeContractVO.nextPage.pageNumber} + 1">다음[[${storeContractVO.nextPage.pageNumber} + 1]]</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <!--페이지 및 검색조건 get방식으로 넘김-->
+                <form id="pageInfo" th:action="@{listStoreContract}" method="get">
+                    <input type="hidden" name="page" th:value="${storeContractVO.currentPageNum}"/>
+                    <input type="hidden" name="size" th:value="${storeContractVO.currentPage.pageSize}"/>
+                    <input type="hidden" name="type" th:value="${pageVO.type}"/>
+                    <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    <input type="hidden" name="serviceOperationCode" th:value="${pageVO.serviceOperationCode}"/>
+                    <input type="hidden" name="userId" th:value="${pageVO.userId}"/>
+                </form>
+            </div>
+        </div>
+        <!-- 콘텐츠 END -->
+
+        <!-- 푸터 START -->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+</div>
+
+<th:block >
+    <script th:inline="javascript">
+
+        $(window).on('load', function() {
+            var message = /*[[${message}]]*/'fail';
+
+            if (message == "successRegister"){
+                alert('등록이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successUpdate"){
+                alert('수정이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successDelete"){
+                alert('삭제가 정상적으로 처리되었습니다.');
+            }
+        });
+
+        $(document).ready(function () {
+            var pageSize = /*[[${totalPages}]]*/'';
+
+            console.log(pageSize);
+
+            $('.chosen-select').chosen({width: "100%"});
+
+        });
+
+    </script>
+</th:block>
+<!-- DataTables :
+            var dtLang = {
+                en : {
+                    "sEmptyTable" : "No data available in table",
+                    "sInfo" : "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "sInfoEmpty" : "Showing 0 to 0 of 0 entries",
+                    "sInfoFiltered" : "(filtered from _MAX_ total entries)",
+                    "sInfoPostFix" : "",
+                    "sInfoThousands" : ",",
+                    "sLengthMenu" : "Show _MENU_ entries",
+                    "sLoadingRecords" : "Loading...",
+                    "sProcessing" : "Processing...",
+                    "sSearch" : "Search:",
+                    "sZeroRecords" : "No matching records found",
+                    "oPaginate" : {
+                        "sFirst" : "First",
+                        "sLast" : "Last",
+                        "sNext" : "Next",
+                        "sPrevious" : "Previous"
+                    },
+                    "oAria" : {
+                        "sSortAscending" : ": activate to sort column ascending",
+                        "sSortDescending" : ": activate to sort column descending"
+                    }
+                },
+                ko : {
+                    "sEmptyTable" : "데이터가 없습니다",
+                    "sInfo" : "_START_ ~ _END_ / 전체: _TOTAL_",
+                    "sInfoEmpty" : "0 - 0 / 0",
+                    "sInfoFiltered" : "(총 _MAX_ 개)",
+                    "sInfoPostFix" : "",
+                    "sInfoThousands" : ",",
+                    "sLengthMenu" : "페이지당 줄수 _MENU_",
+                    "sLoadingRecords" : "읽는중...",
+                    "sProcessing" : "처리중...",
+                    "sSearch" : "검색:",
+                    "sZeroRecords" : "검색 결과가 없습니다",
+                    "oPaginate" : {
+                        "sFirst" : "처음",
+                        "sLast" : "마지막",
+                        "sNext" : "다음",
+                        "sPrevious" : "이전"
+                    },
+                    "oAria" : {
+                        "sSortAscending" : ": 오름차순 정렬",
+                        "sSortDescending" : ": 내림차순 정렬"
+                    }
+                },
+
+            };
+
+            $.extend(true, $.fn.DataTable.defaults, {
+                "searching" : true,
+                "ordering" : true,
+                "columnDefs":[{
+                    "targets": [0,2,8],
+                    "orderable": false
+                }],
+                "info": true,
+                "paging": true,
+                "lengthChange": true,
+                "language": dtLang["ko"]
+            });
+
+            var table = $('.dataTables-example').DataTable({
+                pageLength: 10,
+                responsive: true,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });
+-->

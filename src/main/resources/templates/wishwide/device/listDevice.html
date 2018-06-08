@@ -1,0 +1,259 @@
+<div th:insert="~{layout/head::head}"/>
+<div id="wrapper">
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"/>
+    <!-- 사이드바 END -->
+
+    <div id="page-wrapper" class="gray-bg">
+        <!-- 헤더 START -->
+        <div th:insert="~{layout/header::header}"/>
+        <!-- 헤더 END -->
+
+        <!-- 콘텐츠 START -->
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>디바이스</h2>
+                </div>
+                <div class="ibox-content">
+                    <div class="col-lg-10">
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">가맹점명</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select data-placeholder="가맹점 선택" class="chosen-select" id="userId" tabindex="2">
+                                                <option value="ALL" >전체</option>
+                                                <option th:each="store:${storeNameList}" name="storeName" th:value="${store[0]}"
+                                                        th:selected="${pageVO.userId} == ${store[0]}">[[${store[1]}]]</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">사용/미사용</th>
+                                    <td>
+                                        <div class="col-sm-5 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="searchVisibleStatus">
+                                                <option value="2" th:selected="${pageVO.visibleCode} == '2'">전체</option>
+                                                <option value="1" th:selected="${pageVO.visibleCode} == '1'">사용</option>
+                                                <option value="0" th:selected="${pageVO.visibleCode} == '0'">미사용</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">디바이스 타입</th>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="deviceTypeCode">
+                                                <option value="ALL" th:selected="${pageVO.deviceTypeCode} == 'ALL'">전체</option>
+                                                <option value="TABLET" th:selected="${pageVO.deviceTypeCode} == 'TABLET'">태블릿</option>
+                                                <option value="BEACON" th:selected="${pageVO.deviceTypeCode} == 'BEACON'">비콘</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">검색대상</th>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="searchType">
+                                                <option value="ALL" th:selected="${pageVO.type} == 'ALL'">전체</option>
+                                                <option value="deviceModelTitle" th:selected="${pageVO.type} == 'deviceModelTitle'" >모델명</option>
+                                                <option value="deviceTitle" th:selected="${pageVO.type} == 'deviceTitle'" >디바이스명</option>
+                                                <option value="deviceId" th:selected="${pageVO.type} == 'deviceId'">디바이스 ID</option>
+                                                <option value="posId" th:selected="${pageVO.type} == 'posId'">POS ID</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs input-group">
+                                            <input type="text" placeholder="키워드 입력" class="input-sm form-control"
+                                                   id="searchKeyword" th:value="${pageVO.keyword}">
+                                            <span class="input-group-btn">
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                                id="searchButton">검색</button>
+                                                    </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!--등록 버튼-->
+                    <div class="col-lg-12">
+                        <div class="pull-right">
+                            <a th:href="@{registerDevice}"><button class="btn btn-primary">디바이스 추가</button></a>
+                        </div>
+                    </div>
+                    <!--테이블-->
+                    <div class="row" th:with="device=${deviceVO.result}">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <th>상세</th>
+                                <th sec:authorize="hasRole('MA')">가맹점명</th>
+                                <th>디바이스 타입</th>
+                                <th>이미지</th>
+                                <th>모델명</th>
+                                <th>디바이스명</th>
+                                <th>디바이스 ID/POS ID</th>
+                                <th>사용/미사용</th>
+                                <th>등록일</th>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vo:${device.content}" name="table">
+                                    <td>
+                                        <a th:href="@{/wishwide/device/detailDevice/{deviceId}(deviceId=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
+                                            <img src="/img/menu.png" style="width: 35px; height: 35px;">
+                                        </a>
+                                    </td>
+                                    <td sec:authorize="hasRole('MA')">[[${vo[2]}]]</td>
+                                    <td>
+                                        <span th:if="${vo[3]} == 'TABLET'">태블릿</span>
+                                        <span th:if="${vo[3]} == 'BEACON'">비콘</span>
+                                    </td>
+                                    <td>
+                                         <span th:if="${vo[15]} != null">
+                                             <a th:href="${vo[15]}" data-gallery="">
+                                                 <img th:src="${vo[14]}" style="width: 35px; height: 35px;">
+                                             </a>
+                                         </span>
+                                        <span th:if="${vo[15]} == null">
+                                             <a href="/img/no_image.png" data-gallery="">
+                                                  <img src="/img/no_image.png" style="width: 35px; height: 35px;">
+                                             </a>
+                                        </span>
+                                    </td>
+                                    <td>[[${vo[4]}]]</td>
+                                    <td>[[${vo[5]}]]</td>
+                                    <td>
+                                       <span th:if="${vo[6]} != null">[[${vo[6]}]]/[[${vo[7]}]]</span>
+                                        <span th:if="${vo[6]} == null">-</span>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-default" name="updateDeviceVisibleCode" href="#">
+                                            <span class="use" th:if="${vo[8]} == 1" th:value="${vo[8]}">사용</span>
+                                            <span class="not-use"  th:if="${vo[8]} == 0" th:value="${vo[8]}" >미사용</span>
+                                        </a>
+                                    </td>
+                                    <td>[[${#temporals.format(vo[9], 'yyyy-MM-dd HH:mm:ss', locale)}]]</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--페이징-->
+                <nav class="text-center">
+                    <div>
+                        <!--현재 페이지 번호 구분 : th:classappend="${page.pageNumber == productVO.currentPageNum - 1}?active : ''"-->
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${deviceVO.prevPage}"><a th:href="${deviceVO.prevPage.pageNumber} + 1">이전[[${deviceVO.prevPage.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:each="page:${deviceVO.pageList}" th:classappend="${page.pageNumber == (deviceVO.currentPageNum - 1)}?active : ''"><a th:href="${page.pageNumber} + 1" id="currentPage">[[${page.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:if="${deviceVO.nextPage}"><a th:href="${deviceVO.nextPage.pageNumber} + 1">다음[[${deviceVO.nextPage.pageNumber} + 1]]</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <!--페이지 및 검색조건 get방식으로 넘김-->
+                <form id="pageInfo" th:action="@{listDevice}" method="get">
+                    <input type="hidden" name="page" th:value="${deviceVO.currentPageNum}"/>
+                    <input type="hidden" name="size" th:value="${deviceVO.currentPage.pageSize}"/>
+                    <input type="hidden" name="type" th:value="${pageVO.type}"/>
+                    <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    <input type="hidden" name="visibleCode" th:value="${pageVO.visibleCode}"/>
+                    <input type="hidden" name="userId" th:value="${pageVO.userId}"/>
+                    <input type="hidden" name="deviceTypeCode" th:value="${pageVO.deviceTypeCode}"/>
+                </form>
+            </div>
+        </div>
+        <!-- 콘텐츠 END -->
+
+        <!-- 푸터 START -->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+</div>
+<!-- The Gallery as lightbox dialog, should be a child element of the document body -->
+<div id="blueimp-gallery" class="blueimp-gallery">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+</div>
+<th:block >
+    <script th:inline="javascript">
+        $(window).on('load', function() {
+            var message = /*[[${message}]]*/'fail';
+
+            if (message == "successRegister"){
+                alert('등록이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successUpdate"){
+                alert('수정이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successDelete"){
+                alert('삭제가 정상적으로 처리되었습니다.');
+            }
+        });
+
+        $(document).ready(function () {
+            var pageSize = /*[[${totalPages}]]*/'';
+
+            console.log(pageSize);
+
+            $('.chosen-select').chosen({width: "100%"});
+
+            $('#storeNameList').on('change', function(){
+                console.log('dddd');
+                table.search(this.value).draw();
+            });
+
+            $('a[name="updateDeviceVisibleCode"]').click(function (e) {
+                e.preventDefault();
+
+                console.log($(this));
+
+                var node = $(this);
+                var updateDeviceVisibleCode = $(this).children().eq(0).attr('value');
+                var parentNode = $(this).parent().parent();
+                var deviceNo = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log('디바이스 번호 : '+deviceNo +' 활성화코드 : ' +updateDeviceVisibleCode);
+
+                $.ajax({
+                    url: "/wishwide/device/updateDeviceVisibleCode/" + deviceNo + "/" + updateDeviceVisibleCode,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log("변경 성공" + data);
+                        if (data == '1') {
+                            console.log(node);
+                            node.empty();
+                            node.html('<span class="use" value="1" >사용</span>');
+                            alert('디바이스 사용 상태로 변경되었습니다.');
+                        }
+                        else {
+                            console.log(node);
+                            node.empty();
+                            node.html('<span class="not-use" value="0" >미사용</span>');
+                            alert('디바이스 미사용 상태로 변경되었습니다.')
+                        }
+                    }
+                });
+
+
+            });
+        });
+
+    </script>
+</th:block>

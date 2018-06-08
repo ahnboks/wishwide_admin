@@ -1,0 +1,755 @@
+<div th:insert="~{layout/head::head}"></div>
+<script src="/js/managerValidation.js"></script>
+
+<div id="wrapper">
+
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>가맹점 상세</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form id="detailForm" method="post" class="form-horizontal" th:action="@{../update}"  enctype="multipart/form-data">
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>기본정보
+                                        <small class="m-l-sm"></small>
+                                    </h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <!--아이디-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">아이디<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-2">
+                                            <p class="form-control-static" th:text="${storeVO[0]}"></p>
+                                            <input type="hidden" th:value="${storeVO[0]}" class="form-control" name="storeId"/>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+                                    <!--비밀번호-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">비밀번호<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-2">
+                                            <button type="button" id="updatePassword" class="btn btn-primary">비밀번호 변경</button>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+                                    <!--이메일-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">이메일</label>
+                                        <div class="col-sm-2">
+                                            <input type="email" th:value="${storeVO[1]}" maxlength="40" placeholder="이메일 @ sample.com" class="form-control email-input-validation" name="storeEmail">
+                                            <span id="msg-email-input-validation"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--연락처-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">연락처<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-2">
+                                            <input type="text" th:value="${storeVO[2]}" maxlength="11" class="form-control phone-number-input-validation" name="storePhone" placeholder="ex) 01012345678">
+                                            <span id="msg-phone-number-input-validation"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="hr-line-dashed"></div>
+                                    <!--우편번호-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">우편번호</label>
+                                        <div class="col-sm-5">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <input type="text" th:value="${storeVO[3]}" class="form-control" name="storeZipCode" id="storeZipCode" onclick="searchAddress();" readonly>
+                                                </div>
+                                                <div>
+                                                    <button type="button" class="btn btn-primary" onclick="searchAddress();">우편번호 검색</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--주소-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">주소</label>
+                                        <div class="col-sm-5">
+                                            <input type="text" th:value="${storeVO[4]}" class="form-control" name="storeAddress"  id="storeAddress" readonly>
+                                        </div>
+                                    </div>
+
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--상세주소-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">상세주소</label>
+
+                                        <div class="col-sm-5">
+                                            <input type="text" th:value="${storeVO[5]}" class="form-control" name="storeAddressDetail"  id="storeAddressDetail">
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                </div>
+                                <!--위도/경도-->
+                                <input type="hidden" class="form-control" name="storeLatitude" id="storeLatitude"/>
+                                <input type="hidden" class="form-control" name="storeLongitude" id="storeLongitude"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>매장정보
+                                        <small class="m-l-sm"></small>
+                                    </h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <!--브랜드명-->
+                                    <div class="form-group" sec:authorize="hasAnyRole('MA','PF')">
+                                        <label class="col-sm-2 control-label">브랜드명<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-2">
+                                            <p class="form-control-static" th:text="${storeVO[6]}"></p>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" th:value="${storeVO[6]}" class="form-control" name="brandName"/>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--가맹점명-->
+                                    <div class="form-group" sec:authorize="hasAnyRole('MA','PF')">
+                                        <label class="col-sm-2 control-label">가맹점명<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-2">
+                                            <p class="form-control-static" th:text="${storeVO[7]}"></p>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" th:value="${storeVO[7]}" class="form-control" name="storeName"/>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--매장소개-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">매장소개</label>
+                                        <div class="col-sm-2">
+                                            <textarea class="form-control" th:text="${storeVO[8]}" name="storeIntroduction" rows="7"></textarea>
+                                            <span class="textarea-limit-validation"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!--사업자번호-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">사업자 번호<label class="notnull-mark-color"> *</label></label>
+
+                                        <div class="col-sm-2">
+                                            <input type="text" th:value="${storeVO[9]}" maxlength="10" class="form-control business-no-input-validation" name="storeBusinessRegistrationNumber">
+                                            <span id="msg-business-no-input-validation"></span>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--사업자등록증-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">사업자 등록증</label>
+
+                                        <div class="col-sm-10">
+                                            <div class="fileinput fileinput-new" data-provides="fileinput" id="file1">
+                                                <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                                <span class="fileinput-filename"></span>
+                                                <div>
+                                                    <span class="btn btn-default btn-file" onclick="removeBzi(event, 'update');">
+                                                        <span class="fileinput-new">파일 선택</span>
+                                                        <span class="fileinput-exists">파일 변경</span>
+                                                        <input type="file" name="bziFile"/>
+                                                    </span>
+                                                    <a th:href="@{/file/download(fileName=${storeVO[31]}, dbFileName=${storeVO[32]})}"
+                                                       class="btn btn-default file-download" th:if="${storeVO[34]} != null">다운로드
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--로고-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label"><label class="notnull-mark-color"> *</label>로고</label>
+                                        <div class="col-sm-5">
+                                            <div class="fileinput fileinput-new" data-provides="fileinput" id="file2">
+                                                <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                                <span class="fileinput-filename"></span>
+                                                <div>
+                                                    <span class="btn btn-default btn-file" onclick="removeLogo(event, 'update');">
+                                                        <span class="fileinput-new">파일 선택</span>
+                                                        <span class="fileinput-exists">파일 변경</span>
+                                                        <input type="file" name="logoFile" class="file-validation" onchange="fileUploadValidation(this, 'image', '2')">
+                                                    </span>
+                                                    <a th:href="@{/file/download(fileName=${storeVO[41]}, dbFileName=${storeVO[42]})}"
+                                                       class="btn btn-default file-download" th:if="${storeVO[44]} != null">다운로드
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--대표자명-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">대표자명<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-2">
+                                            <input type="text"th:value="${storeVO[10]}"  maxlength="20" class="form-control" name="storePresidentName">
+                                            <span class="msg-president-name-input-validation"/>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+
+                                    <!--담당자정보-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">담당자 정보<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-2">
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <input type="text" th:value="${storeVO[11]}" maxlength="20" placeholder="이름" class="form-control " name="storeOperatorName">
+                                                    <span class="msg-operator-name-input-validation"/>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <input type="text" th:value="${storeVO[12]}" maxlength="11" class="form-control "  name="storeOperatorPhone" placeholder="전화번호">
+                                                <span class="msg-operator-phone-number-input-validation"/>
+                                            </div>
+                                            <div>
+                                                <input type="email" th:value="${storeVO[13]}" maxlength="40" placeholder="이메일@sample.com" class="form-control " name="storeOperatorEmail">
+                                                <span class="msg-operator-email-input-validation"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--개점시간-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">개점시간</label>
+                                        <div class="col-sm-2">
+                                            <div class="input-group clockpicker" data-autoclose="true">
+                                                <input type="time" th:value="${storeVO[14]}" class="form-control" value="09:30" name="storeOpeningHour">
+                                                <span class="input-group-addon">
+                                                    <span class="fa fa-clock-o"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--폐점시간-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">폐점시간</label>
+                                        <div class="col-sm-2">
+                                            <div class="input-group clockpicker" data-autoclose="true">
+                                                <input type="time" th:value="${storeVO[15]}" class="form-control" value="22:30" name="storeClosingHour">
+                                                <span class="input-group-addon">
+                                                    <span class="fa fa-clock-o"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--카카오 옐로우 아이디-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">카카오 옐로우 아이디</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" th:value="${storeVO[16]}" maxlength="20" class="form-control" name="storeKakaoYellowId">
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--&lt;!&ndash;서비스운영타입코드&ndash;&gt;-->
+                                    <!--<input type="hidden" value="PREACTIVE" class="form-control" name="storeServiceOperationCode"/>-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>계약정보
+                                        <small class="m-l-sm"></small>
+                                    </h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <!--계약서-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">계약서</label>
+                                        <div class="col-sm-10">
+                                            <div class="fileinput fileinput-new" data-provides="fileinput" id="file3">
+                                                <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                                <span class="fileinput-filename"></span>
+                                                <div>
+                                                    <span class="btn btn-default btn-file" onclick="removeContact(event, 'update');">
+                                                        <span class="fileinput-new">파일 선택</span>
+                                                        <span class="fileinput-exists">파일 변경</span>
+                                                        <input type="file" name="contractFile">
+                                                    </span>
+                                                    <a th:href="@{/file/download(fileName=${storeVO[36]}, dbFileName=${storeVO[37]})}"
+                                                       class="btn btn-default file-download" th:if="${storeVO[39]} != null">다운로드
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--계약상태-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">계약상태<label class="notnull-mark-color"> *</label></label>
+
+                                        <div class="col-md-2">
+                                            <select class="form-control m-b" name="storeContractStatusCode">
+                                                <option value="CW" th:selected="${storeVO[17]} == 'CW'">계약대기</option>
+                                                <option value="CY" th:selected="${storeVO[17]} == 'CY'">계약중</option>
+                                                <option value="CC" th:selected="${storeVO[17]} == 'CC'">계약취소</option>
+                                                <option value="CE" th:selected="${storeVO[17]} == 'CE'">계약종료</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--계약기간-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">계약기간<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-5">
+                                            <div class="input-daterange input-group" id="datepicker">
+                                                <input type="date" th:value="${storeVO[18]}" class="input-sm form-control contract-begin-date-input-validation" name="storeContractBegindate" />
+                                                <span class="input-group-addon"> ~ </span>
+                                                <input type="date" th:value="${storeVO[19]}" class="input-sm form-control contract-finish-date-input-validation" name="storeContractFinishdate" />
+                                            </div>
+                                            <span id="msg-contract-period-input-validation"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="hr-line-dashed"></div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>혜택정보
+                                        <small class="m-l-sm"></small>
+                                    </h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <!--혜택타입-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">혜택타입<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-3" >
+                                            <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" th:checked="${storeVO[20]} == N" value="N">사용 안함</label>
+                                            <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" th:checked="${storeVO[20]} == S" value="S">도장</label>
+                                            <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" th:checked="${storeVO[20]} == P" value="P">포인트</label>
+                                        </div>
+                                    </div>
+                                    <!--도장 혜택 정보-->
+                                    <div class="form-group" id="stampBenefitInfo" style="display: none;">
+                                        <div class="col-sm-offset-1 col-md-8" >
+                                            <div class="panel panel-default ">
+                                                <!--<div class="panel-heading"><h5>도장 혜택 정보</h5></div>-->
+                                                <div class="panel-body">
+                                                    <div class="panel-group">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">쿠폰발급 도장개수 기준</label>
+                                                            <div class="col-sm-5">
+                                                                <label class="checkbox-inline"><input type="text" th:value="${storeVO[21]}" name="storeStampGoal" style="width: 70px;"> 개</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">단골등업 도장개수 기준</label>
+                                                            <div class="col-sm-5">
+                                                                <label class="checkbox-inline"><input type="text" th:value="${storeVO[22]}" name="storeStampVipGoal" style="width: 70px;"> 개</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--포인트 혜택 정보-->
+                                    <div class="form-group" id="pointBenefitInfo" style="display: none">
+                                        <div class="col-sm-offset-1 col-md-8" >
+                                            <div class="panel panel-default ">
+                                                <!--<div class="panel-heading"><h5>포인트 혜택 정보</h5></div>-->
+                                                <div class="panel-body">
+                                                    <div class="panel-group">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">포인트 사용기준</label>
+                                                            <div class="col-sm-5">
+                                                                <label class="checkbox-inline"><input type="text" th:value="${storeVO[23]}" name="storePointUseGoal"  style="width: 70px;"> P</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">단골등업 포인트 기준</label>
+                                                            <div class="col-sm-5">
+                                                                <label class="checkbox-inline"><input type="text" th:value="${storeVO[24]}" name="storePointVipGoal"  style="width: 70px;"> P</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>AR게임 정보
+                                        <small class="m-l-sm"></small>
+                                    </h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <!--AR게임-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">AR게임<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-5" >
+                                            <label class="radio-inline"><input type="radio" name="storeArGameUseCode" th:checked="${storeVO[25]} == 0" value="0">사용 안함</label>
+                                            <label class="radio-inline"><input type="radio" name="storeArGameUseCode" th:checked="${storeVO[25]} == 1" value="1">사용</label>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+                                    <!--게임타입-->
+                                    <div class="form-group" id="storeArGameTypeCode" style="display:none;">
+                                        <label class="col-sm-2 control-label">게임타입</label>
+                                        <div class="col-sm-6" >
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <select class="form-control m-b" name="storeArGameTypeCode">
+                                                        <option value="1" th:selected="${storeVO[26]} == 1">캐릭터잡기</option>
+                                                        <option value="2" th:selected="${storeVO[26]} == 2">글자맞추기</option>
+                                                    </select>
+                                                </div>
+                                                <div id="storeArGameWord" style="display:none;">
+                                                    <label class="col-sm-2 control-label">단어 입력</label>
+                                                    <div class="col-md-3">
+                                                        <input type="text" th:value="${storeVO[28]}" maxlength="20" class="form-control " name="storeArGameWord">
+                                                        <p class="form-control-static" style="color: red">*a~z까지 10자이내로<br> 원하는 단어를 입력해주세요. </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>기타 정보
+                                        <small class="m-l-sm"></small>
+                                    </h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <!--메모-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">메모</label>
+                                        <div class="col-sm-2">
+                                            <textarea class="form-control" th:text="${storeVO[29]}" name="storeMemo" rows="7"></textarea>
+                                            <span class="textarea-limit-validation"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--수정, 목록 버튼-->
+                       <div class="form-group text-center">
+                                <button class="btn btn-primary" type="submit" id="btnUpdate" sec:authorize="hasRole('MA')">수정</button>
+                                <a th:href="@{/wishwide/store/listStore(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" id="btnList">목록</button>
+                                </a>
+
+                        </div>
+                        <input type="hidden" name="page" th:value="${pageVO.page}"/>
+                        <input type="hidden" name="size" th:value="${pageVO.size}"/>
+                        <input type="hidden" name="type" th:value="${pageVO.type}"/>
+                        <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+
+    <!-- 콘텐츠 END -->
+</div>
+<div id="updatePasswordModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!--Modal Content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    비밀번호 변경
+                </h4>
+            </div>
+            <div class="modal-body">
+                <label>새 비밀번호</label>
+                <input type="password" class="form-control password-input-validation" name="newPassword" id="newPassword">
+                <span class="msg-password-input-validation"></span>
+                <br>
+                <label>새 비밀번호 확인</label>
+                <input type="password" class="form-control password-confirm-input-validation" name="newPasswordConfirm" id="newPasswordConfirm">
+                <span class="msg-password-confirm-input-validation"></span>
+                <br>
+
+            </div>
+            <div class="modal-footer">
+                <button id="btnUpdatePassword" class="btn btn-info">비밀번호 변경</button>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block >
+    <script th:inline="javascript">
+        var detailForm = $('#detailForm');
+
+        var storeId =  detailForm.find('[name="storeId"]').val();
+
+        var isBziAlert = false;
+        var bziFileNo = /*[[${storeVO[30]}]]*/'';
+        var bziFileName = /*[[${storeVO[31]}]]*/'';
+        var bziFileExtension = /*[[${storeVO[33]}]]*/'';
+
+        var isContactAlert = false;
+        var contactFileNo = /*[[${storeVO[35]}]]*/'';
+        var contactFileName = /*[[${storeVO[36]}]]*/'';
+        var contactFileExtension = /*[[${storeVO[38]}]]*/'';
+
+        var isLogoAlert = false;
+        var logoFileNo = /*[[${storeVO[40]}]]*/'';
+        var logoFileName = /*[[${storeVO[41]}]]*/'';
+        var logoFileExtension = /*[[${storeVO[43]}]]*/'';
+        var logoFileThumbnailUrl = /*[[${storeVO[45]}]]*/'';
+
+        $(document).ready(function() {
+            if(bziFileNo != null) {
+                console.log('들어오니1');
+                isBziAlert = true;
+                processFile(bziFileName, bziFileExtension, '', 1);
+            }
+            if(logoFileNo != null) {
+                console.log('들어오니2');
+                isLogoAlert = true;
+                processFile(logoFileName, logoFileExtension, logoFileThumbnailUrl, 2);
+            }
+            if(contactFileNo != null) {
+                console.log('들어오니3');
+                isContactAlert = true;
+                processFile(contactFileName, contactFileExtension, '', 3);
+            }
+
+            displayBenefit();
+            displayArGameType();
+            displayArGameWord();
+
+            //혜택타입 코드에 따른 CSS
+            detailForm.find('[name="storeBenefitTypeCode"]').change(function (e) {
+                displayBenefit();
+            });
+
+            //AR게임 사용 여부에 따른 CSS
+            detailForm.find('[name="storeArGameUseCode"]').change(function (e) {
+                displayArGameType();
+            });
+
+            //게임타입 코드에 따른 CSS
+            detailForm.find('[name="storeArGameTypeCode"]').change(function () {
+                displayArGameWord();
+            });
+
+
+            //비밀번호 변경
+            $('#btnUpdatePassword').click(function () {
+                var newPassword = $("input[name='newPassword']").val();
+                var newPasswordConfirm = $("input[name='newPasswordConfirm']").val();
+
+                console.log("새 비밀번호 : "+newPassword+"확인 : "+newPasswordConfirm);
+
+                if(!(newPassword == newPasswordConfirm)){
+                    $("input[name='newPassword']").val("");
+                    $("input[name='newPasswordConfirm']").val("");
+                    $("#msg_newPasswordConfirm").text('비밀번호를 일치하게 입력하세요.').css('color','red');
+                }
+                else{
+                    console.log('비밀번호 변경');
+                    $.ajax({
+                        url:'/wishwide/store/detailStore/updatePassword/'+storeId,
+                        type:'post',
+                        data:{
+                            userPw : newPassword
+                        },
+                        success : function (data) {
+                            console.log("성공"+data);
+                            $('#updatePasswordModal').modal('hide');
+                            $("input[name='newPassword']").val("");
+                            $("input[name='newPasswordConfirm']").val("");
+                            alert("비밀번호 변경이 성공적으로 완료되었습니다");
+                        }
+                    });
+                }
+            });
+        });
+
+
+        function removeBzi(e, type) {
+            if(isBziAlert == true) {
+                if (confirm('현재 파일이 삭제됩니다. \n계속 진행하시겠습니까?.')) {
+                    removeStoreFile(storeId, "BSN");
+                    $('#file1').find('.file-download').hide();
+                    isBziAlert = false;
+
+                    var element = $('#file1');
+                    element.addClass('fileinput-new').removeClass('fileinput-exists');
+                    element.find('.fileinput-filename').text('');
+                    element.find('.fileinput-preview thumbnail').css('display', 'none');
+                    element.find('.fileinput-preview').empty();
+                }
+                else {
+                    console.log(type);
+                    if (type == 'remove') e.stopPropagation();
+                    else if (type == 'update') e.preventDefault();
+                }
+            }
+        }
+
+        function removeLogo(e, type) {
+            if(isLogoAlert == true) {
+                if (confirm('현재 파일이 삭제됩니다. \n계속 진행하시겠습니까?.')) {
+                    removeStoreImage(storeId, "LOGO");
+                    $('#file2').find('.file-download').hide();
+                    isLogoAlert = false;
+
+                    var element = $('#file2');
+                    element.addClass('fileinput-new').removeClass('fileinput-exists');
+                    element.find('.fileinput-filename').text('');
+                    element.find('.fileinput-preview thumbnail').css('display', 'none');
+                    element.find('.fileinput-preview').empty();
+                }
+                else {
+                    console.log(type);
+                    if (type == 'remove') e.stopPropagation();
+                    else if (type == 'update') e.preventDefault();
+                }
+            }
+        }
+
+        function removeContact(e, type) {
+            if(isContactAlert == true) {
+                if (confirm('현재 파일이 삭제됩니다. \n계속 진행하시겠습니까?.')) {
+                    removeStoreFile(storeId, "CONT");
+                    $('#file3').find('.file-download').hide();
+                    isContactAlert = false;
+
+                    var element = $('#file3');
+                    element.addClass('fileinput-new').removeClass('fileinput-exists');
+                    element.find('.fileinput-filename').text('');
+                    element.find('.fileinput-preview thumbnail').css('display', 'none');
+                    element.find('.fileinput-preview').empty();
+                }
+                else {
+                    console.log(type);
+                    if (type == 'remove') e.stopPropagation();
+                    else if (type == 'update') e.preventDefault();
+                }
+            }
+        }
+        
+        function displayBenefit() {
+            var storeBenefitTypeCode = detailForm.find('[name="storeBenefitTypeCode"]:checked').val();
+            console.log(storeBenefitTypeCode + '값');
+
+            if(storeBenefitTypeCode == 'S'){
+                $('#pointBenefitInfo').css('display','none');
+                $('#stampBenefitInfo').css('display','block');
+            }
+            else if(storeBenefitTypeCode == 'P'){
+                $('#stampBenefitInfo').css('display','none');
+                $('#pointBenefitInfo').css('display','block');
+            }
+            else{
+                $('#stampBenefitInfo').css('display','none');
+                $('#pointBenefitInfo').css('display','none');
+            }
+        }
+
+        function displayArGameType() {
+            var storeArGameUseCode = detailForm.find('[name="storeArGameUseCode"]:checked').val();
+            console.log(storeArGameUseCode + '값');
+
+            if(storeArGameUseCode == '1'){
+                $('#storeArGameTypeCode').css('display','block');
+            }
+            else{
+                $('#storeArGameTypeCode').css('display','none');
+                $('#storeArGameWord').css('display','none');
+                detailForm.find('[name="storeArGameTypeCode"] option:eq(0)').prop('selected', true);
+            }
+        }
+        
+        function displayArGameWord() {
+            var storeArGameTypeCode = detailForm.find('[name="storeArGameTypeCode"] option:selected').val();
+            console.log(storeArGameTypeCode + '값');
+
+            if(storeArGameTypeCode == '2'){
+                $('#storeArGameWord').css('display','block');
+            }
+            else{
+                $('#storeArGameWord').css('display','none');
+            }
+        }
+    </script>
+</th:block>

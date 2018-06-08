@@ -1,0 +1,243 @@
+<div th:insert="~{layout/head::head}"/>
+<div id="wrapper">
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"/>
+    <!-- 사이드바 END -->
+
+    <div id="page-wrapper" class="gray-bg">
+        <!-- 헤더 START -->
+        <div th:insert="~{layout/header::header}"/>
+        <!-- 헤더 END -->
+
+        <!-- 콘텐츠 START -->
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>선물 거래 내역</h2>
+                </div>
+                <div class="ibox-content">
+                    <div class="col-lg-10">
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">가맹점명</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select data-placeholder="가맹점 선택" class="chosen-select" id="userId" tabindex="2">
+                                                <option value="ALL" >전체</option>
+                                                <option th:each="store:${storeNameList}" name="storeName" th:value="${store[0]}"
+                                                        th:selected="${pageVO.userId} == ${store[0]}">[[${store[1]}]]</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">결제상태</th>
+                                    <td>
+                                        <div class="col-sm-5 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="giftPaymentStatusCode">
+                                                <option value="ALL" th:selected="${pageVO.giftPaymentStatusCode} == 'ALL'">전체</option>
+                                                <option value="COMPLETE" th:selected="${pageVO.giftPaymentStatusCode} == 'COMPLETE'">결제완료</option>
+                                                <option value="CANCEL" th:selected="${pageVO.giftPaymentStatusCode} == 'CANCEL'">결제취소</option>
+                                                <option value="REFUND" th:selected="${pageVO.giftPaymentStatusCode} == 'REFUND'">환불</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-2 m-b-xs">검색대상</th>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="searchType">
+                                                <option value="ALL" th:selected="${pageVO.type} == 'ALL'">전체</option>
+                                                <option value="giftSenderPhone" th:selected="${pageVO.type} == 'giftSenderPhone'" >구매자 전화번호</option>
+                                                <option value="giftSenderName" th:selected="${pageVO.type} == 'giftSenderName'" >구매자명</option>
+                                                <option value="giftReceiverPhone" th:selected="${pageVO.type} == 'giftReceiverPhone'">수신자 전화번호</option>
+                                                <option value="giftReceiverName" th:selected="${pageVO.type} == 'giftReceiverName'">수신자명</option>
+                                                <option value="productTitle" th:selected="${pageVO.type} == 'productTitle'">상품명</option>
+                                                <option value="giftQuantity" th:selected="${pageVO.type} == 'giftQuantity'">수량</option>
+                                                <option value="giftPaymentPrice" th:selected="${pageVO.type} == 'giftPaymentPrice'">결제금액</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs input-group">
+                                            <input type="text" placeholder="키워드 입력" class="input-sm form-control"
+                                                   id="searchKeyword" th:value="${pageVO.keyword}">
+                                            <span class="input-group-btn">
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                                id="searchButton">검색</button>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!--테이블-->
+                    <div class="row" th:with="giftPayment=${giftPaymentVO.result}">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <th>상세</th>
+                                <th sec:authorize="hasRole('MA')">가맹점명</th>
+                                <th>구매자전화번호</th>
+                                <th>구매자명</th>
+                                <th>수신자전화번호</th>
+                                <th>수신자명</th>
+                                <th>상품명</th>
+                                <th>수량</th>
+                                <th>결제금액</th>
+                                <th>결제상태</th>
+                                <th>결제일시</th>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vo:${giftPayment.content}" name="table">
+                                    <td>
+                                        <a th:href="@{/wishwide/gift/detailGiftPayment/{giftPaymentNo}(giftPaymentNo=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
+                                            <img src="/img/menu.png" style="width: 35px; height: 35px;">
+                                        </a>
+                                    </td>
+                                    <td sec:authorize="hasRole('MA')">[[${vo[2]}]]</td>
+                                    <td>
+                                        <span th:if="${#strings.length(vo[3])} == 10">[[${#strings.substring(vo[3], 0, 3)}]] - [[${#strings.substring(vo[3], 3, 6)}]] - [[${#strings.substring(vo[3], 6, 10)}]]</span>
+                                        <span th:if="${#strings.length(vo[3])} == 11">[[${#strings.substring(vo[3], 0, 3)}]] - [[${#strings.substring(vo[3], 3, 7)}]] - [[${#strings.substring(vo[3], 7, 11)}]]</span>
+                                    </td>
+                                    <td>[[${vo[4]}]]</td>
+                                    <td>
+                                        <span th:if="${#strings.length(vo[5])} == 10">[[${#strings.substring(vo[5], 0, 3)}]] - [[${#strings.substring(vo[5], 3, 6)}]] - [[${#strings.substring(vo[5], 6, 10)}]]</span>
+                                        <span th:if="${#strings.length(vo[5])} == 11">[[${#strings.substring(vo[5], 0, 3)}]] - [[${#strings.substring(vo[5], 3, 7)}]] - [[${#strings.substring(vo[5], 7, 11)}]]</span>
+                                    </td>
+                                    <td>[[${vo[6]}]]</td>
+                                    <td>[[${vo[7]}]]</td>
+                                    <td>[[${vo[8]}]]개</td>
+                                    <td>[[${#numbers.formatDecimal(vo[9], 0, 'COMMA', -1, 'POINT')}]]원</td>
+                                    <td>
+                                        <span th:switch="${vo[10]}">
+                                            <span th:case="COMPLETE">결제완료</span>
+                                            <span th:case="CANCEL">결제취소</span>
+                                            <span th:case="REFUND">환불</span>
+                                        </span>
+                                    </td>
+                                    <td>[[${#temporals.format(vo[11], 'yyyy-MM-dd HH:mm:ss', locale)}]]</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--페이징-->
+                <nav class="text-center">
+                    <div>
+                        <!--현재 페이지 번호 구분 : th:classappend="${page.pageNumber == productVO.currentPageNum - 1}?active : ''"-->
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${giftPaymentVO.prevPage}"><a th:href="${giftPaymentVO.prevPage.pageNumber} + 1">이전[[${giftPaymentVO.prevPage.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:each="page:${giftPaymentVO.pageList}" th:classappend="${page.pageNumber == (giftPaymentVO.currentPageNum - 1)}?active : ''"><a th:href="${page.pageNumber} + 1" id="currentPage">[[${page.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:if="${giftPaymentVO.nextPage}"><a th:href="${giftPaymentVO.nextPage.pageNumber} + 1">다음[[${giftPaymentVO.nextPage.pageNumber} + 1]]</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <!--페이지 및 검색조건 get방식으로 넘김-->
+                <form id="pageInfo" th:action="@{listGiftPayment}" method="get">
+                    <input type="hidden" name="page" th:value="${giftPaymentVO.currentPageNum}"/>
+                    <input type="hidden" name="size" th:value="${giftPaymentVO.currentPage.pageSize}"/>
+                    <input type="hidden" name="type" th:value="${pageVO.type}"/>
+                    <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    <input type="hidden" name="giftPaymentStatusCode" th:value="${pageVO.giftPaymentStatusCode}"/>
+                    <input type="hidden" name="userId" th:value="${pageVO.userId}"/>
+                </form>
+            </div>
+        </div>
+        <!-- 콘텐츠 END -->
+
+        <!-- 푸터 START -->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+</div>
+<!-- The Gallery as lightbox dialog, should be a child element of the document body -->
+<div id="blueimp-gallery" class="blueimp-gallery">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+</div>
+<th:block >
+    <script th:inline="javascript">
+        $(window).on('load', function() {
+            var message = /*[[${message}]]*/'fail';
+
+            if (message == "successRegister"){
+                alert('등록이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successUpdate"){
+                alert('수정이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successDelete"){
+                alert('삭제가 정상적으로 처리되었습니다.');
+            }
+        });
+
+        $(document).ready(function () {
+            var pageSize = /*[[${totalPages}]]*/'';
+
+            console.log(pageSize);
+
+            $('.chosen-select').chosen({width: "100%"});
+
+            $('#storeNameList').on('change', function(){
+                console.log('dddd');
+                table.search(this.value).draw();
+            });
+
+            $('a[name="updateGiftPaymentVisibleCode"]').click(function (e) {
+                e.preventDefault();
+
+                console.log($(this));
+
+                var node = $(this);
+                var updateGiftPaymentVisibleCode = $(this).children().eq(0).attr('value');
+                var parentNode = $(this).parent().parent();
+                var giftPaymentNo = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log('디바이스 번호 : '+giftPaymentNo +' 활성화코드 : ' +updateGiftPaymentVisibleCode);
+
+                if(updateGiftPaymentVisibleCode == 'TERMINATE'){
+                    alert('서비스 계약이 종료되었습니다. 매장에 문의해주세요.')
+                }
+                else{
+                    $.ajax({
+                        url: "/wishwide/giftPayment/updateGiftPaymentVisibleCode/" + giftPaymentNo + "/" + updateGiftPaymentVisibleCode,
+                        type: 'get',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            console.log("변경 성공" + data);
+                            if (data == 'use'){
+                                console.log(node);
+                                node.empty();
+                                node.html('<span class="use" value="1" >사용</span>');
+                                alert('디바이스 사용 상태로 변경되었습니다.');
+                            }
+                            else{
+                                console.log(node);
+                                node.empty();
+                                node.html('<span class="not-use" value="0" >미사용</span>');
+                                alert('디바이스 미사용 상태로 변경되었습니다.')
+                            }
+                        }
+                    });
+                }
+
+
+            });
+        });
+
+    </script>
+</th:block>

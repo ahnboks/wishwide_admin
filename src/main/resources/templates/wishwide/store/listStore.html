@@ -1,0 +1,809 @@
+<div th:insert="~{layout/head::head}"/>
+<div id="wrapper">
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"/>
+    <!-- 사이드바 END -->
+
+    <div id="page-wrapper" class="gray-bg">
+        <!-- 헤더 START -->
+        <div th:insert="~{layout/header::header}"/>
+        <!-- 헤더 END -->
+
+        <!-- 콘텐츠 START -->
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>가맹점 관리</h2>
+                </div>
+                <div class="ibox-content">
+                    <div class="col-lg-10">
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">가맹점명</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select data-placeholder="가맹점 선택" class="chosen-select" id="userId" tabindex="2">
+                                                <option value="ALL" >전체</option>
+                                                <option th:each="store:${storeNameList}" name="storeName" th:value="${store[0]}"
+                                                        th:selected="${pageVO.userId} == ${store[0]}">[[${store[1]}]]</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">서비스 상태</th>
+                                    <td>
+                                        <div class="col-sm-5 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="serviceOperationCode">
+                                                <option value="ALL" th:selected="${pageVO.serviceOperationCode} == 'ALL'">전체</option>
+                                                <option value="PREACTIVE" th:selected="${pageVO.serviceOperationCode} == 'PREACTIVE'">운영전</option>
+                                                <option value="ACTIVE" th:selected="${pageVO.serviceOperationCode} == 'ACTIVE'">운영중</option>
+                                                <option value="TERMINATE" th:selected="${pageVO.serviceOperationCode} == 'TERMINATE'">해지</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">검색 키워드</th>
+                                    <td>
+                                        <div class="col-sm-8 m-b-xs input-group">
+                                            <input type="text" placeholder="키워드 입력" class="input-sm form-control"
+                                                   id="searchKeyword" th:value="${pageVO.keyword}">
+                                            <span class="input-group-btn">
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                                id="searchButton">검색</button>
+                                                    </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!--등록 버튼-->
+                    <div class="col-lg-12">
+                        <div class="pull-right">
+                            <a th:href="@{listStoreContract}"><button class="btn btn-primary">계약 조회</button></a>
+                            <a th:href="@{registerStore}"><button class="btn btn-primary">가맹점 등록</button></a>
+                        </div>
+                    </div>
+                    <!--테이블-->
+                    <div class="row" th:with="store=${storeVO.result}">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <th>상세</th>
+                                <th sec:authorize="hasRole('MA')">가맹점명</th>
+                                <th>로고 이미지</th>
+                                <th>가입멤버</th>
+                                <th>디바이스</th>
+                                <th>상품</th>
+                                <th>선물거래</th>
+                                <th>쿠폰사용</th>
+                                <th>서비스 상태</th>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vo:${store.content}" name="table">
+                                    <td>
+                                        <a th:href="@{/wishwide/store/detailStore/{storeId}(storeId=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
+                                            <img src="/img/menu.png" style="width: 35px; height: 35px;">
+                                        </a>
+                                    </td>
+                                    <td sec:authorize="hasRole('MA')">[[${vo[2]}]]</td>
+                                    <td>
+                                         <span th:if="${vo[8]} != null">
+                                             <a th:href="${vo[8]}" data-gallery="">
+                                                 <img th:src="${vo[7]}" style="width: 35px; height: 35px;">
+                                             </a>
+                                         </span>
+                                        <span th:if="${vo[8]} == null">
+                                             <a href="/img/no_image.png" data-gallery="">
+                                                  <img src="/img/no_image.png" style="width: 35px; height: 35px;">
+                                             </a>
+                                        </span>
+                                    </td>
+                                    <td>
+                                       <span th:if="${vo[11]} != 0">
+                                           <a href="#" name="selectStoreCustomer">[[${vo[11]}]]</a>
+                                       </span>
+                                        <span th:if="${vo[11]} == 0">-</span>
+                                    </td>
+                                    <td>
+                                       <span th:if="${vo[9]} != 0">
+                                           <a href="#" name="selectStoreDevice">[[${vo[9]}]]</a>
+                                       </span>
+                                        <span th:if="${vo[9]} == 0">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${vo[10]} != 0">
+                                            <a href="#" name="selectStoreProduct">[[${vo[10]}]]</a>
+                                        </span>
+                                        <span th:if="${vo[10]} == 0">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${vo[12]} != 0">
+                                            <a href="#" name="selectStoreGiftPayment">[[${vo[12]}]]</a>
+                                        </span>
+                                        <span th:if="${vo[12]} == 0">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${vo[13]} != 0">
+                                            <a href="#" name="selectStoreCouponBox">[[${vo[13]}]]</a>
+                                        </span>
+                                        <span th:if="${vo[13]}== 0">-</span>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-default" name="updateServiceOperationCode" href="#">
+                                            <span class="PREACTIVE" th:if="${vo[14]} == 'PREACTIVE'" th:value="${vo[14]}">운영전</span>
+                                            <span class="ACTIVE"  th:if="${vo[14]} == 'ACTIVE'" th:value="${vo[14]}" >운영중</span>
+                                            <span class="TERMINATE"  th:if="${vo[14]} == 'TERMINATE'" th:value="${vo[14]}" >해지</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--페이징-->
+                <nav class="text-center">
+                    <div>
+                        <!--현재 페이지 번호 구분 : th:classappend="${page.pageNumber == productVO.currentPageNum - 1}?active : ''"-->
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${storeVO.prevPage}"><a th:href="${storeVO.prevPage.pageNumber} + 1">이전[[${storeVO.prevPage.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:each="page:${storeVO.pageList}" th:classappend="${page.pageNumber == (storeVO.currentPageNum - 1)}?active : ''"><a th:href="${page.pageNumber} + 1" id="currentPage">[[${page.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:if="${storeVO.nextPage}"><a th:href="${storeVO.nextPage.pageNumber} + 1">다음[[${storeVO.nextPage.pageNumber} + 1]]</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <!--페이지 및 검색조건 get방식으로 넘김-->
+                <form id="pageInfo" th:action="@{listStore}" method="get">
+                    <input type="hidden" name="page" th:value="${storeVO.currentPageNum}"/>
+                    <input type="hidden" name="size" th:value="${storeVO.currentPage.pageSize}"/>
+                    <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    <input type="hidden" name="serviceOperationCode" th:value="${pageVO.serviceOperationCode}"/>
+                    <input type="hidden" name="userId" th:value="${pageVO.userId}"/>
+                </form>
+            </div>
+        </div>
+        <!-- 콘텐츠 END -->
+
+        <!-- 푸터 START -->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+</div>
+<!-- The Gallery as lightbox dialog, should be a child element of the document body -->
+<div id="blueimp-gallery" class="blueimp-gallery">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+</div>
+<!--매장 고객 리스트Modal-->
+<div class="modal inmodal fade" id="modalStoreCustomer" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">고객 정보</h4>
+            </div>
+            <div class="modal-body">
+                <table class="footable table table-bordered table-hover">
+                    <thead>
+                    <th>전화번호</th>
+                    <th>등급</th>
+                    <th>방문횟수</th>
+                    <th>선물구매</th>
+                    <th>선물수신</th>
+                    <th>쿠폰(사용/수신)</th>
+                    <th>적립수</th>
+                    </thead>
+                    <tbody id="selectStoreCustomer">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--매장 디바이스 리스트Modal-->
+<div class="modal inmodal fade" id="modalStoreDevice" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">디바이스 정보</h4>
+            </div>
+            <div class="modal-body">
+                <table class="footable table table-bordered table-hover">
+                    <thead>
+                    <th>디바이스 타입</th>
+                    <th>모델명</th>
+                    <th>디바이스명</th>
+                    <th>디바이스 ID/POS ID</th>
+                    <th>사용/미사용</th>
+                    <th>등록일</th>
+                    </thead>
+                    <tbody id="selectStoreDevice">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--매장 상품 리스트Modal-->
+<div class="modal inmodal fade" id="modalStoreProduct" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">상품 정보</h4>
+            </div>
+            <div class="modal-body">
+                <table class="footable table table-bordered table-hover">
+                    <thead>
+                    <th>선물 설정</th>
+                    <th>카테고리</th>
+                    <th>상품명</th>
+                    <th>판매가격</th>
+                    <th>할인가격</th>
+                    <th>판매상태</th>
+                    </thead>
+                    <tbody id="selectStoreProduct">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--매장 선물거래 리스트Modal-->
+<div class="modal inmodal fade" id="modalStoreGiftPayment" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">선물거래정보</h4>
+            </div>
+            <div class="modal-body">
+                <table class="footable table table-bordered table-hover">
+                    <thead>
+                    <th>구매자전화번호</th>
+                    <th>수신자전화번호</th>
+                    <th>상품명</th>
+                    <th>수량</th>
+                    <th>결제금액</th>
+                    <th>결제일시</th>
+                    </thead>
+                    <tbody id="selectStoreGiftPayment">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--매장 쿠폰사용 리스트Modal-->
+<div class="modal inmodal fade" id="modalStoreCouponBox" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">쿠폰사용 정보</h4>
+            </div>
+            <div class="modal-body">
+                <table class="footable table table-bordered table-hover">
+                    <thead>
+                    <th>전화번호</th>
+                    <th>이름</th>
+                    <th>쿠폰유형</th>
+                    <th>쿠폰명</th>
+                    <th>발급대상</th>
+                    <th>발급경로</th>
+                    <th>사용여부</th>
+                    <th>유효만료일</th>
+                    </thead>
+                    <tbody id="selectStoreCouponBox">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block >
+    <script th:inline="javascript">
+
+        $(window).on('load', function() {
+            var message = /*[[${message}]]*/'fail';
+
+            if (message == "successRegister"){
+                alert('등록이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successUpdate"){
+                alert('수정이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successDelete"){
+                alert('삭제가 정상적으로 처리되었습니다.');
+            }
+        });
+
+        $(document).ready(function () {
+            var pageSize = /*[[${totalPages}]]*/'';
+
+            console.log(pageSize);
+
+            $('.chosen-select').chosen({width: "100%"});
+
+
+            //매장 고객리스트 가져오기
+            $('a[name="selectStoreCustomer"]').click(function (e) {
+                e.preventDefault();
+
+                var parentNode = $(this).parent().parent().parent();
+                var storeId = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log(parentNode);
+
+                $('#selectStoreCustomer').empty();
+                $('#modalStoreCustomer').modal('show');
+
+                $.ajax({
+                    url: "/wishwide/store/selectStoreCustomer/" + storeId,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data != "") {
+                            $.each(data, function (index, item) {
+                                $('#selectStoreCustomer').append(
+                                    '<tr>' +
+                                    '<td>' + item[1].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
+                                    '<td>' + item[4] + '</td>' +
+                                    '<td>' + item[5] + '</td>' +
+                                    '<td>' + item[6] + '</td>' +
+                                    '<td>' + item[7] + '</td>' +
+                                    '<td>' + item[8] + '/' + item[9] + '</td>' +
+                                    '<td>' + item[11] + '</td>' +
+                                    '</tr>'
+                                );
+                            });
+//                                $('.footable').footable({
+//                                    paging: {
+//                                        enabled: true,
+//                                        size: 5
+//                                    }
+//                                });
+                            isSelectStoreCustomer = true;
+                        }
+                    }
+                });
+            });
+
+            //매장 디바이스 가져오기
+            $('a[name="selectStoreDevice"]').click(function (e) {
+                e.preventDefault();
+
+                var parentNode = $(this).parent().parent().parent();
+                var storeId = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log(parentNode);
+
+                $('#selectStoreDevice').empty();
+                $('#modalStoreDevice').modal('show');
+
+                $.ajax({
+                    url: "/wishwide/store/selectStoreDevice/" + storeId,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data != "") {
+                            $.each(data, function (index, item) {
+                                var deviceTypeCode = '';
+                                var deviceVisibleCode = '';
+                                var deviceId = '';
+                                var posId = '';
+
+                                /*디바이스 타입*/
+                                if(item[3] == 'TABLET')
+                                    deviceTypeCode = '태블릿';
+                                else
+                                    deviceTypeCode = '비콘';
+
+                                /*사용/미사용*/
+                                if(item[8] == 1)
+                                    deviceVisibleCode = '사용';
+                                else
+                                    deviceVisibleCode = '미사용';
+
+                                /*디바이스 아이디*/
+                                if(deviceId != '')
+                                    deviceId = item[6];
+                                else
+                                    deviceId = '-';
+
+                                /*포스 아이디*/
+                                if(posId != '')
+                                    posId = item[7];
+                                else
+                                    posId = '-';
+
+                                $('#selectStoreDevice').append(
+                                    '<tr>' +
+                                    '<td>' + deviceTypeCode + '</td>' +
+                                    '<td>' + item[4] + '</td>' +
+                                    '<td>' + item[5] + '</td>' +
+                                    '<td>' + deviceId + '/' + posId + '</td>' +
+                                    '<td>' + deviceVisibleCode + '</td>' +
+                                    '<td>' + item[9].replace('T', ' ') + '</td>' +
+                                    '</tr>'
+                                );
+                            });
+//                                $('.footable').footable({
+//                                    paging: {
+//                                        enabled: true,
+//                                        size: 5
+//                                    }
+//                                });
+                        }
+                    }
+                });
+            });
+
+            //매장 상품리스트 가져오기
+            $('a[name="selectStoreProduct"]').click(function (e) {
+                e.preventDefault();
+
+                var parentNode = $(this).parent().parent().parent();
+                var storeId = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log(parentNode);
+
+                $('#selectStoreProduct').empty();
+                $('#modalStoreProduct').modal('show');
+
+                $.ajax({
+                    url: "/wishwide/store/selectStoreProduct/" + storeId,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data != "") {
+                            $.each(data, function (index, item) {
+                                var giftProductRegisterCode = '';
+                                var majorCategoryTitle = '';
+                                var subCategoryTitle = '';
+                                var productSellStatusCode = '';
+                                var giftProductDiscountPrice = '';
+
+                                /*선택*/
+                                if(item[1] == 1)
+                                    giftProductRegisterCode = '<input type="checkbox" checked="" aria-label="Single checkbox Two" onclick="return false;">';
+                                else
+                                    giftProductRegisterCode = '<input type="checkbox" aria-label="Single checkbox Two" onclick="return false;">';
+
+                                /*대분류명*/
+                                if(!(item[4] === null))
+                                    majorCategoryTitle = item[4];
+                                else
+                                    majorCategoryTitle = '-';
+
+                                /*중분류명*/
+                                if(!(item[5] === null))
+                                    subCategoryTitle = item[5];
+                                else
+                                    subCategoryTitle = '-';
+
+                                /*판매여부*/
+                                if(item[9] != 0)
+                                    productSellStatusCode = '판매';
+                                else
+                                    productSellStatusCode = '미판매';
+
+                                /*할인가격*/
+                                if(!(item[8] === null))
+                                    giftProductDiscountPrice = item[8]+'원';
+                                else
+                                    giftProductDiscountPrice = '-';
+
+
+                                    $('#selectStoreProduct').append(
+                                    '<tr>' +
+                                    '<td>' + giftProductRegisterCode + '</td>' +
+                                    '<td>' + majorCategoryTitle + '/' + subCategoryTitle + '</td>' +
+                                    '<td>' + item[6] + '</td>' +
+                                    '<td>' + item[7] + '원</td>' +
+                                    '<td>' + giftProductDiscountPrice + '</td>' +
+                                    '<td>' + productSellStatusCode + '</td>' +
+                                    '</tr>'
+                                );
+                            });
+//                                $('.footable').footable({
+//                                    paging: {
+//                                        enabled: true,
+//                                        size: 5
+//                                    }
+//                                });
+                        }
+                    }
+                });
+            });
+
+            //매장 선물거래리스트 가져오기
+            $('a[name="selectStoreGiftPayment"]').click(function (e) {
+                e.preventDefault();
+
+                var parentNode = $(this).parent().parent().parent();
+                var storeId = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log(parentNode);
+
+                $('#selectStoreGiftPayment').empty();
+                $('#modalStoreGiftPayment').modal('show');
+
+                $.ajax({
+                    url: "/wishwide/store/selectStoreGiftPayment/" + storeId,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data != "") {
+                            $.each(data, function (index, item) {
+                                $('#selectStoreGiftPayment').append(
+                                    '<tr>' +
+                                    '<td>' + item[3].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
+                                    '<td>' + item[5].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
+                                    '<td>' + item[7] + '</td>' +
+                                    '<td>' + item[8] + '</td>' +
+                                    '<td>' + item[9] + '원</td>' +
+                                    '<td>' + item[11].replace('T', ' ') + '</td>' +
+                                    '</tr>'
+                                );
+                            });
+//                                $('.footable').footable({
+//                                    paging: {
+//                                        enabled: true,
+//                                        size: 5
+//                                    }
+//                                });
+                        }
+                    }
+                });
+            });
+
+            //매장 쿠폰사용리스트 가져오기
+            $('a[name="selectStoreCouponBox"]').click(function (e) {
+                e.preventDefault();
+
+                var parentNode = $(this).parent().parent().parent();
+                var storeId = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log(parentNode);
+
+                $('#selectStoreCouponBox').empty();
+                $('#modalStoreCouponBox').modal('show');
+
+                $.ajax({
+                    url: "/wishwide/store/selectStoreCouponBox/" + storeId,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data != "") {
+                            $.each(data, function (index, item) {
+                                var couponTargetTypeCode = '';
+                                var couponPublishTypeCode = '';
+                                var couponUseCode = '';
+                                var customerName = '';
+
+                                /*이름*/
+                                if(!(item[5] === null))
+                                    customerName = item[5];
+                                else
+                                    customerName = '-';
+
+                                /*발급대상*/
+                                if(item[8] == 'BIRTH')
+                                    couponTargetTypeCode = '생일';
+                                else if(item[8] == 'STAMP')
+                                    couponTargetTypeCode = '도장적립';
+                                else if(item[8] == 'NEW')
+                                    couponTargetTypeCode = '신규';
+                                else if(item[8] == 'UPGRADE')
+                                    couponTargetTypeCode = '단골등업';
+                                else if(item[8] == 'WHOLE')
+                                    couponTargetTypeCode = '전체';
+                                else if(item[8] == 'VIP')
+                                    couponTargetTypeCode = '단골';
+                                else
+                                    couponTargetTypeCode = '특정';
+
+                                /*발급경로*/
+                                if(item[9] == 'AR')
+                                    couponPublishTypeCode = 'AR게임';
+                                else
+                                    couponPublishTypeCode = '쿠폰함';
+
+                                /*사용여부*/
+                                if(item[10] == 0)
+                                    couponUseCode = '미사용';
+                                else
+                                    couponUseCode =  item[11].replace('T', ' ');
+
+
+                                $('#selectStoreCouponBox').append(
+                                    '<tr>' +
+                                    '<td>' + item[4].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
+                                    '<td>' + customerName + '</td>' +
+                                    '<td>' + item[6] + '</td>' +
+                                    '<td>' + item[7] + '</td>' +
+                                    '<td>' + couponTargetTypeCode + '</td>' +
+                                    '<td>' + couponPublishTypeCode + '</td>' +
+                                    '<td>' + couponUseCode + '</td>' +
+                                    '<td>' + item[13].replace('T', ' ') + '</td>' +
+                                    '</tr>'
+                                );
+                            });
+//                                $('.footable').footable({
+//                                    paging: {
+//                                        enabled: true,
+//                                        size: 5
+//                                    }
+//                                });
+                        }
+                    }
+                });
+            });
+
+            $('#storeNameList').on('change', function(){
+                console.log('dddd');
+                table.search(this.value).draw();
+            });
+
+            $('a[name="updateServiceOperationCode"]').click(function (e) {
+                e.preventDefault();
+
+                console.log($(this));
+
+                var node = $(this);
+                var storeServiceOperationCode = $(this).children().eq(0).attr('value');
+                var parentNode = $(this).parent().parent();
+                var storeId = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log(storeId + storeServiceOperationCode);
+
+                if(storeServiceOperationCode == 'TERMINATE'){
+                    alert('서비스 계약이 종료되었습니다. 매장에 문의해주세요.')
+                }
+                else{
+                    $.ajax({
+                        url: "/wishwide/store/updateServiceOperationCode/" + storeId + "/" + storeServiceOperationCode,
+                        type: 'get',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            console.log("변경 성공" + data);
+                            if (data == 'ACTIVE'){
+                                console.log(node);
+                                node.empty();
+                                node.html('<span class="ACTIVE" value="ACTIVE" >운영중</span>');
+                                alert('서비스 운영중 상태로 변경되었습니다.');
+                            }
+                            else{
+                                console.log(node);
+                                node.empty();
+                                node.html('<span class="PREACTIVE" value="PREACTIVE">운영전</span>');
+                                alert('서비스 운영전 상태로 변경되었습니다.')
+                            }
+                        }
+                    });
+                }
+
+
+            });
+        });
+
+    </script>
+</th:block>
+<!-- DataTables :
+            var dtLang = {
+                en : {
+                    "sEmptyTable" : "No data available in table",
+                    "sInfo" : "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "sInfoEmpty" : "Showing 0 to 0 of 0 entries",
+                    "sInfoFiltered" : "(filtered from _MAX_ total entries)",
+                    "sInfoPostFix" : "",
+                    "sInfoThousands" : ",",
+                    "sLengthMenu" : "Show _MENU_ entries",
+                    "sLoadingRecords" : "Loading...",
+                    "sProcessing" : "Processing...",
+                    "sSearch" : "Search:",
+                    "sZeroRecords" : "No matching records found",
+                    "oPaginate" : {
+                        "sFirst" : "First",
+                        "sLast" : "Last",
+                        "sNext" : "Next",
+                        "sPrevious" : "Previous"
+                    },
+                    "oAria" : {
+                        "sSortAscending" : ": activate to sort column ascending",
+                        "sSortDescending" : ": activate to sort column descending"
+                    }
+                },
+                ko : {
+                    "sEmptyTable" : "데이터가 없습니다",
+                    "sInfo" : "_START_ ~ _END_ / 전체: _TOTAL_",
+                    "sInfoEmpty" : "0 - 0 / 0",
+                    "sInfoFiltered" : "(총 _MAX_ 개)",
+                    "sInfoPostFix" : "",
+                    "sInfoThousands" : ",",
+                    "sLengthMenu" : "페이지당 줄수 _MENU_",
+                    "sLoadingRecords" : "읽는중...",
+                    "sProcessing" : "처리중...",
+                    "sSearch" : "검색:",
+                    "sZeroRecords" : "검색 결과가 없습니다",
+                    "oPaginate" : {
+                        "sFirst" : "처음",
+                        "sLast" : "마지막",
+                        "sNext" : "다음",
+                        "sPrevious" : "이전"
+                    },
+                    "oAria" : {
+                        "sSortAscending" : ": 오름차순 정렬",
+                        "sSortDescending" : ": 내림차순 정렬"
+                    }
+                },
+
+            };
+
+            $.extend(true, $.fn.DataTable.defaults, {
+                "searching" : true,
+                "ordering" : true,
+                "columnDefs":[{
+                    "targets": [0,2,8],
+                    "orderable": false
+                }],
+                "info": true,
+                "paging": true,
+                "lengthChange": true,
+                "language": dtLang["ko"]
+            });
+
+            var table = $('.dataTables-example').DataTable({
+                pageLength: 10,
+                responsive: true,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });
+-->

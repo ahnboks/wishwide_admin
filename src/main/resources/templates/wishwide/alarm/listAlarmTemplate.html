@@ -1,0 +1,255 @@
+<div th:insert="~{layout/head::head}"/>
+<div id="wrapper">
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"/>
+    <!-- 사이드바 END -->
+
+    <div id="page-wrapper" class="gray-bg">
+        <!-- 헤더 START -->
+        <div th:insert="~{layout/header::header}"/>
+        <!-- 헤더 END -->
+
+        <!-- 콘텐츠 START -->
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>템플릿</h2>
+                </div>
+                <div class="ibox-content">
+                    <div class="col-lg-10">
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">알림유형</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="alarmTypeCode">
+                                                <option value="ALL" th:selected="${pageVO.alarmTypeCode} == 'ALL'">전체</option>
+                                                <option value="G" th:selected="${pageVO.alarmTypeCode} == 'G'">선물</option>
+                                                <option value="C" th:selected="${pageVO.alarmTypeCode} == 'C'">쿠폰</option>
+                                                <option value="S" th:selected="${pageVO.alarmTypeCode} == 'S'">도장</option>
+                                                <option value="P" th:selected="${pageVO.alarmTypeCode} == 'P'">포인트</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">신규가입 전송여부</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select class="input-sm form-control input-s-sm inline" id="alarmJoinCode">
+                                                <option value="2" th:selected="${pageVO.alarmJoinCode} == '2'">전체</option>
+                                                <option value="1" th:selected="${pageVO.alarmJoinCode} == '1'">사용</option>
+                                                <option value="0" th:selected="${pageVO.alarmJoinCode} == '0'">미사용</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-2 m-b-xs">알림목적</th>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs text-left">
+                                            <select class="chosen-select" id="alarmPurposeCode">
+                                                <option value="ALL" th:selected="${pageVO.alarmPurposeCode} == 'ALL'">전체</option>
+                                                <option value="G1" th:selected="${pageVO.alarmPurposeCode} == 'G1'">선물 사용</option>
+                                                <option value="G2" th:selected="${pageVO.alarmPurposeCode} == 'G2'">선물 구매</option>
+                                                <option value="G3" th:selected="${pageVO.alarmPurposeCode} == 'G3'">선물 유효기간 만료</option>
+                                                <option value="C0" th:selected="${pageVO.alarmPurposeCode} == 'C0'">쿠폰 도착</option>
+                                                <option value="C1" th:selected="${pageVO.alarmPurposeCode} == 'C1'">쿠폰 사용</option>
+                                                <option value="C3" th:selected="${pageVO.alarmPurposeCode} == 'C3'">쿠폰 유효기간 만료</option>
+                                                <option value="S4" th:selected="${pageVO.alarmPurposeCode} == 'S4'">도장 적립</option>
+                                                <option value="S5" th:selected="${pageVO.alarmPurposeCode} == 'S5'">도장 차감</option>
+                                                <option value="P3" th:selected="${pageVO.alarmPurposeCode} == 'P3'">포인트 유효기간 만료</option>
+                                                <option value="P4" th:selected="${pageVO.alarmPurposeCode} == 'P4'">포인트 적립</option>
+                                                <option value="P5" th:selected="${pageVO.alarmPurposeCode} == 'P5'">포인트 차감</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">알림 대상자</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select class="input-sm form-control input-s-sm inline" id="alarmTargetTypeCode">
+                                                <option value="ALL" th:selected="${pageVO.alarmTargetTypeCode} == 'ALL'">전체</option>
+                                                <option value="BC" th:selected="${pageVO.alarmTargetTypeCode} == 'BC'">구매자</option>
+                                                <option value="RC" th:selected="${pageVO.alarmTargetTypeCode} == 'RC'">수신자</option>
+                                                <option value="AC" th:selected="${pageVO.alarmTargetTypeCode} == 'AC'">적립자</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="m-b-xs input-group">
+                                            <span class="input-group-btn">
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                                id="searchButton">검색</button>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!--등록 버튼-->
+                    <div class="col-lg-12">
+                        <div class="pull-right">
+                            <a th:href="@{registerAlarmTemplate}"><button class="btn btn-primary">템플릿 추가</button></a>
+                        </div>
+                    </div>
+                    <!--테이블-->
+                    <div class="row" th:with="alarmTemplate=${alarmTemplateVO.result}">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <th>상세</th>
+                                <th>알림유형</th>
+                                <th>신규가입 전송 여부</th>
+                                <th>알림목적</th>
+                                <th>발송시점</th>
+                                <th>알림 대상자</th>
+                                <th>알림 메시지</th>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vo:${alarmTemplate.content}" name="table">
+                                    <td>
+                                        <a th:href="@{/wishwide/alarm/detailAlarmTemplate/{alarmTemplateNo}(alarmTemplateNo=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
+                                            <img src="/img/menu.png" style="width: 35px; height: 35px;">
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span th:switch="${vo[1]}">
+                                            <span th:case="G">선물</span>
+                                            <span th:case="C">쿠폰</span>
+                                            <span th:case="S">도장</span>
+                                            <span th:case="P">포인트</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                         <span th:switch="${vo[2]}">
+                                            <span th:case="1">사용</span>
+                                            <span th:case="0">미사용</span>
+                                         </span>
+                                    </td>
+                                    <td>[[${vo[4]}]]</td>
+                                    <td>[[${vo[6]}]]</td>
+                                    <td>
+                                        <span th:switch="${vo[7]}">
+                                            <span th:case="BC">구매자</span>
+                                            <span th:case="RC">수신자</span>
+                                            <span th:case="AC">적립자</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-default" name="selectAlarmMessage" href="#">
+                                            <span>보기</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--페이징-->
+                <nav class="text-center">
+                    <div>
+                        <!--현재 페이지 번호 구분 : th:classappend="${page.pageNumber == productVO.currentPageNum - 1}?active : ''"-->
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${alarmTemplateVO.prevPage}"><a th:href="${alarmTemplateVO.prevPage.pageNumber} + 1">이전[[${alarmTemplateVO.prevPage.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:each="page:${alarmTemplateVO.pageList}" th:classappend="${page.pageNumber == (alarmTemplateVO.currentPageNum - 1)}?active : ''"><a th:href="${page.pageNumber} + 1" id="currentPage">[[${page.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:if="${alarmTemplateVO.nextPage}"><a th:href="${alarmTemplateVO.nextPage.pageNumber} + 1">다음[[${alarmTemplateVO.nextPage.pageNumber} + 1]]</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <!--페이지 및 검색조건 get방식으로 넘김-->
+                <form id="pageInfo" th:action="@{listAlarmTemplate}" method="get">
+                    <input type="hidden" name="page" th:value="${alarmTemplateVO.currentPageNum}"/>
+                    <input type="hidden" name="size" th:value="${alarmTemplateVO.currentPage.pageSize}"/>
+                    <input type="hidden" name="type" th:value="${pageVO.type}"/>
+                    <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    <input type="hidden" name="alarmJoinCode" th:value="${pageVO.alarmJoinCode}"/>
+                    <input type="hidden" name="alarmTypeCode" th:value="${pageVO.alarmTypeCode}"/>
+                    <input type="hidden" name="alarmPurposeCode" th:value="${pageVO.alarmPurposeCode}"/>
+                    <input type="hidden" name="alarmTargetTypeCode" th:value="${pageVO.alarmTargetTypeCode}"/>
+                </form>
+            </div>
+        </div>
+        <!-- 콘텐츠 END -->
+
+        <!-- 푸터 START -->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+</div>
+<div class="modal inmodal fade" id="modalAlarmMessage" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">알림 메시지</h4>
+            </div>
+            <div class="modal-body">
+                <p id="alarmMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block >
+    <script th:inline="javascript">
+        $(window).on('load', function() {
+            var message = /*[[${message}]]*/'fail';
+
+            if (message == "successRegister"){
+                alert('등록이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successUpdate"){
+                alert('수정이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successDelete"){
+                alert('삭제가 정상적으로 처리되었습니다.');
+            }
+        });
+
+        $(document).ready(function () {
+            var pageSize = /*[[${totalPages}]]*/'';
+
+            console.log(pageSize);
+
+            $('.chosen-select').chosen({width: "100%"});
+
+            $('a[name="selectAlarmMessage"]').click(function (e) {
+                e.preventDefault();
+
+                console.log($(this));
+
+                $('#modalAlarmMessage').modal('show');
+
+                var parentNode = $(this).parent().parent();
+                var alarmTemplateNo = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log('번호 : '+alarmTemplateNo );
+
+                $.ajax({
+                    url: "/wishwide/alarm/selectAlarmTemplate/" + alarmTemplateNo,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        $('#alarmMessage').text(data);
+                    }
+                });
+
+
+            });
+        });
+
+    </script>
+</th:block>

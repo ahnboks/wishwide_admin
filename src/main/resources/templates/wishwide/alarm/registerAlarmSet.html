@@ -1,0 +1,463 @@
+<div th:insert="~{layout/head::head}"></div>
+<!--<script src="/js/managerValidation.js"></script>-->
+
+<div id="wrapper">
+
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>수동 발송</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form method="post" th:action="@{postRegisterAlarmSet}" class="form-horizontal" id="registerForm">
+                        <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">가맹점명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-md-2">
+                                <select data-placeholder="가맹점 선택" class="chosen-select" id="storeId" tabindex="2">
+                                    <option value="ALL" >전체</option>
+                                    <option th:each="store:${storeNameList}" name="storeId" th:value="${store[0]}"
+                                            th:selected="${pageVO.userId} == ${store[0]}">[[${store[1]}]]</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <!--템플릿 미리보기-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">템플릿 미리보기<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-md-2">
+                                <a class="btn btn-default" name="selectAlarmTemplatePreview" href="#">
+                                    <span>템플릿 미리보기</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--메시지 입력-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">메시지 입력</label>
+                            <div class="col-sm-2">
+                                <textarea class="form-control input-textarea" name="alarmMessage" rows="10"></textarea>
+                                <span class="textarea-limit-validation"></span>
+                            </div>
+                            <div>
+                                <a class="btn btn-default" name="selectAlarmVariable" href="#">
+                                    <span>알림 변수 정보</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <!--발송유형-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">발송유형<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-6" >
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label class="radio-inline"><input type="radio" name="alarmSendTypeCode" value="IMME" checked="checked">즉시발송</label>
+                                        <label class="radio-inline"><input type="radio" name="alarmSendTypeCode" value="RESERVE">예약발송</label>
+                                    </div>
+                                    <div class="col-md-9" id="alarmReservationTime" style="display:none;">
+                                        <label class="col-md-3 control-label">예약발송시간</label>
+                                        <span class="col-md-3 input-group date">
+                                            <input type="text" class="form-control" value="" name="reserveDate">
+                                            <span class="input-group-addon">
+                                                <span class="fa fa-calendar"></span>
+                                            </span>
+                                        </span>
+                                        <label class="col-md-3 control-label"></label>
+                                        <span class="col-md-3 input-group clockpicker" data-autoclose="true">
+                                            <input type="text" class="form-control" value="" name="reserveTime">
+                                            <span class="input-group-addon">
+                                                <span class="fa fa-clock-o"></span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <!--발송수단-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">발송수단<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-3" >
+                                <label class="radio-inline"><input type="radio" name="alarmSendWayCode" value="TM" checked="checked">알림톡우선</label>
+                                <label class="radio-inline"><input type="radio" name="alarmSendWayCode" value="M">문자</label>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <!--수신고객선택-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">수신고객 선택<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-md-2">
+                                <a class="btn btn-default" name="selectStoreCustomer" href="#">
+                                    <span>고객 불러오기</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--테스트 발송-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"></label>
+                            <div class="col-md-2">
+                                <a class="btn btn-default" name="sendTestMessage" href="#">
+                                    <span>테스트 문자 받아보기</span>
+                                </a>
+                            </div>
+                        </div>
+
+
+
+                        <!--등록, 목록 버튼-->
+                        <div class="form-group">
+                            <div class="text-center">
+                                <!--<button class="btn btn-primary" type="submit" id="btnSubmit">발송</button>-->
+                                <button class="btn btn-primary" type="button">발송</button>
+                                <a th:href="@{/wishwide/alarm/listAlarmSet(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" type="button" id="btnList">목록</button>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+    <!-- 콘텐츠 END -->
+</div>
+<!--알림변수 Modal-->
+<div class="modal inmodal fade" id="modalAlarmVariable" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">알림 변수</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <th>변수명</th>
+                    </thead>
+                    <tbody id="alarmVariable">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--템플릿 미리보기 Modal-->
+<div class="modal inmodal fade" id="modalAlarmTemplate" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">템플릿 미리보기</h4>
+            </div>
+            <div class="modal-body">
+                <div class="wrapper wrapper-content animated fadeInRight" id="selectAlarmTemplatePreview">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!--<button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--매장 고객 리스트Modal-->
+<div class="modal inmodal fade" id="modalStoreCustomer" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">고객 불러오기</h4>
+            </div>
+            <div class="modal-body">
+                <table class="footable table table-bordered table-hover">
+                    <thead>
+                    <th data-sort-ignore="true">선택</th>
+                    <th>전화번호</th>
+                    <th>등급</th>
+                    <th>방문횟수</th>
+                    <th>선물구매</th>
+                    <th>선물수신</th>
+                    <th>쿠폰(사용/수신)</th>
+                    <th>적립수</th>
+                    </thead>
+                    <tbody id="selectStoreCustomer">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block >
+    <script th:inline="javascript">
+        var TEXTAREA_LIMIT_NUM = 300;
+        var isSelectStoreCustomer = false;
+
+        $(document).ready(function () {
+            var registerForm = $('#registerForm');
+
+            $('.chosen-select').chosen({width: "100%"});
+
+            $('.clockpicker').clockpicker();
+
+            $('.input-group.date').datepicker({
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                calendarWeeks: true,
+                autoclose: true
+            });
+
+            if ($('textarea').length != 0) {
+                var textareaValue = $('textarea').val();
+                updateTextareaMsg(textareaValue);
+            }
+
+            //설명 유효성 체크
+            $('textarea').keyup(function () {
+                var textareaValue = $(this).val();
+                console.log("ssss");
+                updateTextareaMsg(textareaValue);
+
+                if (textareaValue.length > TEXTAREA_LIMIT_NUM) {
+                    alert(TEXTAREA_LIMIT_NUM + "자이내로 작성해주세요.");
+                    $(this).val(textareaValue.substr(0, TEXTAREA_LIMIT_NUM));
+                    $('.textarea-limit-validation').text(TEXTAREA_LIMIT_NUM + '/' + TEXTAREA_LIMIT_NUM);
+                }
+            });
+
+            //발송유형 코드에 따른 CSS
+            registerForm.find('[name="alarmSendTypeCode"]').change(function () {
+                var alarmSendTypeCode = registerForm.find('[name="alarmSendTypeCode"]:checked').val();
+
+                console.log(alarmSendTypeCode + '값');
+
+                if(alarmSendTypeCode == 'RESERVE'){
+                    $('#alarmReservationTime').css('display','block');
+                }
+                else{
+                    $('#alarmReservationTime').css('display','none');
+                }
+            });
+
+            //테스트 문자 발송
+            $('a[name="sendTestMessage"]').click(function (e) {
+                e.preventDefault();
+
+                var storeId = registerForm.find('#storeId').val();
+
+                console.log(storeId);
+
+                if(storeId == 'ALL'){
+                    alert('가맹점을 먼저 선택해주세요.');
+
+                    return false;
+                }
+
+                $('#selectStoreCustomer').empty();
+                $('#modalStoreCustomer').modal('show');
+
+                if(isSelectStoreCustomer == false) {
+                    $.ajax({
+                        url: "/wishwide/alarm/selectStoreCustomer/" + storeId,
+                        type: 'get',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            console.log(data);
+                            if (data != "") {
+                                $.each(data, function (index, item) {
+                                    $('#selectStoreCustomer').append(
+                                        '<tr>' +
+                                        '<td><input type="checkbox" value="' + item[0] + '"></td>' +
+                                        '<td>' + item[1] + '</td>' +
+                                        '<td>' + item[4] + '</td>' +
+                                        '<td>' + item[5] + '</td>' +
+                                        '<td>' + item[6] + '</td>' +
+                                        '<td>' + item[7] + '</td>' +
+                                        '<td>' + item[8] +'/'+item[9]+ '</td>' +
+                                        '<td>' + item[11] + '</td>' +
+                                        '</tr>'
+                                    );
+                                });
+                                $('.footable').footable({
+                                    paging: {
+                                        enabled: true,
+                                        size: 5,
+                                        current: data.length
+                                    }
+                                });
+                                isSelectStoreCustomer = true;
+                            }
+                            else{
+                                $('#selectStoreCustomer').append('<tr><td colspan="8">등록된 고객이 없습니다.</td></tr>');
+                            }
+                        }
+                    });
+                }
+            });
+
+            //매장 고객리스트 가져오기
+            $('a[name="selectStoreCustomer"]').click(function (e) {
+                e.preventDefault();
+
+                var storeId = registerForm.find('#storeId').val();
+
+                console.log(storeId);
+
+                if(storeId == 'ALL'){
+                    alert('가맹점을 먼저 선택해주세요.');
+
+                    return false;
+                }
+
+                $('#selectStoreCustomer').empty();
+                $('#modalStoreCustomer').modal('show');
+
+                if(isSelectStoreCustomer == false) {
+                    $.ajax({
+                        url: "/wishwide/alarm/selectStoreCustomer/" + storeId,
+                        type: 'get',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            console.log(data);
+                            if (data != "") {
+                                $.each(data, function (index, item) {
+                                    $('#selectStoreCustomer').append(
+                                        '<tr>' +
+                                        '<td><input type="checkbox" value="' + item[0] + '"></td>' +
+                                        '<td>' + item[1] + '</td>' +
+                                        '<td>' + item[4] + '</td>' +
+                                        '<td>' + item[5] + '</td>' +
+                                        '<td>' + item[6] + '</td>' +
+                                        '<td>' + item[7] + '</td>' +
+                                        '<td>' + item[8] +'/'+item[9]+ '</td>' +
+                                        '<td>' + item[11] + '</td>' +
+                                        '</tr>'
+                                    );
+                                });
+                                $('.footable').footable({
+                                    paging: {
+                                        enabled: true,
+                                        size: 5,
+                                        current: data.length
+                                    }
+                                });
+                                isSelectStoreCustomer = true;
+                            }
+                            else{
+                                $('#selectStoreCustomer').append('<tr><td colspan="8">등록된 고객이 없습니다.</td></tr>');
+                            }
+                        }
+                    });
+                }
+            });
+
+            //메시지템플릿 가져오기
+            $('a[name="selectAlarmTemplatePreview"]').click(function (e) {
+                e.preventDefault();
+
+                console.log($(this));
+
+                $('#modalAlarmTemplate').modal('show');
+
+                $.ajax({
+                    url: "/wishwide/alarm/selectAlarmTemplatePreview",
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data != "") {
+                            $.each(data, function (index, item) {
+                                console.log(data.length % 3);
+                                if((data.length % 3) == 1) {
+                                    $('#selectAlarmTemplatePreview').append('<div class="row">');
+                                }
+                                $('#selectAlarmTemplatePreview').append(
+                                    '<div class="col-md-4">'+
+                                    '<div class="ibox">'+
+                                    '<div class="ibox-content product-box">'+
+                                    '<div class="full-width" style="padding: 10px; height: 350px;">'+
+                                    item[1]+
+                                    '</div>'+
+                                    '</div>'+
+                                    '</div>');
+                                if((data.length % 3) == 0){
+                                    $('#selectAlarmTemplatePreview').append('</div>');
+                                }
+
+
+//                                }
+//                                else if((data.length % 3) == 1){
+//                                }
+                            });
+                        }
+                    }
+                });
+            });
+
+            //알림변수 값 가져오기
+            $('a[name="selectAlarmVariable"]').click(function (e) {
+                e.preventDefault();
+
+                console.log($(this));
+
+                $('#modalAlarmVariable').modal('show');
+
+                $.ajax({
+                    url: "/wishwide/alarm/selectAlarmVariable",
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data != "") {
+                            $.each(data, function (index, item) {
+                                $('#alarmVariable').append('<tr>' +
+                                    '<td>' + item[2] + '</td>' +
+                                    '</tr>');
+                            });
+                        }
+                    }
+                });
+            });
+
+            $('#btnSubmit').click(function (e) {
+                if (confirm('발송 하시겠습니까?') != true) return false;
+            });
+
+        });
+
+
+        function updateTextareaMsg(textareaValue) {
+            $('.textarea-limit-validation').text(textareaValue.length + '/' + TEXTAREA_LIMIT_NUM);
+        }
+
+    </script>
+</th:block>
+
+

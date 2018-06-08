@@ -1,13 +1,17 @@
 package com.wishwide.wishwide.controller;
 
+import com.wishwide.wishwide.persistence.LoginInfoRepository;
+import com.wishwide.wishwide.vo.PageVO;
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -15,6 +19,9 @@ import javax.servlet.http.HttpSession;
 @Log
 @Controller
 public class DefaultController {
+    @Autowired
+    LoginInfoRepository loginInfoRepository;
+
     @GetMapping("/")
     public String index(HttpServletRequest request) {
         log.info("index");
@@ -64,5 +71,23 @@ public class DefaultController {
     @GetMapping("/auth/accessDenied")
     public void accessDenied() {
 
+    }
+
+    @PostMapping("/login/checkSign")
+    public ResponseEntity<Integer> checkSignUp(@RequestBody String userId,
+                                               RedirectAttributes redirectAttributes){
+        int checkResult = loginInfoRepository.checkSignId(userId);
+
+        log.info("아이디값 :"+userId+ " 결과 값: "+checkResult);
+
+        return new ResponseEntity<>(checkResult, HttpStatus.CREATED);
+    }
+
+    public static void pageRedirectProperty(RedirectAttributes redirectAttributes, PageVO pageVO) {
+        redirectAttributes.addAttribute("page", pageVO.getPage());
+        redirectAttributes.addAttribute("size", pageVO.getSize());
+        redirectAttributes.addAttribute("keyword", pageVO.getKeyword());
+        redirectAttributes.addAttribute("type", pageVO.getType());
+        redirectAttributes.addAttribute("visibleCode", pageVO.getVisibleCode());
     }
 }
