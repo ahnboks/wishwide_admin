@@ -1,0 +1,252 @@
+<div th:insert="~{layout/head::head}"></div>
+<script src="/js/managerValidation.js"></script>
+
+<div id="wrapper">
+
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>파트너 등록</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form method="post" th:action="@{postRegisterPartner}" class="form-horizontal" id="registerForm">
+                        <!--아이디-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">아이디<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="text" maxlength="20" class="form-control id-input-validation" name="partnerId">
+                                <span class="msg-id-input-validation"></span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <!--비밀번호-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">비밀번호<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="password" maxlength="15" class="form-control password-input-validation" name="userPw">
+                                <span class="msg-password-input-validation"></span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <!--비밀번호확인-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">비밀번호 확인<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="password" maxlength="15" class="form-control password-confirm-input-validation">
+                                <span class="msg-password-confirm-input-validation"></span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--파트너명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">파트너명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="text" maxlength="20" class="form-control title-input-validation" name="partnerName">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--담당자명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">담당자명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="text" maxlength="20" class="form-control" name="partnerOperatorName">
+                                <span class="msg-operator-name-input-validation"/>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--연락처-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">담당자 연락처<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="text" maxlength="11" class="form-control phone-number-input-validation" name="partnerOperatorPhone" placeholder="ex) 01012345678">
+                                <span class="msg-phone-number-input-validation"></span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+
+                        <!--이메일-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">담당자 이메일<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="email" maxlength="40" placeholder="이메일 @ sample.com" class="form-control email-input-validation" name="partnerOperatorEmail">
+                                <span class="msg-email-input-validation"></span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--가맹점 선택-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">가맹점 선택<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <a class="btn btn-default" name="selectStore" href="#">
+                                    <span>가맹점 선택하기</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--가맹점  리스트Modal-->
+                        <div class="modal inmodal fade" id="modalStore" tabindex="-1" role="dialog"  aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                        <h4 class="modal-title">가맹점 선택</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="footable table table-bordered table-hover">
+                                            <thead>
+                                            <th data-sort-ignore="true">선택</th>
+                                            <th>가맹점명</th>
+                                            <th>가입자수</th>
+                                            <th>디바이스</th>
+                                            <th>상품</th>
+                                            <th>선물거래</th>
+                                            <th>쿠폰사용</th>
+                                            <th>서비스 상태</th>
+                                            </thead>
+                                            <tbody id="selectStore">
+                                                <td><input class="store-check-validation" name="storeId" type="checkbox" value=""></td>
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <td colspan="8">
+                                                    <ul class="pagination text-center"></ul>
+                                                </td>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-white" data-dismiss="modal">저장</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--수정, 목록 버튼-->
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" id="btnSubmit">등록</button>
+                                <a th:href="@{/wishwide/partner/listPartner(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" type="button" id="btnList">목록</button>
+                                </a>
+                            </div>
+                        </div>
+                        <input type="hidden" name="page" th:value="${pageVO.page}"/>
+                        <input type="hidden" name="size" th:value="${pageVO.size}"/>
+                        <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+    <!-- 콘텐츠 END -->
+</div>
+<th:block >
+<script th:inline="javascript">
+        var isSelectStore = false;
+
+        $(document).ready(function () {
+            var registerForm = $('#registerForm');
+
+            var partnerId =  registerForm.find('[name="partnerId"]').val();
+
+            //가맹점 리스트 가져오기
+            $('a[name="selectStore"]').click(function (e) {
+                e.preventDefault();
+
+                $('#modalStore').modal('show');
+
+                if(isSelectStore == false) {
+                    $('#selectStore').empty();
+                    $.ajax({
+                        url: "/wishwide/store/selectStore",
+                        type: 'get',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            console.log(data);
+                            if (data.length != 0) {
+                                $.each(data, function (index, item) {
+                                    var storeServiceOperationCode = '';
+
+                                    if (item[14] == 'PREACTIVE')
+                                        storeServiceOperationCode = '운영전';
+                                    else if (item[14] == 'ACTIVE')
+                                        storeServiceOperationCode = '운영중';
+                                    else
+                                        storeServiceOperationCode = '해지';
+
+                                    $('#selectStore').append(
+                                        '<tr>' +
+                                        '<td><input class="store-check-validation" name="storeId" type="checkbox" value="' + item[0] + '"></td>' +
+                                        '<td>' + item[1] + '</td>' +
+                                        '<td>' + item[9] + '</td>' +
+                                        '<td>' + item[10] + '</td>' +
+                                        '<td>' + item[11] + '</td>' +
+                                        '<td>' + item[12] + '</td>' +
+                                        '<td>' + item[13] + '</td>' +
+                                        '<td>' + storeServiceOperationCode + '</td>' +
+                                        '</tr>'
+                                    );
+                                });
+                                $('.footable').footable({
+                                    paging: {
+                                        enabled: true,
+                                        size: 5
+                                    }
+                                });
+                            }
+
+                            isSelectStore = true;
+
+                        }
+                    });
+                }
+            });
+
+            $('#btnSubmit').click(function () {
+                var checkStore = $('.store-check-validation');
+                var isStoreCheckedCnt = 0;
+                console.log(checkStore);
+
+                if(checkStore.length != 0){
+                    for (var i = 0; i < checkStore.length; i++) {
+                        if (checkStore.eq(i).prop('checked')) {
+                            isStoreCheckedCnt++;
+                        }
+                    }
+
+                    if(isStoreCheckedCnt == 0){
+                        alert('가맹점을 선택해주세요.');
+                        return false;
+                    }
+
+                }
+            });
+
+        });
+
+</script>
+</th:block>
+
+

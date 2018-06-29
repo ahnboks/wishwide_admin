@@ -1,0 +1,425 @@
+<div th:insert="~{layout/head::head}"></div>
+<script src="/js/managerValidation.js"></script>
+
+<div id="wrapper">
+
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>상품 상세</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form method="post"  th:action="@{../updatePartner}" class="form-horizontal" id="detailForm" enctype="multipart/form-data">
+                        <!--파트너명-->
+                        <div class="form-group" sec:authorize="hasRole('MA')">
+                            <label class="col-sm-2 control-label">파트너명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <p class="form-control-static" th:text="${productVO[2]}"></p>
+                            </div>
+                        </div>
+                        <input type="hidden" th:value="${productVO[1]}" class="form-control" name="productOwnerId"/>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--상품명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">상품명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-7">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <div class="col-sm-5">
+                                            <input type="text" th:value="${productVO[5]}" maxlength="20" class="form-control" name="productTitle">
+                                            <span class="msg-operator-name-input-validation"></span>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <a href="#" name="addSubProduct">
+                                                <i class="fa fa-plus-circle"></i>
+                                            </a><label class="form-control-static" > 서브상품 추가</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="sub1" style="display:none;">
+                                    <div class="hr-line-dashed"></div>
+                                    <label class="col-sm-2 form-control-static"><a href="#" name="minusSubProduct" class="minusSubProduct"><i class="fa fa-minus-circle"></i></a>서브상품명</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductName">
+                                    </div>
+                                    <label class="col-sm-3 form-control-static">서브상품가격(원)</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductPrice">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="sub2" style="display:none;">
+                                    <div class="hr-line-dashed"></div>
+                                    <label class="col-sm-2 form-control-static"><a href="#" name="minusSubProduct" class="minusSubProduct"><i class="fa fa-minus-circle"></i></a>서브상품명</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductName">
+                                    </div>
+                                    <label class="col-sm-3 form-control-static">서브상품가격(원)</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductPrice">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="sub3" style="display:none;">
+                                    <div class="hr-line-dashed"></div>
+                                    <label class="col-sm-2 form-control-static"><a href="#" name="minusSubProduct" class="minusSubProduct"><i class="fa fa-minus-circle"></i></a>서브상품명</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductName">
+                                    </div>
+                                    <label class="col-sm-3 form-control-static">서브상품가격(원)</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductPrice">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="sub4" style="display:none;">
+                                    <div class="hr-line-dashed"></div>
+                                    <label class="col-sm-2 form-control-static"><a href="#" name="minusSubProduct" class="minusSubProduct"><i class="fa fa-minus-circle"></i></a>서브상품명</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductName">
+                                    </div>
+                                    <label class="col-sm-3 form-control-static">서브상품가격(원)</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductPrice">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="sub5" style="display:none;">
+                                    <div class="hr-line-dashed"></div>
+                                    <label class="col-sm-2 form-control-static"><a href="#" name="minusSubProduct" class="minusSubProduct"><i class="fa fa-minus-circle"></i></a>서브상품명</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductName">
+                                    </div>
+                                    <label class="col-sm-3 form-control-static">서브상품가격(원)</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductPrice">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--판매가격-->
+                        <div class="form-group" id="productPrice">
+                            <label class="col-sm-2 control-label">판매가격(원)</label>
+                            <div class="col-sm-2">
+                                <input type="text" th:value="${productVO[6]}" maxlength="5" class="form-control" value="0" name="productPrice">
+                                <span class="msg-operator-name-input-validation"/>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--상품 이미지-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">이미지<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <div class="fileinput fileinput-new" data-provides="fileinput" id="file1">
+                                    <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                    <a th:href="@{/file/download(fileName=${productVO[10]}, dbFileName=${productVO[11]})}"
+                                       class="btn btn-default file-download" th:if="${productVO[14]} != null">
+                                        <span class="fileinput-filename"></span>
+                                    </a>
+                                    <span class="fileinput-filename" th:if="${productVO[14]} == null"></span>
+                                    <div>
+                                        <span class="btn btn-default btn-file" onclick="removeProduct(event, 'update');">
+                                            <span class="fileinput-new">파일 선택</span>
+                                            <span class="fileinput-exists">파일 변경</span>
+                                            <input type="file" name="productImage">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--설명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">설명</label>
+                            <div class="col-sm-2">
+                                <textarea class="form-control" th:text="${productVO[15]}" name="productDescription" rows="7"></textarea>
+                                <span class="textarea-limit-validation"></span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--수정, 목록 버튼-->
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" id="btnUpdate">수정</button>
+                                <a th:href="@{/wishwide/product/listPartnerProduct(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" type="button" id="btnList">목록</button>
+                                </a>
+                            </div>
+                        </div>
+                        <input type="hidden" name="page" th:value="${pageVO.page}"/>
+                        <input type="hidden" name="size" th:value="${pageVO.size}"/>
+                        <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                        <input type="hidden" name="productNo" th:value="${productVO[0]}"/>
+                        <input type="hidden" name="productSubProductCode" th:value="${productVO[17]}"/>
+                        <input type="hidden" name="giftProductRegisterCode" th:value="${productVO[16]}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+    <!-- 콘텐츠 END -->
+</div>
+<th:block >
+    <script th:inline="javascript">
+        var detailForm = $('#detailForm');
+
+        var isProductAlert = false;
+        var productNo = /*[[${productVO[0]}]]*/'';
+        var productImageNo = /*[[${productVO[9]}]]*/'';
+        var productImageName = /*[[${productVO[10]}]]*/'';
+        var productImageExtension = /*[[${productVO[12]}]]*/'';
+        var productImageThumbnailUrl = /*[[${productVO[13]}]]*/'';
+
+        var productSubProductCode = /*[[${productVO[17]}]]*/'';
+        var subProductCount = /*[[${subProductCnt}]]*/'';
+
+        $(document).ready(function () {
+            if(productImageNo != null) {
+                console.log('들어오니1');
+                isProductAlert = true;
+                processFile(productImageName, productImageExtension, productImageThumbnailUrl, 1);
+            }
+
+            $('.chosen-select').chosen({width: "100%"});
+
+            var subProductCnt = subProductCount+1;
+
+            //서브상품 추가
+            $('a[name="addSubProduct"]').click(function (e) {
+                e.preventDefault();
+
+                if(subProductCnt == 1) {
+                    $('#sub1').css('display', 'block');
+                    subProductCnt++;
+
+                    $('#productPrice').css('display', 'none');
+                }
+                else if(subProductCnt == 2){
+                    $('#sub2').css('display', 'block');
+                    subProductCnt++;
+                }
+                else if(subProductCnt == 3){
+                    $('#sub3').css('display', 'block');
+                    subProductCnt++;
+                }
+                else if(subProductCnt == 4){
+                    $('#sub4').css('display', 'block');
+                    subProductCnt++;
+                }
+                else if(subProductCnt == 5){
+                    $('#sub5').css('display', 'block');
+                    subProductCnt++;
+                }
+            });
+
+            //서브상품 제거
+            $('.minusSubProduct').click(function (e) {
+                e.preventDefault();
+
+                if(subProductCnt == 2) {
+                    $('#sub1').css('display', 'none');
+                    $('#productPrice').css('display', 'block');
+                    subProductCnt--;
+                }
+                else if(subProductCnt == 3){
+                    $('#sub2').css('display', 'none');
+                    subProductCnt--;
+                }
+                else if(subProductCnt == 4){
+                    $('#sub3').css('display', 'none');
+                    subProductCnt--;
+                }
+                else if(subProductCnt == 5){
+                    $('#sub4').css('display', 'none');
+                    subProductCnt--;
+                }
+                else if(subProductCnt == 6){
+                    $('#sub5').css('display', 'none');
+                    subProductCnt--;
+                }
+
+            });
+
+            console.log('서브상품 '+productSubProductCode);
+
+            //서브상품 등록되어있을 시 서브상품 정보 가져옴
+            if(productSubProductCode == 1){
+                $('#productPrice').css('display', 'none');
+
+                $.ajax({
+                    url: "/wishwide/product/selectSubProduct/"+productNo,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data.length != 0) {
+                            console.log('서브상품개수 : '+subProductCount);
+                            $.each(data, function (index, item) {
+                                if(index < subProductCount) {
+                                    console.log("인덱스 : " + index);
+
+                                    var value = index+1;
+
+                                    var element = $('#sub'+value +'');
+
+                                    element.find('[name="subProductName"]').attr('value', item[2]);
+                                    element.find('[name="subProductPrice"]').attr('value', item[3]);
+
+                                    element.css('display', 'block');
+                                }
+                            });
+                        }
+                        else{
+                            console.log('데이터없음');
+                        }
+                    }
+                });
+            }
+
+            $('#btnUpdate').click(function (e){
+//                e.preventDefault();
+                if($("#sub1").css("display") == "block"){
+                    var element = $("#sub1");
+
+                    var subProductName = element.find('[name="subProductName"]').val();
+                    var subProductPrice = element.find('[name="subProductName"]').val();
+
+                    if(subProductName == '' || subProductPrice == ''){
+                        alert('서브상품 정보를 입력해주세요.');
+                        return false;
+                    }
+                    else{
+                        renameForModelAttribute(element, 0);
+                    }
+                }
+                else{
+                    var element = $("#sub1");
+
+                    element.find('[name="subProductName"]').attr('value', 'none');
+                    element.find('[name="subProductPrice"]').attr('value', 0);
+
+                    renameForModelAttribute(element, 0);
+                }
+
+                if($("#sub2").css("display") == "block"){
+                    var element = $("#sub2");
+
+                    var subProductName = element.find('[name="subProductName"]').val();
+                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+                    console.log(subProductName + subProductPrice);
+                    if(subProductName == '' || subProductPrice == ''){
+                        alert('서브상품 정보를 입력해주세요.');
+                        return false;
+                    }
+                    else{
+                        renameForModelAttribute(element, 1);
+                    }
+
+                }
+
+                if($("#sub3").css("display") == "block"){
+                    var element = $("#sub3");
+
+                    var subProductName = element.find('[name="subProductName"]').val();
+                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+
+                    if(subProductName == '' || subProductPrice == ''){
+                        alert('서브상품 정보를 입력해주세요.');
+                        return false;
+                    }
+                    else{
+                        renameForModelAttribute(element, 2);
+                    }
+
+                }
+
+                if($("#sub4").css("display") == "block"){
+                    var element = $("#sub4");
+
+                    var subProductName = element.find('[name="subProductName"]').val();
+                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+
+                    if(subProductName == '' || subProductPrice == ''){
+                        alert('서브상품 정보를 입력해주세요.');
+                        return false;
+                    }
+                    else{
+                        renameForModelAttribute(element, 3);
+                    }
+                }
+
+                if($("#sub5").css("display") == "block"){
+                    var element = $("#sub5");
+
+                    var subProductName = element.find('[name="subProductName"]').val();
+                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+
+                    if(subProductName == '' || subProductPrice == ''){
+                        alert('서브상품 정보를 입력해주세요.');
+                        return false;
+                    }
+                    else{
+                        renameForModelAttribute(element, 4);
+                    }
+                }
+
+                if(productImageNo == null){
+                    var productImage = $('input[name="productImage"]').val();
+
+                    console.log(productImage);
+
+                    if(productImage == '') {
+                        alert('이미지를 등록해주세요');
+                        return false;
+                    }
+                }
+            });
+        });
+
+        function removeProduct(e, type) {
+            if(isProductAlert == true) {
+                if (confirm('현재 파일이 삭제됩니다. \n계속 진행하시겠습니까?.')) {
+                    removeProductFile(productNo);
+                    $('#file1').find('.file-download').hide();
+                    isProductAlert = false;
+
+                    var element = $('#file1');
+                    element.addClass('fileinput-new').removeClass('fileinput-exists');
+                    element.find('.fileinput-filename').text('');
+                    element.find('.fileinput-preview thumbnail').css('display', 'none');
+                    element.find('.fileinput-preview').empty();
+                }
+                else {
+                    console.log(type);
+                    if (type == 'remove') e.stopPropagation();
+                    else if (type == 'update') e.preventDefault();
+                }
+            }
+        }
+
+        function renameForModelAttribute(element, index) {
+            $(element).find("input[name=subProductName]").attr("name", "subProductList[" + index + "].subProductName");
+            $(element).find("input[name=subProductPrice]").attr("name", "subProductList[" + index + "].subProductPrice");
+        }
+
+    </script>
+</th:block>
+
+

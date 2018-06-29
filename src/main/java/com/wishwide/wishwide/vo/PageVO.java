@@ -39,10 +39,12 @@ public class PageVO {
     private String customerGradeTypeCode = "ALL";   //고객등급유형코드
 
     //알림 리스트
-    private int alarmJoinCode = 2;
     private String alarmTypeCode = "ALL";
     private String alarmPurposeCode = "ALL";
     private String alarmTargetTypeCode = "ALL";
+
+    //마커 리스트
+    private int storeArGameTypeCode = 2;
 
    private int visibleCode = 2;
     private int visibleCode2 = 2;   //같은 리스트의 활성화 여부를 위한 활성화 여부 검사
@@ -52,12 +54,12 @@ public class PageVO {
         this.size=DEFAULT_SIZE;
     }
 
-    public int getAlarmJoinCode() {
-        return alarmJoinCode;
+    public int getStoreArGameTypeCode() {
+        return storeArGameTypeCode;
     }
 
-    public void setAlarmJoinCode(int alarmJoinCode) {
-        this.alarmJoinCode = alarmJoinCode;
+    public void setStoreArGameTypeCode(int storeArGameTypeCode) {
+        this.storeArGameTypeCode = storeArGameTypeCode;
     }
 
     public String getCustomerBenefitTypeCode() {

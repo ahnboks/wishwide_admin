@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface StoreFileRepository extends CrudRepository<StoreFile, Long> {
     @Query(value = "select s from StoreFile s where s.storeId =?1 and s.storeFileTypeCode = ?2")
-    public StoreFile findByStoreIdAndStoreFileTypeCode(String storeId, String storeFileTypeCode);
+    public StoreFile findByStoreFileAndStoreFileTypeCode(String storeId, String storeFileTypeCode);
 }

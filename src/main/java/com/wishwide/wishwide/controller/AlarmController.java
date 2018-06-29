@@ -1,14 +1,13 @@
 package com.wishwide.wishwide.controller;
 
 
-import com.wishwide.wishwide.domain.AlarmTemplate;
-import com.wishwide.wishwide.persistence.alarm.CustomAlarmSendHistoryRepository;
-import com.wishwide.wishwide.persistence.alarm.CustomAlarmSetRepository;
-import com.wishwide.wishwide.persistence.alarm.CustomAlarmTemplateRepository;
+import com.wishwide.wishwide.domain.*;
+import com.wishwide.wishwide.persistence.alarm.*;
 import com.wishwide.wishwide.persistence.customer.CustomCustomerRepository;
 import com.wishwide.wishwide.persistence.store.CustomStoreRepository;
 import com.wishwide.wishwide.vo.PageMaker;
 import com.wishwide.wishwide.vo.PageVO;
+import javafx.scene.input.DataFormat;
 import lombok.extern.java.Log;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,6 +47,12 @@ public class AlarmController {
     @Autowired
     CustomAlarmSendHistoryRepository customAlarmSendHistoryRepository;
 
+    @Autowired
+    MsgQueueRepository msgQueueRepository;
+
+    @Autowired
+    AlarmSendLogRepository alarmSendLogRepository;
+
     /*알림 발송 설정*/
 
     //리스트
@@ -59,7 +66,7 @@ public class AlarmController {
         String sessionId = session.getAttribute("userId").toString();
         String roleCode = session.getAttribute("userRole").toString();
 
-        log.info("세션 : "+sessionId+roleCode);
+        log.info("세션 : " + sessionId + roleCode);
 
         Pageable pageable = pageVO.makePageable(0, "alarmTemplateNo");
 
@@ -69,7 +76,6 @@ public class AlarmController {
                 pageVO.getUserId(),
                 roleCode,
                 sessionId,
-                pageVO.getAlarmJoinCode(),
                 pageVO.getAlarmTypeCode(),
                 pageVO.getAlarmPurposeCode(),
                 pageVO.getAlarmTargetTypeCode(),
@@ -82,7 +88,7 @@ public class AlarmController {
         log.info("총 행 수" + result.getTotalElements());
 
         result.forEach(alarmSetVO -> {
-            log.info("알림 정보"+ Arrays.toString(alarmSetVO));
+            log.info("알림 정보" + Arrays.toString(alarmSetVO));
         });
 
         //알림템플릿 리스트
@@ -95,21 +101,103 @@ public class AlarmController {
     //알림수동발송 페이지
     @GetMapping("/registerAlarmSet")
     public void getRegisterAlarmSet(@ModelAttribute("pageVO") PageVO pageVO,
-                                 Model model) {
-        log.info("알림 수동 발송 페이지");
-
-        //가맹점명 셀렉트 박스
-        model.addAttribute("storeNameList", customStoreRepository.getStoreNameList());
-    }
-
-    //알림수동발송
-    @PostMapping("/postRegisterAlarmSet")
-    public void postRegisterAlarmSet(@ModelAttribute("pageVO") PageVO pageVO,
                                     Model model) {
         log.info("알림 수동 발송 페이지");
 
         //가맹점명 셀렉트 박스
-        model.addAttribute("storeNameList", customStoreRepository.getStoreNameList());
+        model.addAttribute("storeNameList", customStoreRepository.getStoreList());
+    }
+
+    //알림수동발송
+    @PostMapping("/postRegisterAlarmSet")
+    public String postRegisterAlarmSet(@ModelAttribute("alarmSendHistoryVO") AlarmSendHistory alarmSendHistoryVO,
+                                       @RequestParam(value = "reserveDate", required = false) String reserveDate,
+                                       @RequestParam(value = "reserveTime", required = false) String reserveTime,
+                                       @RequestParam("customerNo") List<Long> customerNoList,
+                                       @ModelAttribute("pageVO") PageVO pageVO,
+                                       RedirectAttributes redirectAttributes) {
+        log.info("데이터 : " + alarmSendHistoryVO + ", 날짜 : " + reserveDate + reserveTime + ", 고객" + customerNoList);
+
+
+        if (customerNoList != null) {
+            for (Long customerNo : customerNoList) {
+                Customer customer = customCustomerRepository.findById(customerNo).get();
+
+                String message = setAlarmMessage(alarmSendHistoryVO.getAlarmMessage(), customer, alarmSendHistoryVO.getStoreId());
+
+                //내역 저장
+                AlarmSendHistory alarmSendHistory = new AlarmSendHistory();
+                alarmSendHistory.setCustomerNo(customerNo);
+                alarmSendHistory.setCustomerPhone(customer.getCustomerPhone());
+                alarmSendHistory.setCustomerGradeTypeCode(customer.getCustomerGradeTypeCode());
+                alarmSendHistory.setCustomerName(customer.getCustomerName());
+                alarmSendHistory.setAlarmMessage(message);
+                alarmSendHistory.setStoreId(alarmSendHistoryVO.getStoreId());
+                alarmSendHistory.setAlarmSendTypeCode(alarmSendHistoryVO.getAlarmSendTypeCode());
+                alarmSendHistory.setAlarmSendWayCode(alarmSendHistoryVO.getAlarmSendWayCode());
+                alarmSendHistory.setAlarmPurposeCode("ETC");
+                alarmSendHistory.setAlarmPurposeName("기타");
+                alarmSendHistory.setAlarmSendPointCode("IMME");
+                alarmSendHistory.setAlarmSendPointName("즉시");
+                alarmSendHistory.setAlarmPurposeName("기타");
+                alarmSendHistory.setAlarmTargetTypeCode("RC");
+                alarmSendHistory.setAlarmTypeCode("ETC");
+
+                if (reserveDate != "" && reserveTime != "") {
+                    LocalDateTime alarmReservationTime = LocalDateTime.parse(reserveDate + " " + reserveTime, DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"));
+                    alarmSendHistory.setAlarmReservationTime(alarmReservationTime);
+                }
+
+                customAlarmSendHistoryRepository.save(alarmSendHistory);
+
+                //로그 저장
+                AlarmSendLog alarmSendLog = new AlarmSendLog();
+                alarmSendLog.setCustomerNo(customerNo);
+                alarmSendLog.setCustomerPhone(customer.getCustomerPhone());
+                alarmSendLog.setCustomerGradeTypeCode(customer.getCustomerGradeTypeCode());
+                alarmSendLog.setCustomerName(customer.getCustomerName());
+                alarmSendLog.setAlarmMessage(message);
+                alarmSendLog.setStoreId(alarmSendHistoryVO.getStoreId());
+                alarmSendLog.setAlarmSendTypeCode(alarmSendHistoryVO.getAlarmSendTypeCode());
+                alarmSendLog.setAlarmSendWayCode(alarmSendHistoryVO.getAlarmSendWayCode());
+                alarmSendLog.setAlarmPurposeCode("ETC");
+                alarmSendLog.setAlarmPurposeName("기타");
+                alarmSendLog.setAlarmSendPointCode("IMME");
+                alarmSendLog.setAlarmSendPointName("즉시");
+                alarmSendLog.setAlarmPurposeName("기타");
+                alarmSendLog.setAlarmTargetTypeCode("RC");
+                alarmSendLog.setAlarmTypeCode("ETC");
+
+                if (reserveDate != "" && reserveTime != "") {
+                    LocalDateTime alarmReservationTime = LocalDateTime.parse(reserveDate + " " + reserveTime, DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"));
+                    alarmSendLog.setAlarmReservationTime(alarmReservationTime);
+                }
+
+                alarmSendLogRepository.save(alarmSendLog);
+
+                MsgQueue msgQueue = new MsgQueue();
+                msgQueue.setMsg_type("3");
+                msgQueue.setFilecnt(0);
+                msgQueue.setDstaddr(customer.getCustomerPhone());
+                msgQueue.setCallback("01088041229");
+                msgQueue.setText(alarmSendHistoryVO.getAlarmMessage());
+
+                if (reserveDate != "" && reserveTime != "")
+                    msgQueue.setRequest_time(LocalDateTime.parse(reserveDate + " " + reserveTime, DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")));
+                else
+                    msgQueue.setRequest_time(LocalDateTime.now());
+                msgQueue.setStat("0");
+                msgQueue.setText(message);
+
+                msgQueueRepository.save(msgQueue);
+
+                redirectAttributes.addFlashAttribute("message", "successRegister");
+                pageRedirectProperty(redirectAttributes, pageVO);
+
+                log.info("알림 발송 성공");
+            }
+        }
+        return "redirect:/wishwide/alarm/listAlarmSet";
     }
 
     //알림설정여부코드 변경
@@ -122,7 +210,7 @@ public class AlarmController {
 
         //알림설정여부코드 변경
         customAlarmSetRepository.findById(alarmNo).ifPresent(alarm -> {
-            if(alarmVisibleCode == 1)
+            if (alarmVisibleCode == 1)
                 alarm.setAlarmVisibleCode(0);
             else
                 alarm.setAlarmVisibleCode(1);
@@ -130,12 +218,12 @@ public class AlarmController {
             customAlarmSetRepository.save(alarm);
         });
 
-        if(alarmVisibleCode == 1)
+        if (alarmVisibleCode == 1)
             resultCode = "0";
         else
             resultCode = "1";
 
-        return new ResponseEntity<>(resultCode,HttpStatus.CREATED);
+        return new ResponseEntity<>(resultCode, HttpStatus.CREATED);
     }
 
 
@@ -153,12 +241,13 @@ public class AlarmController {
     //알림 메시지 수정
     @GetMapping("/updateAlarmMessage/{alarmNo}")
     public ResponseEntity<String> updateAlarmMessage(@PathVariable("alarmNo") Long alarmNo,
-                                                     @RequestParam("alarmMessage")String alarmMessage) {
-        log.info("번호 : " + alarmNo);
+                                                     @RequestParam("alarmMessage") String alarmMessage) {
+        log.info("번호 : " + alarmNo + " 알림메시지 : "+alarmMessage);
 
         //알림메시지 수정
         customAlarmSetRepository.findById(alarmNo).ifPresent(alarm -> {
             alarm.setAlarmMessage(alarmMessage);
+            alarm.setAlarmMessageUpdateCode(1);
 
             customAlarmSetRepository.save(alarm);
 
@@ -178,8 +267,37 @@ public class AlarmController {
     @GetMapping("/selectStoreCustomer/{storeId}")
     public ResponseEntity<List<Object[]>> selectStoreCustomer(@PathVariable("storeId") String storeId,
                                                               @ModelAttribute("pageVO") PageVO pageVO) {
-        Pageable pageable = pageVO.makePageable(0, "storeId");
         return new ResponseEntity<>(customCustomerRepository.getStoreCustomerList(storeId), HttpStatus.CREATED);
+    }
+
+    //메시지 테스트 발송
+    @GetMapping("/sendTestAlarm")
+    public ResponseEntity<String> sendTestAlarm(@RequestParam("storeId") String storeId,
+                                                @RequestParam("dstaddr") String dstaddr,
+                                                @RequestParam("alarmMessage") String alarmMessage) {
+        log.info("데이터 : " + storeId + ", " + dstaddr + "," + alarmMessage);
+
+        if (alarmMessage.contains("#{매장명}")) {
+            System.out.println("1");
+            alarmMessage = alarmMessage.replace("#{매장명}", customStoreRepository.findById(storeId).get().getStoreName());
+        }
+        if (alarmMessage.contains("#{수신자전화번호}")) {
+            System.out.println("2");
+            alarmMessage = alarmMessage.replace("#{수신자전화번호}", dstaddr);
+        }
+
+        System.out.println(alarmMessage);
+
+        MsgQueue msgQueue = new MsgQueue();
+        msgQueue.setDstaddr(dstaddr);
+        msgQueue.setCallback("01088041229");
+        msgQueue.setText(alarmMessage);
+        msgQueue.setRequest_time(LocalDateTime.now());
+        msgQueue.setStat("0");
+
+        msgQueueRepository.save(msgQueue);
+
+        return new ResponseEntity<>("1", HttpStatus.CREATED);
     }
 
 
@@ -188,14 +306,13 @@ public class AlarmController {
     //리스트
     @GetMapping("/listAlarmTemplate")
     public void listAlarmTemplate(@ModelAttribute("pageVO") PageVO pageVO,
-                           Model model) {
+                                  Model model) {
 
         Pageable pageable = pageVO.makePageable(0, "alarmTemplateNo");
 
         Page<Object[]> result = customAlarmTemplateRepository.getAlarmTemplatePage(
                 pageVO.getType(),   //검색조건
                 pageVO.getKeyword(),    //키워드
-                pageVO.getAlarmJoinCode(),
                 pageVO.getAlarmTypeCode(),
                 pageVO.getAlarmPurposeCode(),
                 pageVO.getAlarmTargetTypeCode(),
@@ -208,7 +325,7 @@ public class AlarmController {
         log.info("총 행 수" + result.getTotalElements());
 
         result.forEach(alarmTemplateVO -> {
-            log.info("알림 템플릿 정보"+ Arrays.toString(alarmTemplateVO));
+            log.info("알림 템플릿 정보" + Arrays.toString(alarmTemplateVO));
         });
 
         //알림템플릿 리스트
@@ -221,7 +338,7 @@ public class AlarmController {
     //등록
     @GetMapping("/registerAlarmTemplate")
     public void getRegisterAlarmTemplate(@ModelAttribute("pageVO") PageVO pageVO,
-                                 Model model) {
+                                         Model model) {
         log.info("템플릿 추가 페이지");
     }
 
@@ -240,16 +357,22 @@ public class AlarmController {
         alarmPurposeName += setAlarmPurposeName(alarmTemplate.getAlarmTypeCode(), alarmTemplate.getAlarmPurposeCode());
 
         //알림목적이 '유효기간 만료'가 아닐 경우 발송시점은 전부 즉시로 설정
-        if(!alarmTemplate.getAlarmPurposeCode().equals("3")) {
+        if (!alarmTemplate.getAlarmPurposeCode().equals("3")) {
             alarmTemplate.setAlarmSendPointCode("IMME");
             alarmTemplate.setAlarmSendPointName("즉시");
         }
-        else {
+        else{
             alarmTemplate.setAlarmSendPointName(alarmTemplate.getAlarmSendPointCode() + "일전");
         }
 
-        alarmTemplate.setAlarmPurposeCode(alarmPurposeCode);
-        alarmTemplate.setAlarmPurposeName(alarmPurposeName);
+        if(alarmTemplate.getAlarmPurposeCode().equals("6")) {
+            alarmTemplate.setAlarmPurposeCode("ETC");
+            alarmTemplate.setAlarmPurposeName("신규가입");
+        }
+        else{
+            alarmTemplate.setAlarmPurposeCode(alarmPurposeCode);
+            alarmTemplate.setAlarmPurposeName(alarmPurposeName);
+        }
 
         //알림 템플릿 정보 저장
         customAlarmTemplateRepository.save(alarmTemplate);
@@ -279,8 +402,8 @@ public class AlarmController {
     //수정
     @PostMapping("/update")
     public String updateAlarmTemplate(@ModelAttribute("alarmTemplateVO") AlarmTemplate alarmTemplateVO,
-                                            @ModelAttribute("pageVO") PageVO pageVO,
-                                            RedirectAttributes redirectAttributes) {
+                                      @ModelAttribute("pageVO") PageVO pageVO,
+                                      RedirectAttributes redirectAttributes) {
         log.info("수정 데이터 : " + alarmTemplateVO);
 
         //VO에 세션값 세팅
@@ -292,11 +415,10 @@ public class AlarmController {
         alarmPurposeName += setAlarmPurposeName(alarmTemplateVO.getAlarmTypeCode(), alarmTemplateVO.getAlarmPurposeCode());
 
         //알림목적이 '유효기간 만료'가 아닐 경우 발송시점은 전부 즉시로 설정
-        if(!alarmTemplateVO.getAlarmPurposeCode().equals("3")) {
+        if (!alarmTemplateVO.getAlarmPurposeCode().equals("3")) {
             alarmTemplateVO.setAlarmSendPointCode("IMME");
             alarmTemplateVO.setAlarmSendPointName("즉시");
-        }
-        else {
+        } else {
             alarmTemplateVO.setAlarmSendPointName(alarmTemplateVO.getAlarmSendPointCode() + "일전");
         }
         alarmTemplateVO.setAlarmPurposeCode(alarmPurposeCode);
@@ -304,7 +426,6 @@ public class AlarmController {
 
         customAlarmTemplateRepository.findById(alarmTemplateVO.getAlarmTemplateNo()).ifPresent(alarmTemplate -> {
             alarmTemplate.setAlarmTypeCode(alarmTemplateVO.getAlarmTypeCode());
-            alarmTemplate.setAlarmJoinCode(alarmTemplateVO.getAlarmJoinCode());
             alarmTemplate.setAlarmPurposeCode(alarmTemplateVO.getAlarmPurposeCode());
             alarmTemplate.setAlarmPurposeName(alarmTemplateVO.getAlarmPurposeName());
             alarmTemplate.setAlarmSendPointCode(alarmTemplateVO.getAlarmSendPointCode());
@@ -358,7 +479,7 @@ public class AlarmController {
         String sessionId = session.getAttribute("userId").toString();
         String roleCode = session.getAttribute("userRole").toString();
 
-        log.info("세션 : "+sessionId+roleCode);
+        log.info("세션 : " + sessionId + roleCode);
 
         Pageable pageable = pageVO.makePageable(0, "alarmSendHistoryNo");
 
@@ -368,7 +489,6 @@ public class AlarmController {
                 pageVO.getUserId(),
                 roleCode,
                 sessionId,
-                pageVO.getAlarmJoinCode(),
                 pageVO.getAlarmTypeCode(),
                 pageVO.getAlarmPurposeCode(),
                 pageVO.getAlarmTargetTypeCode(),
@@ -381,14 +501,14 @@ public class AlarmController {
         log.info("총 행 수" + result.getTotalElements());
 
         result.forEach(alarmSetVO -> {
-            log.info("알림발송내역 정보"+ Arrays.toString(alarmSetVO));
+            log.info("알림발송내역 정보" + Arrays.toString(alarmSetVO));
         });
 
         //알림발송내역 리스트
         model.addAttribute("alarmSendHistoryVO", new PageMaker<>(result));
 
         //가맹점명 셀렉트 박스
-        model.addAttribute("storeNameList", customStoreRepository.getStoreNameList());
+        model.addAttribute("storeNameList", customStoreRepository.getStoreList());
 
         //총 페이지 수
         model.addAttribute("totalPages", result.getTotalElements());
@@ -405,41 +525,73 @@ public class AlarmController {
         return new ResponseEntity<>(alarmMessage, HttpStatus.CREATED);
     }
 
+    private String originalAlarmMessage = "";
+    //알림메시지 원래 알림메시지 템플릿으로 되돌리기
+    @GetMapping("/updateOriginalAlarmMessage/{alarmNo}")
+    public ResponseEntity<String> updateOriginalAlarmMessage(@PathVariable("alarmNo") Long alarmNo) {
+        log.info("코드 : " + alarmNo);
+
+        customAlarmSetRepository.findById(alarmNo).ifPresent(alarm -> {
+            originalAlarmMessage = customAlarmTemplateRepository.findByAlarmMessageByAlarmTemplateNo(alarm.getAlarmTemplateNo());
+
+            alarm.setAlarmMessage(originalAlarmMessage);
+        });
+
+        return new ResponseEntity<>(originalAlarmMessage, HttpStatus.CREATED);
+    }
+
 
     /*메소드*/
+
+    //알림 메시지 set
+    private String setAlarmMessage(String alarmMessage, Customer customer, String storeId) {
+        if (alarmMessage.contains("#{매장명}")) {
+            System.out.println("1");
+            alarmMessage = alarmMessage.replace("#{매장명}", customStoreRepository.findById(storeId).get().getStoreName());
+        }
+        if (alarmMessage.contains("#{수신자명}")) {
+            System.out.println("2");
+            if (customer.getCustomerName() != null)
+                alarmMessage = alarmMessage.replace("#{수신자명}", customer.getCustomerName());
+            else
+                alarmMessage = alarmMessage.replace("#{수신자명}", customer.getCustomerPhone());
+        }
+        if (alarmMessage.contains("#{수신자전화번호}")) {
+            System.out.println("3");
+            alarmMessage = alarmMessage.replace("#{수신자전화번호}", customer.getCustomerPhone());
+        }
+
+        System.out.println(alarmMessage);
+
+        return alarmMessage;
+    }
+
+
     //알림목정명 set
-    private String setAlarmPurposeName(String alarmTypeCode, String alarmPurposeCode){
+    private String setAlarmPurposeName(String alarmTypeCode, String alarmPurposeCode) {
         String returnValue = "";
 
-        if(alarmTypeCode.equals("G")){
+        if (alarmTypeCode.equals("G")) {
             returnValue += "선물 ";
-        }
-        else if(alarmTypeCode.equals("C")){
+        } else if (alarmTypeCode.equals("C")) {
             returnValue += "쿠폰 ";
-        }
-        else if(alarmTypeCode.equals("S")){
+        } else if (alarmTypeCode.equals("S")) {
             returnValue += "도장 ";
-        }
-        else if(alarmTypeCode.equals("P")){
+        } else if (alarmTypeCode.equals("P")) {
             returnValue += "포인트 ";
         }
 
-        if(alarmPurposeCode.equals("0")){
+        if (alarmPurposeCode.equals("0")) {
             returnValue += "도착";
-        }
-        else if(alarmPurposeCode.equals("1")){
+        } else if (alarmPurposeCode.equals("1")) {
             returnValue += "사용";
-        }
-        else if(alarmPurposeCode.equals("2")){
+        } else if (alarmPurposeCode.equals("2")) {
             returnValue += "구매";
-        }
-        else if(alarmPurposeCode.equals("3")){
+        } else if (alarmPurposeCode.equals("3")) {
             returnValue += "유효기간 만료";
-        }
-        else if(alarmPurposeCode.equals("4")){
+        } else if (alarmPurposeCode.equals("4")) {
             returnValue += "적립";
-        }
-        else if(alarmPurposeCode.equals("5")){
+        } else if (alarmPurposeCode.equals("5")) {
             returnValue += "차감";
         }
 

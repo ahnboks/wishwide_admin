@@ -22,7 +22,6 @@ public class CustomAlarmSetRepositoryImpl extends QuerydslRepositorySupport impl
                                           String searchUserId,
                                           String roleCode,
                                           String sessionId,
-                                          int alarmJoinCode,
                                           String alarmTypeCode,
                                           String alarmPurposeCode,
                                           String alarmTargetTypeCode,
@@ -38,7 +37,7 @@ public class CustomAlarmSetRepositoryImpl extends QuerydslRepositorySupport impl
                 store.storeName,    //가맹점명2
                 alarm.alarmTemplateNo,  //알림템플릿번호3
                 alarm.alarmTypeCode,    //알림유형코드4
-                alarm.alarmJoinCode,    //가입전송여부코드5
+                alarm.alarmUpdatedate,    //5
                 alarm.alarmPurposeCode, //알림목적코드6
                 alarm.alarmPurposeName, //알림목적명7
                 alarm.alarmSendPointCode,   //알림발송시점코드8
@@ -58,10 +57,6 @@ public class CustomAlarmSetRepositoryImpl extends QuerydslRepositorySupport impl
         //검색조건 : 가맹점명
         if(!searchUserId.equals("ALL")){
             tupleJPQLQuery.where(alarm.storeId.eq(searchUserId));
-        }
-        //검색조건 : 가입전송여부코드
-        if(alarmJoinCode != 2){
-            tupleJPQLQuery.where(alarm.alarmJoinCode.eq(alarmJoinCode));
         }
         //검색조건 : 알림유형코드
         if(!alarmTypeCode.equals("ALL")){
@@ -106,6 +101,55 @@ public class CustomAlarmSetRepositoryImpl extends QuerydslRepositorySupport impl
     }
 
     @Override
+    public List<Object[]> getAlarmSetList(String storeId) {
+        QAlarm alarm = QAlarm.alarm;
+        QStore store = QStore.store;
+
+        JPQLQuery<Alarm> query = from(alarm);
+
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
+                alarm.alarmNo,  //알림번호0
+                store.storeId,  //매장아이디1
+                store.storeName,    //가맹점명2
+                alarm.alarmTemplateNo,  //알림템플릿번호3
+                alarm.alarmTypeCode,    //알림유형코드4
+                alarm.alarmUpdatedate,    //5
+                alarm.alarmPurposeCode, //알림목적코드6
+                alarm.alarmPurposeName, //알림목적명7
+                alarm.alarmSendPointCode,   //알림발송시점코드8
+                alarm.alarmSendPointName,   //알림발송시점명9
+                alarm.alarmTargetTypeCode,  //알림대상자코드10
+                alarm.alarmMessage,//알림메시지11
+                alarm.alarmSendWayCode, //발송수단코드12
+                alarm.alarmMessage,     //알림메시지13
+                alarm.alarmVisibleCode,  //알림설정여부코드14
+                alarm.alarmMessageUpdateCode    //알림메시지업데이트여부코드15
+        );
+
+        //조인문
+        tupleJPQLQuery
+                .leftJoin(store).on(alarm.storeId.eq(store.storeId));
+
+        //조건문
+        tupleJPQLQuery.where(alarm.storeId.eq(storeId));
+
+        //정렬
+        tupleJPQLQuery.orderBy(alarm.alarmNo.desc());
+
+        //패치
+        List<Tuple> tuples = tupleJPQLQuery.fetch();
+
+        List<Object[]> resultList = new ArrayList<>();
+
+        tuples.forEach(tuple -> {
+            resultList.add(tuple.toArray());
+        });
+
+
+        return resultList;
+    }
+
+    @Override
     public List<Object[]> getAlarmMessage() {
         QAlarmTemplate alarmTemplate = QAlarmTemplate.alarmTemplate;
 
@@ -137,7 +181,6 @@ public class CustomAlarmSetRepositoryImpl extends QuerydslRepositorySupport impl
 //        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
 //                alarmTemplate.alarmTemplateNo,  //알림템플릿번호0
 //                alarmTemplate.alarmTypeCode,    //알림유형코드1
-//                alarmTemplate.alarmJoinCode,    //신규가입전송여부코드2
 //                alarmTemplate.alarmPurposeCode, //알림목적코드3
 //                alarmTemplate.alarmPurposeName, //알림목적명4
 //                alarmTemplate.alarmSendPointCode,   //알림발송시점코드5

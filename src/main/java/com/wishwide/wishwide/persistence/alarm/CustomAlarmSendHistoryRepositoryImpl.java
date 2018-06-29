@@ -22,7 +22,6 @@ public class CustomAlarmSendHistoryRepositoryImpl extends QuerydslRepositorySupp
                                                   String searchUserId,
                                                   String roleCode,
                                                   String sessionId,
-                                                  int alarmJoinCode,
                                                   String alarmTypeCode,
                                                   String alarmPurposeCode,
                                                   String alarmTargetTypeCode,
@@ -40,7 +39,7 @@ public class CustomAlarmSendHistoryRepositoryImpl extends QuerydslRepositorySupp
                 store.storeName,    //가맹점명3
                 alarmSendHistory.alarmTemplateNo,  //알림템플릿번호4
                 alarmSendHistory.alarmTypeCode,    //알림유형코드5
-                alarmSendHistory.alarmJoinCode,    //가입전송여부코드6
+                alarmSendHistory.alarmMessageUpdateCode,    //6
                 alarmSendHistory.alarmPurposeCode, //알림목적코드7
                 alarmSendHistory.alarmPurposeName, //알림목적명8
                 alarmSendHistory.alarmSendPointCode,   //알림발송시점코드9
@@ -53,7 +52,8 @@ public class CustomAlarmSendHistoryRepositoryImpl extends QuerydslRepositorySupp
                 alarmSendHistory.alarmSendHistoryRegdate,    //알림발송일시 16
                 alarmSendHistory.alarmSendTypeCode, //알림발송유형코드17
                 customer.customerNo,    //고객번호18
-                customer.customerPhone  //고객전화번호19
+                customer.customerPhone,  //고객전화번호19
+                customer.customerName   //고객명20
         );
 
         //조인문
@@ -64,10 +64,6 @@ public class CustomAlarmSendHistoryRepositoryImpl extends QuerydslRepositorySupp
         //검색조건 : 가맹점명
         if(!searchUserId.equals("ALL")){
             tupleJPQLQuery.where(alarmSendHistory.storeId.eq(searchUserId));
-        }
-        //검색조건 : 가입전송여부코드
-        if(alarmJoinCode != 2){
-            tupleJPQLQuery.where(alarmSendHistory.alarmJoinCode.eq(alarmJoinCode));
         }
         //검색조건 : 알림유형코드
         if(!alarmTypeCode.equals("ALL")){

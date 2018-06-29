@@ -1,0 +1,336 @@
+<div th:insert="~{layout/head::head}"/>
+<div id="wrapper">
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"/>
+    <!-- 사이드바 END -->
+
+    <div id="page-wrapper" class="gray-bg">
+        <!-- 헤더 START -->
+        <div th:insert="~{layout/header::header}"/>
+        <!-- 헤더 END -->
+
+        <!-- 콘텐츠 START -->
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>혜택 조회</h2>
+                </div>
+                <div class="ibox-content">
+                    <div class="col-lg-10">
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr sec:authorize="hasRole('MA')">
+                                    <th class="col-sm-3 m-b-xs">가맹점명</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select data-placeholder="가맹점 선택" class="chosen-select" id="userId" tabindex="2">
+                                                <option value="ALL" >전체</option>
+                                                <option th:each="store:${storeNameList}" name="storeName" th:value="${store[0]}"
+                                                        th:selected="${pageVO.userId} == ${store[0]}">[[${store[1]}]]</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">검색대상</th>
+                                    <td>
+                                        <div class="col-sm-15 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="searchType">
+                                                <option value="ALL" th:selected="${pageVO.type} == 'ALL'">전체</option>
+                                                <option value="customerPhone" th:selected="${pageVO.type} == 'customerPhone'">전화번호</option>
+                                                <option value="customerName" th:selected="${pageVO.type} == 'customerName'" >고객명</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs input-group">
+                                            <input type="text" placeholder="키워드 입력" class="input-sm form-control"
+                                                   id="searchKeyword" th:value="${pageVO.keyword}">
+                                            <span class="input-group-btn">
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                                id="searchButton">검색</button>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!--테이블-->
+                    <div class="row" th:with="benefit=${benefitVO.result}">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <th sec:authorize="hasRole('MA')">가맹점명</th>
+                                <th>전화번호</th>
+                                <th>이름</th>
+                                <th>적립 혜택 수</th>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vo:${benefit.content}" name="table">
+                                    <td sec:authorize="hasRole('MA')">
+                                        <input type="hidden" th:value="${vo[0]}">
+                                        <input type="hidden" th:value="${vo[1]}">
+                                        [[${vo[2]}]]
+                                    </td>
+                                    <td>
+                                        <span th:if="${#strings.length(vo[3])} == 10">[[${#strings.substring(vo[3], 0, 3)}]] - [[${#strings.substring(vo[3], 3, 6)}]] - [[${#strings.substring(vo[3], 6, 10)}]]</span>
+                                        <span th:if="${#strings.length(vo[3])} == 11">[[${#strings.substring(vo[3], 0, 3)}]] - [[${#strings.substring(vo[3], 3, 7)}]] - [[${#strings.substring(vo[3], 7, 11)}]]</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${vo[4]} != null">[[${vo[4]}]]</span>
+                                        <span th:if="${vo[4]} == null">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${vo[6]} != 0">
+                                            <span th:switch="${vo[5]}">
+                                                <span th:case="S"><a href="#" name="selectStampHistory">[[${vo[6]}]]개</a></span>
+                                                <span th:case="P"><a href="#" name="selectPointHistory">[[${vo[6]}]]P</a></span>
+                                            </span>
+                                        </span>
+                                        <span th:if="${vo[6]} == 0">-</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--페이징-->
+                <nav class="text-center">
+                    <div>
+                        <!--현재 페이지 번호 구분 : th:classappend="${page.pageNumber == productVO.currentPageNum - 1}?active : ''"-->
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${benefitVO.prevPage}"><a th:href="${benefitVO.prevPage.pageNumber} + 1">이전[[${benefitVO.prevPage.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:each="page:${benefitVO.pageList}" th:classappend="${page.pageNumber == (benefitVO.currentPageNum - 1)}?active : ''"><a th:href="${page.pageNumber} + 1" id="currentPage">[[${page.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:if="${benefitVO.nextPage}"><a th:href="${benefitVO.nextPage.pageNumber} + 1">다음[[${benefitVO.nextPage.pageNumber} + 1]]</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <!--페이지 및 검색조건 get방식으로 넘김-->
+                <form id="pageInfo" th:action="@{listBenefit}" method="get">
+                    <input type="hidden" name="page" th:value="${benefitVO.currentPageNum}"/>
+                    <input type="hidden" name="size" th:value="${benefitVO.currentPage.pageSize}"/>
+                    <input type="hidden" name="type" th:value="${pageVO.type}"/>
+                    <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    <input type="hidden" name="userId" th:value="${pageVO.userId}"/>
+                    <input type="hidden" name="couponUseCode" th:value="${pageVO.couponUseCode}"/>
+                    <input type="hidden" name="couponPublishTypeCode" th:value="${pageVO.couponPublishTypeCode}"/>
+                    <input type="hidden" name="couponTargetTypeCode" th:value="${pageVO.couponTargetTypeCode}"/>
+                    <input type="hidden" name="couponTypeCode" th:value="${pageVO.couponTypeCode}"/>
+                </form>
+            </div>
+        </div>
+        <!-- 콘텐츠 END -->
+
+        <!-- 푸터 START -->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+</div>
+<!--적립포인트 리스트Modal-->
+<div class="modal inmodal fade" id="modalPointHistory" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">적립 정보</h4>
+            </div>
+            <div class="modal-body">
+                <table class="footable table table-bordered table-hover">
+                    <thead>
+                    <th>일시</th>
+                    <th>전화번호</th>
+                    <th>고객명</th>
+                    <th>적립포인트</th>
+                    <th>사용포인트</th>
+                    <th>소멸포인트</th>
+                    <th>잔여포인트</th>
+                    <th>적립경로</th>
+                    </thead>
+                    <tbody id="selectPointHistory">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--적립도장 리스트Modal-->
+<div class="modal inmodal fade" id="modalStampHistory" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">적립 정보</h4>
+            </div>
+            <div class="modal-body">
+                <table class="footable table table-bordered table-hover">
+                    <thead>
+                    <th>일시</th>
+                    <th>전화번호</th>
+                    <th>고객명</th>
+                    <th>적립도장수</th>
+                    <th>차감도장수</th>
+                    <th>누적도장수</th>
+                    <th>현재도장수</th>
+                    <th>쿠폰발급수</th>
+                    </thead>
+                    <tbody id="selectStampHistory">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block >
+    <script th:inline="javascript">
+        $(window).on('load', function() {
+            var message = /*[[${message}]]*/'fail';
+
+            if (message == "successRegister"){
+                alert('등록이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successUpdate"){
+                alert('수정이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successDelete"){
+                alert('삭제가 정상적으로 처리되었습니다.');
+            }
+        });
+
+        $(document).ready(function () {
+            var pageSize = /*[[${totalPages}]]*/'';
+
+            console.log(pageSize);
+
+            $('.chosen-select').chosen({width: "100%"});
+
+            //도장 내역 리스트 가져오기
+            $('a[name="selectStampHistory"]').click(function (e) {
+                e.preventDefault();
+
+                var parentNode = $(this).parent().parent().parent().parent().parent();
+                var customerNo = parentNode.children().eq(0).children().eq(0).attr('value');
+                var storeId = parentNode.children().eq(0).children().eq(1).attr('value');
+
+                console.log(customerNo + ', '+storeId);
+                console.log(parentNode);
+
+                $('#selectStampHistory').empty();
+                $('#modalStampHistory').modal('show');
+
+                $.ajax({
+                    url: "/wishwide/benefit/selectStampHistory/" + storeId+'/'+customerNo,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data.length != 0) {
+                            $.each(data, function (index, item) {
+                                var customerName = '';
+
+                                /*이름*/
+                                if(!(item[3] === null))
+                                    customerName = item[3];
+                                else
+                                    customerName = '-';
+
+                                $('#selectStampHistory').append(
+                                    '<tr>' +
+                                    '<td>' + item[9].replace('T', ' ') + '</td>' +
+                                    '<td>' + item[2].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
+                                    '<td>' + customerName + '</td>' +
+                                    '<td>' + item[4] + '</td>' +
+                                    '<td>' + item[5] + '</td>' +
+                                    '<td>' + item[6] + '</td>' +
+                                    '<td>' + item[7] + '</td>' +
+                                    '<td>' + item[8] + '</td>' +
+                                    '</tr>'
+                                );
+                            });
+//                                $('.footable').footable({
+//                                    paging: {
+//                                        enabled: true,
+//                                        size: 5
+//                                    }
+//                                });
+                        }
+                    }
+                });
+            });
+
+            //포인트 내역 리스트 가져오기
+            $('a[name="selectPointHistory"]').click(function (e) {
+                e.preventDefault();
+
+                var parentNode = $(this).parent().parent().parent().parent().parent();
+                var customerNo = parentNode.children().eq(0).children().eq(0).attr('value');
+                var storeId = parentNode.children().eq(0).children().eq(1).attr('value');
+
+                console.log(customerNo + ', '+storeId);
+                console.log(parentNode);
+
+                $('#selectPointHistory').empty();
+                $('#modalPointHistory').modal('show');
+
+                $.ajax({
+                    url: "/wishwide/benefit/selectPointHistory/" + storeId+'/'+customerNo,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data.length != 0) {
+                            $.each(data, function (index, item) {
+                                var customerName = '';
+                                var pointEarningWay = '';
+
+                                /*이름*/
+                                if(!(item[3] === null))
+                                    customerName = item[3];
+                                else
+                                    customerName = '-';
+
+                                /*적립경로*/
+                                if(item[8] == 'STORE')
+                                    pointEarningWay = '매장적립';
+                                else
+                                    pointEarningWay = '쿠폰적립';
+
+
+                                $('#selectPointHistory').append(
+                                    '<tr>' +
+                                    '<td>' + item[9].replace('T', ' ') + '</td>' +
+                                    '<td>' + item[2].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
+                                    '<td>' + customerName + '</td>' +
+                                    '<td>' + item[4] + '</td>' +
+                                    '<td>' + item[5] + '</td>' +
+                                    '<td>' + item[6] + '</td>' +
+                                    '<td>' + item[7] + '</td>' +
+                                    '<td>' + pointEarningWay + '</td>' +
+                                    '</tr>'
+                                );
+                            });
+//                                $('.footable').footable({
+//                                    paging: {
+//                                        enabled: true,
+//                                        size: 5
+//                                    }
+//                                });
+                        }
+                    }
+                });
+            });
+        });
+
+    </script>
+</th:block>

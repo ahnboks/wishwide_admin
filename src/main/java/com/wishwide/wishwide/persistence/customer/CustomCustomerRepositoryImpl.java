@@ -2,14 +2,12 @@ package com.wishwide.wishwide.persistence.customer;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.hibernate.HibernateQuery;
 import com.wishwide.wishwide.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
-import javax.persistence.TemporalType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +29,8 @@ public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport impl
         QStore store = QStore.store;    //매장
         QCustomerVisitHistory customerVisitHistory = QCustomerVisitHistory.customerVisitHistory;    //고객 방문수
         QGiftReceiveHistory giftReceiveHistory = QGiftReceiveHistory.giftReceiveHistory;    //선물구매수
+        QGiftBox useGiftBox = new QGiftBox("useGift");  //사용한선물
+        QGiftBox notUseGiftBox = new QGiftBox("notUseGift");    //받은선물
         QCouponBox useCouponBox = new QCouponBox("use");    //사용한 쿠폰수
         QCouponBox notUsecouponBox = new QCouponBox("notUse");  //미사용한 쿠폰수
 
@@ -50,13 +50,17 @@ public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport impl
                 customer.customerBenefitTypeCode,   //고객혜택타입10
                 customer.customerBenefitValue,  //고객혜택값11
                 customer.customerBirth, //고객생일12
-                customer.customerRegdate    //고객 가입일시13
+                customer.customerRegdate,    //고객 가입일시13
+                useGiftBox.giftBoxNo.countDistinct(),  //사용한선물수14
+                notUseGiftBox.giftBoxNo.countDistinct()    //사용안한선물수15
         );
 
         //조인문
         tupleJPQLQuery.leftJoin(store).on(customer.storeId.eq(store.storeId))
                 .leftJoin(giftReceiveHistory).on(customer.customerNo.eq(giftReceiveHistory.customerNo))
                 .leftJoin(customerVisitHistory).on(customer.customerNo.eq(customerVisitHistory.customerNo))
+                .leftJoin(useGiftBox).on(customer.customerPhone.eq(useGiftBox.giftReceiverPhone).and(useGiftBox.giftUseCode.eq(1)))
+                .leftJoin(notUseGiftBox).on(customer.customerPhone.eq(notUseGiftBox.giftReceiverPhone))
                 .leftJoin(useCouponBox).on(customer.customerNo.eq(useCouponBox.customerNo).and(useCouponBox.couponUseCode.eq(1)))
                 .leftJoin(notUsecouponBox).on(customer.customerNo.eq(notUsecouponBox.customerNo));
 
@@ -115,6 +119,8 @@ public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport impl
         QStore store = QStore.store;    //매장
         QCustomerVisitHistory customerVisitHistory = QCustomerVisitHistory.customerVisitHistory;    //고객 방문수
         QGiftReceiveHistory giftReceiveHistory = QGiftReceiveHistory.giftReceiveHistory;    //선물구매수
+        QGiftBox useGiftBox = new QGiftBox("useGift");  //사용한선물
+        QGiftBox notUseGiftBox = new QGiftBox("notUseGift");    //받은선물
         QCouponBox useCouponBox = new QCouponBox("use");    //사용한 쿠폰수
         QCouponBox notUsecouponBox = new QCouponBox("notUse");  //미사용한 쿠폰수
 
@@ -134,13 +140,17 @@ public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport impl
                 customer.customerBenefitTypeCode,   //고객혜택타입10
                 customer.customerBenefitValue,  //고객혜택값11
                 customer.customerBirth, //고객생일12
-                customer.customerRegdate    //고객 가입일시13
+                customer.customerRegdate,    //고객 가입일시13
+                useGiftBox.giftBoxNo.countDistinct(),  //사용한선물수14
+                notUseGiftBox.giftBoxNo.countDistinct()    //사용안한선물수15
         );
 
         //조인문
         tupleJPQLQuery.join(store).on(customer.storeId.eq(store.storeId))
                 .leftJoin(giftReceiveHistory).on(customer.customerNo.eq(giftReceiveHistory.customerNo))
                 .leftJoin(customerVisitHistory).on(customer.customerNo.eq(customerVisitHistory.customerNo))
+                .leftJoin(useGiftBox).on(customer.customerPhone.eq(useGiftBox.giftReceiverPhone).and(useGiftBox.giftUseCode.eq(1)))
+                .leftJoin(notUseGiftBox).on(customer.customerPhone.eq(notUseGiftBox.giftReceiverPhone))
                 .leftJoin(useCouponBox).on(customer.customerNo.eq(useCouponBox.customerNo).and(useCouponBox.couponUseCode.eq(1)))
                 .leftJoin(notUsecouponBox).on(customer.customerNo.eq(notUsecouponBox.customerNo));
 

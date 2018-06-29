@@ -1,4 +1,4 @@
-package com.wishwide.wishwide.persistence;
+package com.wishwide.wishwide.persistence.ar;
 
 import com.wishwide.wishwide.domain.Marker;
 import org.springframework.data.jpa.repository.Modifying;

@@ -1,0 +1,274 @@
+<div th:insert="~{layout/head::head}"/>
+<div id="wrapper">
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"/>
+    <!-- 사이드바 END -->
+
+    <div id="page-wrapper" class="gray-bg">
+        <!-- 헤더 START -->
+        <div th:insert="~{layout/header::header}"/>
+        <!-- 헤더 END -->
+
+        <!-- 콘텐츠 START -->
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>쿠폰 발행</h2>
+                </div>
+                <div class="ibox-content">
+                    <div class="col-lg-10">
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr sec:authorize="hasRole('MA')">
+                                    <th class="col-sm-3 m-b-xs">가맹점명</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select data-placeholder="가맹점 선택" class="chosen-select" id="userId" tabindex="2">
+                                                <option value="ALL" >전체</option>
+                                                <option th:each="store:${storeNameList}" name="storeName" th:value="${store[0]}"
+                                                        th:selected="${pageVO.userId} == ${store[0]}">[[${store[1]}]]</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">쿠폰유형</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="couponTypeCode">
+                                                <option value="ALL" th:selected="${pageVO.couponTypeCode} == 'ALL'">전체</option>
+                                                <option value="1" th:selected="${pageVO.couponTypeCode} == '1'">할인</option>
+                                                <option value="2" th:selected="${pageVO.couponTypeCode} == '2'">도장</option>
+                                                <option value="3" th:selected="${pageVO.couponTypeCode} == '3'">포인트</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">발급대상</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select class="input-sm form-control input-s-sm inline" id="couponTargetTypeCode">
+                                                <option value="ALL" th:selected="${pageVO.couponTargetTypeCode} == 'ALL'">전체</option>
+                                                <option value="BIRTH" th:selected="${pageVO.couponTargetTypeCode} == 'BIRTH'">생일</option>
+                                                <option value="STAMP" th:selected="${pageVO.couponTargetTypeCode} == 'STAMP'">도장적립</option>
+                                                <option value="NEW" th:selected="${pageVO.couponTargetTypeCode} == 'NEW'">신규</option>
+                                                <option value="UPGRADE" th:selected="${pageVO.couponTargetTypeCode} == 'UPGRADE'">단골등업</option>
+                                                <option value="WHOLE" th:selected="${pageVO.couponTargetTypeCode} == 'WHOLE'">전체</option>
+                                                <option value="VIP" th:selected="${pageVO.couponTargetTypeCode} == 'VIP'">단골</option>
+                                                <option value="SELECT" th:selected="${pageVO.couponTargetTypeCode} == 'SELECT'">특정</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">발급경로</th>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs text-left">
+                                            <select class="input-sm form-control input-s-sm inline" id="couponPublishTypeCode">
+                                                <option value="ALL" th:selected="${pageVO.couponPublishTypeCode} == 'ALL'">전체</option>
+                                                <option value="AR" th:selected="${pageVO.couponPublishTypeCode} == 'AR'">AR게임</option>
+                                                <option value="CB" th:selected="${pageVO.couponPublishTypeCode} == 'CB'">쿠폰함</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">사용여부</th>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs text-left">
+                                            <select class="input-sm form-control input-s-sm inline" id="couponUseCode">
+                                                <option value="2" th:selected="${pageVO.couponUseCode} == '2'">전체</option>
+                                                <option value="1" th:selected="${pageVO.couponUseCode} == '1'">사용</option>
+                                                <option value="0" th:selected="${pageVO.couponUseCode} == '0'">미사용</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3 m-b-xs">검색대상</th>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs">
+                                            <select class="input-sm form-control input-s-sm inline" id="searchType">
+                                                <option value="ALL" th:selected="${pageVO.type} == 'ALL'">전체</option>
+                                                <option value="customerPhone" th:selected="${pageVO.type} == 'customerPhone'">전화번호</option>
+                                                <option value="customerName" th:selected="${pageVO.type} == 'customerName'" >고객명</option>
+                                                <option value="couponTitle" th:selected="${pageVO.type} == 'couponTitle'">쿠폰명</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs input-group">
+                                            <input type="text" placeholder="키워드 입력" class="input-sm form-control"
+                                                   id="searchKeyword" th:value="${pageVO.keyword}">
+                                            <span class="input-group-btn">
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                                id="searchButton">검색</button>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!--등록 버튼-->
+                    <div class="col-lg-12">
+                        <div class="pull-right">
+                            <a th:href="@{registerCoupon}"><button class="btn btn-primary">쿠폰 발행</button></a>
+                        </div>
+                    </div>
+                    <!--테이블-->
+                    <div class="row" th:with="coupon=${couponVO.result}">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <th>상세</th>
+                                <th sec:authorize="hasRole('MA')">가맹점명</th>
+                                <th>쿠폰유형</th>
+                                <th>발송유형</th>
+                                <th>쿠폰명</th>
+                                <th>발급대상</th>
+                                <th>발급경로</th>
+                                <th>예약발송시간</th>
+                                <th>발행일시</th>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vo:${coupon.content}" name="table">
+                                    <td>
+                                        <a th:href="@{/wishwide/coupon/detailCoupon/{couponNo}(couponNo=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
+                                            <img src="/img/menu.png" style="width: 35px; height: 35px;">
+                                        </a>
+                                    </td>
+                                    <td sec:authorize="hasRole('MA')">[[${vo[2]}]]</td>
+                                    <td>[[${vo[4]}]]</td>
+                                    <td>[[${vo[4]}]]</td>
+                                    <td>[[${vo[5]}]]</td>
+                                    <td>
+                                        <span th:switch="${vo[6]}">
+                                            <span th:case="BIRTH">생일</span>
+                                            <span th:case="STAMP">도장적립</span>
+                                            <span th:case="NEW">신규</span>
+                                            <span th:case="UPGRADE">단골등업</span>
+                                            <span th:case="WHOLE">전체</span>
+                                            <span th:case="VIP">단골</span>
+                                            <span th:case="SELECT">특정</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:switch="${vo[7]}">
+                                            <span th:case="AR">AR게임</span>
+                                            <span th:case="CB">쿠폰함</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${vo[8]} != null">[[${#temporals.format(vo[8], 'yyyy-MM-dd', locale)}]]</span>
+                                        <span th:if="${vo[8]} == null">-</span>
+                                    <td>[[${#temporals.format(vo[9], 'yyyy-MM-dd HH:mm:ss', locale)}]]</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--페이징-->
+                <nav class="text-center">
+                    <div>
+                        <!--현재 페이지 번호 구분 : th:classappend="${page.pageNumber == productVO.currentPageNum - 1}?active : ''"-->
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${couponVO.prevPage}"><a th:href="${couponVO.prevPage.pageNumber} + 1">이전[[${couponVO.prevPage.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:each="page:${couponVO.pageList}" th:classappend="${page.pageNumber == (couponVO.currentPageNum - 1)}?active : ''"><a th:href="${page.pageNumber} + 1" id="currentPage">[[${page.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:if="${couponVO.nextPage}"><a th:href="${couponVO.nextPage.pageNumber} + 1">다음[[${couponVO.nextPage.pageNumber} + 1]]</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <!--페이지 및 검색조건 get방식으로 넘김-->
+                <form id="pageInfo" th:action="@{listCoupon}" method="get">
+                    <input type="hidden" name="page" th:value="${couponVO.currentPageNum}"/>
+                    <input type="hidden" name="size" th:value="${couponVO.currentPage.pageSize}"/>
+                    <input type="hidden" name="type" th:value="${pageVO.type}"/>
+                    <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    <input type="hidden" name="userId" th:value="${pageVO.userId}"/>
+                    <input type="hidden" name="couponPublishTypeCode" th:value="${pageVO.couponPublishTypeCode}"/>
+                    <input type="hidden" name="couponTargetTypeCode" th:value="${pageVO.couponTargetTypeCode}"/>
+                    <input type="hidden" name="couponTypeCode" th:value="${pageVO.couponTypeCode}"/>
+                </form>
+            </div>
+        </div>
+        <!-- 콘텐츠 END -->
+
+        <!-- 푸터 START -->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+</div>
+<th:block >
+    <script th:inline="javascript">
+        $(window).on('load', function() {
+            var message = /*[[${message}]]*/'fail';
+
+            if (message == "successRegister"){
+                alert('등록이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successUpdate"){
+                alert('수정이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successDelete"){
+                alert('삭제가 정상적으로 처리되었습니다.');
+            }
+        });
+
+        $(document).ready(function () {
+            var pageSize = /*[[${totalPages}]]*/'';
+
+            console.log(pageSize);
+
+            $('.chosen-select').chosen({width: "100%"});
+
+            $('#storeNameList').on('change', function(){
+                console.log('dddd');
+                table.search(this.value).draw();
+            });
+
+            $('a[name="updateCouponVisibleCode"]').click(function (e) {
+                e.preventDefault();
+
+                console.log($(this));
+
+                var node = $(this);
+                var updateCouponVisibleCode = $(this).children().eq(0).attr('value');
+                var parentNode = $(this).parent().parent();
+                var couponNo = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log('디바이스 번호 : '+couponNo +' 활성화코드 : ' +updateCouponVisibleCode);
+
+                $.ajax({
+                    url: "/wishwide/coupon/updateCouponVisibleCode/" + couponNo + "/" + updateCouponVisibleCode,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log("변경 성공" + data);
+                        if (data == '1') {
+                            console.log(node);
+                            node.empty();
+                            node.html('<span class="use" value="1" >사용</span>');
+                            alert('디바이스 사용 상태로 변경되었습니다.');
+                        }
+                        else {
+                            console.log(node);
+                            node.empty();
+                            node.html('<span class="not-use" value="0" >미사용</span>');
+                            alert('디바이스 미사용 상태로 변경되었습니다.')
+                        }
+                    }
+                });
+
+
+            });
+        });
+
+    </script>
+</th:block>

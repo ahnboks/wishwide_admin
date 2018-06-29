@@ -66,7 +66,7 @@ public class GiftController {
         model.addAttribute("giftPaymentVO", new PageMaker<>(result));
 
         //가맹점명 셀렉트 박스
-        model.addAttribute("storeNameList", customStoreRepository.getStoreNameList());
+        model.addAttribute("storeNameList", customStoreRepository.getStoreList());
 
         //총 페이지 수
         model.addAttribute("totalPages", result.getTotalElements());

@@ -36,15 +36,7 @@
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
-                        <!--신규가입 전송 여부-->
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">신규가입 전송 여부<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-3" >
-                                <label class="radio-inline"><input type="radio" name="alarmJoinCode" th:checked="${alarmTemplateVO[2]} == 1" value="1">사용 안함</label>
-                                <label class="radio-inline"><input type="radio" name="alarmJoinCode" th:checked="${alarmTemplateVO[2]} == 0" value="0">사용</label>
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
+
                         <!--알림목적-->
                         <div class="form-group">
                             <label class="col-sm-2 control-label">알림목적<label class="notnull-mark-color"> *</label></label>
@@ -203,7 +195,7 @@
                     contentType: 'application/json',
                     success: function (data) {
                         console.log(data);
-                        if (data != "") {
+                        if (data.length != 0) {
                             $.each(data, function (index, item) {
                                 $('#alarmVariable').append('<tr>' +
                                     '<td>' + item[2] + '</td>' +

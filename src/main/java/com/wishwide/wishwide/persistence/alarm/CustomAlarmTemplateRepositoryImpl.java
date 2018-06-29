@@ -19,7 +19,6 @@ public class CustomAlarmTemplateRepositoryImpl extends QuerydslRepositorySupport
     @Override
     public Page<Object[]> getAlarmTemplatePage(String type,
                                                String keyword,
-                                               int alarmJoinCode,
                                                String alarmTypeCode,
                                                String alarmPurposeCode,
                                                String alarmTargetTypeCode,
@@ -31,7 +30,7 @@ public class CustomAlarmTemplateRepositoryImpl extends QuerydslRepositorySupport
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
                 alarmTemplate.alarmTemplateNo,  //알림템플릿번호0
                 alarmTemplate.alarmTypeCode,    //알림유형코드1
-                alarmTemplate.alarmJoinCode,    //가입전송여부코드2
+                alarmTemplate.alarmTemplateUpdatedate,    //2
                 alarmTemplate.alarmPurposeCode, //알림목적코드3
                 alarmTemplate.alarmPurposeName, //알림목적명4
                 alarmTemplate.alarmSendPointCode,   //알림발송시점코드5
@@ -41,10 +40,6 @@ public class CustomAlarmTemplateRepositoryImpl extends QuerydslRepositorySupport
                 alarmTemplate.alarmMessage  //알림메시지9
         );
 
-        //검색조건 : 가입전송여부코드
-        if(alarmJoinCode != 2){
-            tupleJPQLQuery.where(alarmTemplate.alarmJoinCode.eq(alarmJoinCode));
-        }
         //검색조건 : 알림유형코드
         if(!alarmTypeCode.equals("ALL")){
             tupleJPQLQuery.where(alarmTemplate.alarmTypeCode.eq(alarmTypeCode));
@@ -123,7 +118,7 @@ public class CustomAlarmTemplateRepositoryImpl extends QuerydslRepositorySupport
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
                 alarmTemplate.alarmTemplateNo,  //알림템플릿번호0
                 alarmTemplate.alarmTypeCode,    //알림유형코드1
-                alarmTemplate.alarmJoinCode,    //신규가입전송여부코드2
+                alarmTemplate.alarmTemplateRegdate,    //2
                 alarmTemplate.alarmPurposeCode, //알림목적코드3
                 alarmTemplate.alarmPurposeName, //알림목적명4
                 alarmTemplate.alarmSendPointCode,   //알림발송시점코드5

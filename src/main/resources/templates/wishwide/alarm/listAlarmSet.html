@@ -19,7 +19,7 @@
                     <div class="col-lg-10">
                         <div class="col-lg-6">
                             <table class="custom-table">
-                                <tr>
+                                <tr sec:authorize="hasRole('MA')">
                                     <th class="col-sm-3 m-b-xs">가맹점명</th>
                                     <td>
                                         <div class="col-sm-6 m-b-xs text-left">
@@ -41,18 +41,6 @@
                                                 <option value="C" th:selected="${pageVO.alarmTypeCode} == 'C'">쿠폰</option>
                                                 <option value="S" th:selected="${pageVO.alarmTypeCode} == 'S'">도장</option>
                                                 <option value="P" th:selected="${pageVO.alarmTypeCode} == 'P'">포인트</option>
-                                            </select>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="col-sm-3 m-b-xs">신규가입 전송여부</th>
-                                    <td>
-                                        <div class="col-sm-6 m-b-xs text-left">
-                                            <select class="input-sm form-control input-s-sm inline" id="alarmJoinCode">
-                                                <option value="2" th:selected="${pageVO.alarmJoinCode} == '2'">전체</option>
-                                                <option value="1" th:selected="${pageVO.alarmJoinCode} == '1'">사용</option>
-                                                <option value="0" th:selected="${pageVO.alarmJoinCode} == '0'">미사용</option>
                                             </select>
                                         </div>
                                     </td>
@@ -120,7 +108,6 @@
                                 <thead>
                                 <th>가맹점명</th>
                                 <th>알림유형</th>
-                                <th>신규가입 전송</th>
                                 <th>알림목적</th>
                                 <th>발송시점</th>
                                 <th>알림 대상자</th>
@@ -139,19 +126,12 @@
                                             <span th:case="P">포인트</span>
                                         </span>
                                     </td>
-                                    <td>
-                                         <span th:switch="${vo[5]}">
-                                            <span th:case="1">사용</span>
-                                            <span th:case="0">미사용</span>
-                                         </span>
-                                    </td>
                                     <td>[[${vo[7]}]]</td>
                                     <td>[[${vo[9]}]]</td>
                                     <td>
                                         <span th:switch="${vo[10]}">
                                             <span th:case="BC">구매자</span>
                                             <span th:case="RC">수신자</span>
-                                            <span th:case="AC">적립자</span>
                                         </span>
                                     </td>
                                     <td>
@@ -196,7 +176,6 @@
                     <input type="hidden" name="type" th:value="${pageVO.type}"/>
                     <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
                     <input type="hidden" name="userId" th:value="${pageVO.userId}"/>
-                    <input type="hidden" name="alarmJoinCode" th:value="${pageVO.alarmJoinCode}"/>
                     <input type="hidden" name="alarmTypeCode" th:value="${pageVO.alarmTypeCode}"/>
                     <input type="hidden" name="alarmPurposeCode" th:value="${pageVO.alarmPurposeCode}"/>
                     <input type="hidden" name="alarmTargetTypeCode" th:value="${pageVO.alarmTargetTypeCode}"/>
@@ -223,6 +202,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
                 <button type="button" id="updateAlarmMessage" value="" class="btn btn-primary">수정</button>
+                <button type="button" id="updateOriginalAlarmMessage" value="" class="btn btn-primary">원래대로</button>
             </div>
         </div>
     </div>
@@ -233,7 +213,7 @@
             var message = /*[[${message}]]*/'fail';
 
             if (message == "successRegister"){
-                alert('등록이 정상적으로 처리되었습니다.');
+                alert('발송이 정상적으로 처리되었습니다.');
             }
             if (message == "successUpdate"){
                 alert('수정이 정상적으로 처리되었습니다.');
@@ -250,15 +230,16 @@
 
             $('.chosen-select').chosen({width: "100%"});
 
+            /*알림메시지 수정*/
             $('#updateAlarmMessage').click(function (e) {
                 e.preventDefault();
 
                 console.log($(this));
 
-                $('#modalAlarmMessage').modal('show');
+//                $('#modalAlarmMessage').modal('show');
 
                 var alarmNo = $(this).val();
-                var alarmMessage = $("#alarmMessage").text();
+                var alarmMessage = $("#alarmMessage").val();
 
                 console.log(alarmNo + alarmMessage);
 
@@ -277,6 +258,30 @@
                 });
             });
 
+            /*알림메시지 원래대로*/
+            $('#updateOriginalAlarmMessage').click(function (e) {
+                e.preventDefault();
+
+                console.log($(this));
+
+                var alarmNo = $("#updateAlarmMessage").val();
+
+                console.log(alarmNo);
+
+                $.ajax({
+                    url: "/wishwide/alarm/updateOriginalAlarmMessage/" + alarmNo,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        alert('원래대로 변경되었습니다.');
+                        $("#alarmMessage").text(data);
+                        $('#modalAlarmMessage').modal('hide');
+                    }
+                });
+            });
+
+            var isGetAlarmMessage = false;
 
             $('a[name="updateAlarmMessage"]').click(function (e) {
                 e.preventDefault();
@@ -290,18 +295,19 @@
 
                 console.log('번호 : '+alarmNo);
 
-                $.ajax({
-                    url: "/wishwide/alarm/selectAlarmMessage/" + alarmNo,
-                    type: 'get',
-                    contentType: 'application/json',
-                    success: function (data) {
-                        console.log(data);
-                        $('#alarmMessage').text(data);
-                        $('#updateAlarmMessage').val(alarmNo);
-                    }
-                });
-
-
+                if(!isGetAlarmMessage) {
+                    $.ajax({
+                        url: "/wishwide/alarm/selectAlarmMessage/" + alarmNo,
+                        type: 'get',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            console.log(data);
+                            $('#alarmMessage').text(data);
+                            $('#updateAlarmMessage').val(alarmNo);
+                            isGetAlarmMessage = true;
+                        }
+                    });
+                }
             });
 
             $('a[name="updateAlarmVisibleCode"]').click(function (e) {

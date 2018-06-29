@@ -53,7 +53,7 @@ public class DefaultController {
 
         //로그인 실패 시
         if (error!=null && error.equals("true"))
-            model.addAttribute("message", "로그인에 실패하였습니다.");
+            model.addAttribute("message", "아이디와 비밀번호를 다시 입력해주세요.");
 
         //로그아웃 시
        if(logout!=null && logout.equals("true"))

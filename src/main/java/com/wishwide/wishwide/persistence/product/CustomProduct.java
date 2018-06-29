@@ -26,7 +26,20 @@ public interface CustomProduct {
                                                 int giftProductRegisterCode,
                                                 Pageable pageable);
 
-    //매장 상품 리스트 불러오기
+    public Object[] getStoreProductDetail(Long productNo);
+
+    public Object[] getPartnerProductDetail(Long productNo);
+
+   //매장 상품 리스트 불러오기
     List<Object[]> getStoreProductList(String storeId);
+
+    //파트너 상품 리스트 불러오기
+    List<Object[]> getPartnerProductList(String partnerId);
+
+    //서브상품 리스트 불러오기
+    List<Object[]> getSubProductList(Long productNo);
+
+    //선물상품 리스트 불러오기
+    public List<Object[]> getGiftProduct(Long productNo);
 
 }

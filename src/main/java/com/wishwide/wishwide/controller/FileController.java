@@ -1,10 +1,12 @@
 package com.wishwide.wishwide.controller;
 
 
-import com.wishwide.wishwide.domain.StoreFile;
-import com.wishwide.wishwide.domain.StoreImage;
+import com.wishwide.wishwide.domain.*;
 import com.wishwide.wishwide.file.FileManager;
-import com.wishwide.wishwide.persistence.ProductImageRepository;
+import com.wishwide.wishwide.persistence.ar.MarkerDataFileRepository;
+import com.wishwide.wishwide.persistence.ar.MarkerImageRepository;
+import com.wishwide.wishwide.persistence.device.DeviceImageRepository;
+import com.wishwide.wishwide.persistence.product.ProductImageRepository;
 import com.wishwide.wishwide.persistence.store.StoreFileRepository;
 import com.wishwide.wishwide.persistence.store.StoreImageRepository;
 import lombok.extern.java.Log;
@@ -42,6 +44,15 @@ public class FileController {
 
     @Autowired
     ProductImageRepository productImageRepository;
+
+    @Autowired
+    DeviceImageRepository deviceImageRepository;
+
+    @Autowired
+    MarkerDataFileRepository markerDataFileRepository;
+
+    @Autowired
+    MarkerImageRepository markerImageRepository;
 
     @GetMapping(value = "/download")
     public void downloadFile(@RequestParam("fileName") String fileName,
@@ -95,7 +106,7 @@ public class FileController {
     @GetMapping("/remove/storeFile/{storeId}/{fileTypeCode}")
     public ResponseEntity removeStoreFile(@PathVariable("storeId") String storeId,
                                           @PathVariable("fileTypeCode") String fileTypeCode) {
-        StoreFile storeFile = storeFileRepository.findByStoreIdAndStoreFileTypeCode(storeId, fileTypeCode);
+        StoreFile storeFile = storeFileRepository.findByStoreFileAndStoreFileTypeCode(storeId, fileTypeCode);
 
         if(storeFile != null){
             //클라우드 파일 삭제
@@ -113,7 +124,7 @@ public class FileController {
     @GetMapping("/remove/storeImage/{storeId}/{imageTypeCode}")
     public ResponseEntity removeStoreImage(@PathVariable("storeId") String storeId,
                                            @PathVariable("imageTypeCode") String imageTypeCode) {
-        StoreImage storeImage = storeImageRepository.findByStoreIdAndStoreImageTypeCode(storeId, imageTypeCode);
+        StoreImage storeImage = storeImageRepository.findByStoreImageAndStoreImageTypeCode(storeId, imageTypeCode);
 
         if(storeImage != null){
             //클라우드 파일 삭제
@@ -128,67 +139,83 @@ public class FileController {
         return new ResponseEntity("success", HttpStatus.OK);
     }
 
-//    @GetMapping("/remove/markerDataFile/{arGameNo}")
-//    public ResponseEntity removeMarkerDataFile(@PathVariable("arGameNo") Long arGameNo) {
-//        log.info("arGame번호 : "+arGameNo);
-//
-//        WwMarkerDataFile wwMarkerDataFile = markerDataFileRepository.findWwMarkerDataFileByArGameNo(arGameNo);
-//
-//        //DAT, XML파일 삭제
-//        if(wwMarkerDataFile != null){
-//            //클라우드 DAT파일 삭제
-//            removeCloudFile(wwMarkerDataFile.getMarkerDatDbFile());
-//
-//            //클라우드 XML파일 삭제
-//            removeCloudFile(wwMarkerDataFile.getMarkerXmlDbFile());
-//
-//            markerDataFileRepository.deleteById(wwMarkerDataFile.getMarkerDataFileNo());
-//
-//            log.info("데이터 파일 삭제 성공");
-//
-//        }
-//
-//        return new ResponseEntity("success", HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/remove/characterFile/{markerGameTypeCode}")
-//    public ResponseEntity removeCharacterFile(@PathVariable("markerGameTypeCode") String markerGameTypeCode) {
-//
-//        log.info("마커타입 : "+markerGameTypeCode);
-//
-//        wwCharacterFileRepository.findByMarkerGameTypeCode(markerGameTypeCode).forEach(wwCharacterFile -> {
-//            if(wwCharacterFile != null) {
-//                removeCloudFile(wwCharacterFile.getCharacterDbFile());
-//
-//                //DB 파일 삭제
-//                wwCharacterFileRepository.deleteById(wwCharacterFile.getCharacterFileNo());
-//
-//                log.info("이미지파일 삭제 성공");
-//            }
-//        });
-//
-//        return new ResponseEntity("success", HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/remove/markerImageFile/{arGameNo}")
-//    public ResponseEntity removeMarkerImageFile(@PathVariable("arGameNo") Long arGameNo) {
-//
-//        log.info("arGame번호 : "+arGameNo);
-//
-//        markerImageFileRepository.findWwMarkerImageFileByArGameNo(arGameNo).forEach(markerImageFile -> {
-//            //클라우드 파일 삭제
-//            if(markerImageFile != null) {
-//                removeCloudFile(markerImageFile.getMarkerDbFile());
-//
-//                //DB 파일 삭제
-//                markerImageFileRepository.deleteById(markerImageFile.getMarkerFileNo());
-//
-//                log.info("이미지파일 삭제 성공");
-//            }
-//        });
-//
-//        return new ResponseEntity("success", HttpStatus.OK);
-//    }
+    @GetMapping("/remove/deviceImage/{storeId}/{deviceImageTypeCode}")
+    public ResponseEntity removeDeviceImage(@PathVariable("storeId") String storeId,
+                                           @PathVariable("deviceImageTypeCode") String deviceImageTypeCode) {
+        DeviceImage deviceImage = deviceImageRepository.findByDeviceImageAndDeviceImageTypeCode(storeId, deviceImageTypeCode);
+
+        if(deviceImage != null){
+            //클라우드 파일 삭제
+            removeCloudFile(deviceImage.getDeviceImageDbName());
+            log.info("클라우드 파일삭제 완료");
+
+            //DB 정보 삭제
+            deviceImageRepository.deleteById(deviceImage.getDeviceImageNo());
+            log.info("DB 삭제 완료");
+        }
+
+        return new ResponseEntity("success", HttpStatus.OK);
+    }
+
+    @GetMapping("/remove/productImage/{productNo}")
+    public ResponseEntity removeProductImage(@PathVariable("productNo") Long productNo) {
+        ProductImage productImage = productImageRepository.findByProductNo(productNo);
+
+        if(productImage != null){
+            //클라우드 파일 삭제
+            removeCloudFile(productImage.getProductImageDbName());
+            log.info("클라우드 파일삭제 완료");
+
+            //DB 정보 삭제
+            deviceImageRepository.deleteById(productImage.getProductImageNo());
+            log.info("DB 삭제 완료");
+        }
+
+        return new ResponseEntity("success", HttpStatus.OK);
+    }
+
+    @GetMapping("/remove/markerDataFile/{storeId}")
+    public ResponseEntity removeMarkerDataFile(@PathVariable("storeId") String storeId) {
+        log.info("storeId : "+storeId);
+
+        MarkerDataFile markerDataFile = markerDataFileRepository.findMarkerDataFileByStoreId(storeId);
+
+        //DAT, XML파일 삭제
+        if(markerDataFile != null){
+            //클라우드 DAT파일 삭제
+            removeCloudFile(markerDataFile.getMarkerDatDbFile());
+
+            //클라우드 XML파일 삭제
+            removeCloudFile(markerDataFile.getMarkerXmlDbFile());
+
+            markerDataFileRepository.deleteById(markerDataFile.getMarkerDataFileNo());
+
+            log.info("데이터 파일 삭제 성공");
+
+        }
+
+        return new ResponseEntity("success", HttpStatus.OK);
+    }
+
+    @GetMapping("/remove/markerImageFile/{storeId}")
+    public ResponseEntity removeMarkerImageFile(@PathVariable("storeId") String storeId) {
+
+        log.info("storeId : "+storeId);
+
+        markerImageRepository.findMarkerImageByStoreId(storeId).forEach(markerImageFile -> {
+            //클라우드 파일 삭제
+            if(markerImageFile != null) {
+                removeCloudFile(markerImageFile.getMarkerDbFile());
+
+                //DB 파일 삭제
+                markerImageRepository.deleteById(markerImageFile.getMarkerImageNo());
+
+                log.info("이미지파일 삭제 성공");
+            }
+        });
+
+        return new ResponseEntity("success", HttpStatus.OK);
+    }
 //
 //    @GetMapping("/remove/wide/{managerId}/{fileCategory}")
 //    public ResponseEntity removeWideFile(@PathVariable("managerId") String managerId,

@@ -16,6 +16,9 @@ public interface CustomDevice {
                                         int visibleCode,
                                         Pageable pageable);
 
+    //디바이스 상세 페이지
+    public Object[] getDeviceDetail(Long deviceNo);
+
     //매장 디바이스 리스트 불러오기
     List<Object[]> getStoreDeviceList(String storeId);
 

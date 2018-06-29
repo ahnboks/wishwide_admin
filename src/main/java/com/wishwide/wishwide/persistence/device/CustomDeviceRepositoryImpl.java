@@ -122,6 +122,50 @@ public class CustomDeviceRepositoryImpl extends QuerydslRepositorySupport implem
     }
 
     @Override
+    public Object[] getDeviceDetail(Long deviceNo) {
+        QStore store = QStore.store;
+        QDevice device = QDevice.device;
+        QDeviceImage deviceImage = QDeviceImage.deviceImage;
+
+        JPQLQuery<Device> query = from(device);
+
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
+                device.deviceNo,    //디바이스번호0
+                store.storeId,  //매장아이디1
+                store.storeName,    //매장명2
+                device.deviceTypeCode,  //디바이스타입코드3
+                device.deviceModelNo,   //디바이스모델번호4
+                device.deviceModelTitle,    //디바이스모델명5
+                device.deviceTitle, //디바이스명6
+                device.deviceId,    //디바이스아이디7
+                device.posId,   //포스아이디8
+                device.socketId,    //소켓아이디9
+                device.deviceMacAddress,    //맥주소10
+                deviceImage.deviceImageNo,  //이미지번호11
+                deviceImage.deviceImageName,    //이미지명12
+                deviceImage.deviceImageDbName,  //이미지 db명13
+                deviceImage.deviceImageExtension,   //이미지 확장자14
+                deviceImage.deviceImageUrl, //이미지 주소15
+                deviceImage.deviceImageThumbnailUrl, //이미지 썸네일16
+                deviceImage.deviceImageTypeCode //이미지타입코드17
+        );
+
+        //조인문
+        tupleJPQLQuery
+                .join(store).on(device.storeId.eq(store.storeId))
+                .leftJoin(deviceImage).on(device.storeId.eq(deviceImage.storeId).and(deviceImage.deviceImageTypeCode.eq("DV")));
+
+        //조건식
+        tupleJPQLQuery.where(device.deviceNo.eq(deviceNo));
+
+        //한 레코드만 반환
+        Tuple tuple = tupleJPQLQuery.fetchOne();
+
+        return tuple.toArray();
+    }
+
+
+    @Override
     public List<Object[]> getStoreDeviceList(String storeId) {
         QDevice device = QDevice.device;
         QDeviceImage deviceImage = QDeviceImage.deviceImage;

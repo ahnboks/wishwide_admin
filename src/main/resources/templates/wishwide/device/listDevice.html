@@ -19,7 +19,7 @@
                     <div class="col-lg-10">
                         <div class="col-lg-6">
                             <table class="custom-table">
-                                <tr>
+                                <tr sec:authorize="hasRole('MA')">
                                     <th class="col-sm-3 m-b-xs">가맹점명</th>
                                     <td>
                                         <div class="col-sm-6 m-b-xs text-left">
@@ -105,7 +105,6 @@
                                 <th>디바이스명</th>
                                 <th>디바이스 ID/POS ID</th>
                                 <th>사용/미사용</th>
-                                <th>등록일</th>
                                 </thead>
                                 <tbody>
                                 <tr th:each="vo:${device.content}" name="table">
@@ -143,7 +142,6 @@
                                             <span class="not-use"  th:if="${vo[8]} == 0" th:value="${vo[8]}" >미사용</span>
                                         </a>
                                     </td>
-                                    <td>[[${#temporals.format(vo[9], 'yyyy-MM-dd HH:mm:ss', locale)}]]</td>
                                 </tr>
                                 </tbody>
                             </table>

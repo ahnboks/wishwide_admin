@@ -1,0 +1,267 @@
+<div th:insert="~{layout/head::head}"></div>
+<script src="/js/validation.js"></script>
+
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>게임 상세</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form method="post" class="form-horizontal"  th:action="@{../update}" id="detailForm" enctype="multipart/form-data" >
+                        <!--매장명-->
+                        <div class="form-group" sec:authorize="hasRole('MA')">
+                            <label class="col-sm-2 control-label">가맹점명</label>
+                            <div class="col-sm-3">
+                                <p th:text="${markerVO[1]}" class="form-control-static"></p>
+                            </div>
+                        </div>
+                        <input type="hidden" th:value="${markerVO[0]}" name="storeId">
+                        <div class="hr-line-dashed"></div>
+
+                        <!--DAT파일-->
+                        <!--사업자등록증-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">DAT 파일</label>
+                            <div class="col-sm-5">
+                                <div class="fileinput fileinput-new" data-provides="fileinput" id="file1">
+                                    <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                    <a th:href="@{/file/download(fileName=${markerVO[4]}, dbFileName=${markerVO[5]})}"
+                                       class="btn btn-default file-download" th:if="${markerVO[6]} != null">
+                                        <span class="fileinput-filename"></span>
+                                    </a>
+                                    <span class="fileinput-filename" th:if="${markerVO[6]} == null"></span>
+                                    <div>
+                                        <span class="btn btn-default btn-file" onclick="removeMarkerFile(event, 'update');">
+                                            <span class="fileinput-new">파일 선택</span>
+                                            <span class="fileinput-exists">파일 수정</span>
+                                            <input type="file" name="datFile" accept=".dat">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--XML파일-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">XML 파일</label>
+                            <div class="col-sm-5">
+                                <div class="fileinput fileinput-new" data-provides="fileinput" id="file2">
+                                    <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                    <a th:href="@{/file/download(fileName=${markerVO[7]}, dbFileName=${markerVO[8]})}"
+                                       class="btn btn-default file-download" th:if="${markerVO[10]} != null">
+                                        <span class="fileinput-filename"></span>
+                                    </a>
+                                    <div>
+                                        <span class="btn btn-default btn-file" onclick="removeMarkerFile(event, 'update');">
+                                            <span class="fileinput-new">파일 선택</span>
+                                            <span class="fileinput-exists">파일 수정</span>
+                                            <input type="file" name="xmlFile" accept=".xml">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--QR코드이미지-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">QR코드 이미지파일<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-4">
+                                <button class="btn btn-primary" id="btnMarkerImage" type="button" >이미지파일 보기</button>
+                                <span style="display: none;" id="imageFiles">
+                                    <input name="imageFiles" type="file" multiple  />
+                                </span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--수정,삭제,목록 버튼-->
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" id="btnUpdate">수정</button>
+                                <a th:href="@{/wishwide/ar/listMarker(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" type="button" id="btnList">목록</button>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+
+    <!-- 콘텐츠 END -->
+</div>
+<!-- 모달 START-->
+<div id="modalMarkerImageGallery" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">이미지 미리보기</h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12">
+                    <table class="table table-bordered">
+                        <thead>
+                            <th>파일명</th>
+                        </thead>
+                        <tbody name="markerImage">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
+<!-- 모달 END -->
+<th:block>
+    <script th:inline="javascript">
+
+        /*<![CDATA[*/
+        var storeId = /*[[${markerVO[0]}]]*/'';
+        /*]]>*/
+
+        var isDatAlert = false;
+        /*<![CDATA[*/
+        var dataFileNo = /*[[${markerVO[2]}]]*/'';
+
+        var datFileName = /*[[${markerVO[3]}]]*/'';
+        var datExtension = /*[[${markerVO[5]}]]*/'';
+        var datFileUrl = /*[[${markerVO[6]}]]*/'';
+
+        var isXmlAlert = false;
+        /*<![CDATA[*/
+        var xmlFileName = /*[[${markerVO[7]}]]*/'';
+        var xmlExtension = /*[[${markerVO[9]}]]*/'';
+        var xmlFileUrl = /*[[${markerVO[10]}]]*/'';
+        /*]]>*/
+
+        $(document).ready(function() {
+            var detailForm = $('#detailForm');
+
+            $('.chosen-select').chosen({width: "100%"});
+
+            var message = /*[[${message}]]*/'fail';
+
+            if (message == "success")
+                alert('정상적으로 처리되었습니다.');
+
+            if(datFileUrl != null) {
+                isDatAlert = true;
+                processFile(datFileName, datExtension, '', 1);
+            }
+            if(xmlFileUrl != null) {
+                isXmlAlert = true;
+                processFile(xmlFileName, xmlExtension, '', 2);
+            }
+
+            $("#btnMarkerImage").click(function (e) {
+                e.preventDefault();
+
+                console.log("매장아이디 : "+storeId);
+
+                $("#modalMarkerImageGallery").modal('show');
+
+                getMarkerImageFile(storeId);
+            });
+
+            $('input[name="imageFiles"]').on('click', function (e) {
+                var datFileValue = $('input[name="datFile"]').val();
+                var xmlFileValue = $('input[name="xmlFile"]').val();
+
+                console.log(datFileValue+xmlFileValue);
+
+                if((datFileValue == '') || xmlFileValue == '') {
+                    alert('dat파일과 xml파일 먼저 수정해주세요.');
+                    e.preventDefault();
+                }
+                else {
+                    return true;
+                }
+            });
+
+
+        });
+
+        function getMarkerImageFile(storeId) {
+            $.ajax({
+                type: 'get',
+                url: '/wishwide/ar/getMarkerImage/' + storeId,
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function (index, item) {
+                        console.log(item.markerImageName);
+                        $('tbody[name="markerImage"]').append(
+                            '<tr><td>'+item.markerImageName+'</td></tr>'
+                        );
+                    });
+                }
+            });
+        }
+
+        function removeMarkerFile(e, type) {
+            if(isDatAlert == true || isXmlAlert == true) {
+                if (confirm('현재 파일이 삭제됩니다. \n계속 진행하시겠습니까?.')) {
+                    //dat, xml파일 삭제
+                    removeMarkerDataFile(storeId);
+                    isDatAlert = false;
+                    var element1 = $('#file1');
+                    element1.addClass('fileinput-new').removeClass('fileinput-exists');
+                    element1.find('.fileinput-filename').text('');
+                    element1.find('.fileinput-preview thumbnail').css('display', 'none');
+                    element1.find('.fileinput-preview').empty();
+
+                    isXmlAlert = false;
+                    var element2 = $('#file2');
+                    element2.addClass('fileinput-new').removeClass('fileinput-exists');
+                    element2.find('.fileinput-filename').text('');
+                    element2.find('.fileinput-preview thumbnail').css('display', 'none');
+                    element2.find('.fileinput-preview').empty();
+
+                    //이미지파일 연쇄 삭제
+                    removeMarkerImage(storeId);
+                    $("#imageFiles").css('display', 'block');
+                    $("#btnMarkerImageFile").css('display', 'none');
+
+                }
+                else {
+                    console.log(type);
+                    if (type == 'remove') e.stopPropagation();
+                    else if (type == 'update') e.preventDefault();
+                }
+            }
+        }
+
+        function imageFileSelect(e) {
+            var files = e.target.files;
+            var filesArr = Array.prototype.slice.call(files);
+
+            filesArr.forEach(function (t) {
+                if(!t.type.match("image.*")){
+                    alert('확장자는 이미지 확장자만 가능합니다.');
+                    return;
+                }
+
+            });
+        }
+
+    </script>
+</th:block>

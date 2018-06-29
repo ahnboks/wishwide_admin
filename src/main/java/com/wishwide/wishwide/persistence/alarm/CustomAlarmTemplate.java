@@ -9,7 +9,6 @@ public interface CustomAlarmTemplate {
     //알림 템플릿 리스트 페이지
     public Page<Object[]> getAlarmTemplatePage(String type,
                                                String keyword,
-                                               int alarmJoinCode,
                                                String alarmTypeCode,
                                                String alarmPurposeCode,
                                                String alarmTargetTypeCode,

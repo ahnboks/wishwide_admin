@@ -19,7 +19,7 @@
                     <div class="col-lg-10">
                         <div class="col-lg-6">
                             <table class="custom-table">
-                                <tr>
+                                <tr sec:authorize="hasRole('MA')">
                                     <th class="col-sm-3 m-b-xs">가맹점명</th>
                                     <td>
                                         <div class="col-sm-6 m-b-xs text-left">
@@ -119,9 +119,9 @@
                                 <th>등급</th>
                                 <th>방문횟수</th>
                                 <th>선물구매</th>
-                                <th>선물수신</th>
+                                <th>선물(사용/수신)</th>
                                 <th>쿠폰(사용/수신)</th>
-                                <th>적립수</th>
+                                <th>적립 혜택</th>
                                 <th>생년</th>
                                 <th>생월일</th>
                                 <th>등록일시</th>
@@ -142,20 +142,20 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span th:if="${vo[5]} != null"><a href="#" name="a">[[${vo[5]}]]</a></span>
-                                        <span th:if="${vo[5]} == null">-</span>
+                                        <span th:if="${vo[5]} != 0"><a href="#" name="a">[[${vo[5]}]]</a></span>
+                                        <span th:if="${vo[5]} == 0">-</span>
                                     </td>
                                     <td>
-                                        <span th:if="${vo[6]} != null"><a href="#" name="a">[[${vo[6]}]]</a></span>
-                                        <span th:if="${vo[6]} == null">-</span>
+                                        <span th:if="${vo[6]} != 0"><a href="#" name="a">[[${vo[6]}]]</a></span>
+                                        <span th:if="${vo[6]} == 0">-</span>
                                     </td>
                                     <td>
-                                        <span th:if="${vo[7]} != null"><a href="#" name="a">[[${vo[7]}]]</a></span>
-                                        <span th:if="${vo[7]} == null">-</span>
+                                        <span th:if="${vo[14]} != 0"><a href="#" name="a">[[${vo[14]}]]/[[${vo[15]}]]</a></span>
+                                        <span th:if="${vo[14]} == 0">-</span>
                                     </td>
                                     <td>
-                                        <span th:if="${vo[8]} != null"><a href="#" name="a">[[${vo[8]}]]/[[${vo[9]}]]</a></span>
-                                        <span th:if="${vo[8]} == null">-</span>
+                                        <span th:if="${vo[8]} != 0"><a href="#" name="a">[[${vo[8]}]]/[[${vo[9]}]]</a></span>
+                                        <span th:if="${vo[8]} == 0">-</span>
                                     </td>
                                     <td>
                                         <span th:switch="${vo[10]}">

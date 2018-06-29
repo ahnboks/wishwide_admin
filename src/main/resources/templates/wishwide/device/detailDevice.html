@@ -1,0 +1,238 @@
+<div th:insert="~{layout/head::head}"></div>
+<script src="/js/managerValidation.js"></script>
+
+<div id="wrapper">
+
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>디바이스 상세</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form method="post"  th:action="@{../update}" class="form-horizontal" id="detailForm" enctype="multipart/form-data">
+                        <!--가맹점명-->
+                        <div class="form-group" sec:authorize="hasAnyRole('MA','PF')">
+                            <label class="col-sm-2 control-label">가맹점명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <p class="form-control-static" th:text="${deviceVO[1]}"></p>
+                            </div>
+                        </div>
+                        <input type="hidden" th:value="${deviceVO[1]}" class="form-control" name="storeId"/>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--디바이스타입-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">디바이스 타입<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2" >
+                                <label class="radio-inline"><input type="radio" th:checked="${deviceVO[3]} == 'TABLET'" name="deviceTypeCode" value="TABLET">태블릿</label>
+                                <label class="radio-inline"><input type="radio" th:checked="${deviceVO[3]} == 'BEACON'" name="deviceTypeCode" value="BEACON">비콘</label>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--모델 선택-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">모델 선택<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2" >
+                                <select data-placeholder="디바이스 타입 선택" name="deviceModelNo" class="form-control" tabindex="2">
+                                    <option th:value="${deviceVO[4]}">[[${deviceVO[5]}]]</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--디바이스명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">디바이스명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="text" maxlength="20" th:value="${deviceVO[6]}" class="form-control title-input-validation" name="deviceTitle">
+                                <span class="msg-title-input-validation"/>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--MAC 주소-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">MAC 주소<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-5">
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <input type="text" th:value="${#strings.substring(deviceVO[10], 0, 2)}" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" th:value="${#strings.substring(deviceVO[10], 2, 4)}" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" th:value="${#strings.substring(deviceVO[10], 4, 6)}" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" th:value="${#strings.substring(deviceVO[10], 6, 8)}" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" th:value="${#strings.substring(deviceVO[10], 8, 10)}" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" th:value="${#strings.substring(deviceVO[10], 10, 12)}" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--디바이스 이미지-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">이미지</label>
+                            <div class="col-sm-2">
+                                <div class="fileinput fileinput-new" data-provides="fileinput" id="file1">
+                                    <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                    <a th:href="@{/file/download(fileName=${deviceVO[12]}, dbFileName=${deviceVO[13]})}"
+                                       class="btn btn-default file-download" th:if="${deviceVO[15]} != null">
+                                        <span class="fileinput-filename"></span>
+                                    </a>
+                                    <span class="fileinput-filename" th:if="${deviceVO[15]} == null"></span>
+                                    <div>
+                                        <span class="btn btn-default btn-file" onclick="removeDevice(event, 'update');">
+                                            <span class="fileinput-new">파일 선택</span>
+                                            <span class="fileinput-exists">파일 변경</span>
+                                            <input type="file" name="deviceImage">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--수정, 목록 버튼-->
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" id="btnUpdate">수정</button>
+                                <a th:href="@{/wishwide/device/listDevice(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" type="button" id="btnList">목록</button>
+                                </a>
+                            </div>
+                        </div>
+                        <input type="hidden" name="page" th:value="${pageVO.page}"/>
+                        <input type="hidden" name="size" th:value="${pageVO.size}"/>
+                        <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                        <input type="hidden" name="deviceNo" th:value="${deviceVO[0]}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+    <!-- 콘텐츠 END -->
+</div>
+<th:block >
+    <script th:inline="javascript">
+        var detailForm = $('#detailForm');
+
+        var isDeviceAlert = false;
+        var deviceImageNo = /*[[${deviceVO[11]}]]*/'';
+        var deviceImageName = /*[[${deviceVO[12]}]]*/'';
+        var deviceImageExtension = /*[[${deviceVO[14]}]]*/'';
+        var deviceImageThumbnailUrl = /*[[${deviceVO[16]}]]*/'';
+
+        $(document).ready(function () {
+            if(deviceImageNo != null) {
+                console.log('들어오니1');
+                isDeviceAlert = true;
+                processFile(deviceImageName, deviceImageExtension, deviceImageThumbnailUrl, 1);
+            }
+
+            detailForm.find('[name="deviceTypeCode"]').change(function (e) {
+                var deviceTypeCode = detailForm.find('[name="deviceTypeCode"]:checked').val();
+
+                console.log(deviceTypeCode + '값');
+
+                getDeviceModelList(deviceTypeCode);
+
+            });
+
+
+            $('#btnUpdate').click(function (e) {
+                var checkStore = $('.store-check-validation');
+                var isStoreCheckedCnt = 0;
+                console.log(checkStore);
+
+                if(checkStore.length != 0){
+                    for (var i = 0; i < checkStore.length; i++) {
+                        if (checkStore.eq(i).prop('checked')) {
+                            isStoreCheckedCnt++;
+                        }
+                    }
+
+                    if(isStoreCheckedCnt == 0){
+                        alert('가맹점을 선택해주세요.');
+                        return false;
+                    }
+
+                }
+            });
+
+        });
+
+        function getDeviceModelList(deviceTypeCode) {
+            $.ajax({
+                url: "/wishwide/device/selectDeviceModel/"+deviceTypeCode,
+                type: 'get',
+                contentType: 'application/json',
+                success: function (data) {
+                    console.log(data);
+                    if (data.length != 0) {
+                        detailForm.find('[name="deviceModelNo"]').empty();
+
+                        $.each(data, function (index, item) {
+                            detailForm.find('[name="deviceModelNo"]').append(
+                                '<option value="'+item[0]+'" >'+item[2]+'</option>'
+                            );
+                        });
+                    }
+                    else{
+                        console.log('데이터없음');
+                    }
+                }
+            });
+        }
+
+        function removeDevice(e, type) {
+            if(isDeviceAlert == true) {
+                if (confirm('현재 파일이 삭제됩니다. \n계속 진행하시겠습니까?.')) {
+                    removeDeviceImage(storeId, "DV");
+                    $('#file1').find('.file-download').hide();
+                    isDeviceAlert = false;
+
+                    var element = $('#file1');
+                    element.addClass('fileinput-new').removeClass('fileinput-exists');
+                    element.find('.fileinput-filename').text('');
+                    element.find('.fileinput-preview thumbnail').css('display', 'none');
+                    element.find('.fileinput-preview').empty();
+                }
+                else {
+                    console.log(type);
+                    if (type == 'remove') e.stopPropagation();
+                    else if (type == 'update') e.preventDefault();
+                }
+            }
+        }
+
+    </script>
+</th:block>
+
+

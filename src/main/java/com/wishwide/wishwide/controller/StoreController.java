@@ -6,6 +6,7 @@ import com.wishwide.wishwide.domain.WwBrand;
 import com.wishwide.wishwide.domain.WwRole;
 import com.wishwide.wishwide.persistence.*;
 import com.wishwide.wishwide.persistence.alarm.CustomAlarmSetRepository;
+import com.wishwide.wishwide.persistence.ar.MarkerRepository;
 import com.wishwide.wishwide.persistence.coupon.CustomCouponBoxRepository;
 import com.wishwide.wishwide.persistence.coupon.CustomCouponRepository;
 import com.wishwide.wishwide.persistence.customer.CustomCustomerRepository;
@@ -132,7 +133,7 @@ public class StoreController {
         model.addAttribute("storeVO", new PageMaker<>(result));
 
         //가맹점명 셀렉트 박스
-        model.addAttribute("storeNameList", customStoreRepository.getStoreNameList());
+        model.addAttribute("storeNameList", customStoreRepository.getStoreList());
 
         //총 페이지 수
         model.addAttribute("totalPages", result.getTotalElements());
@@ -147,38 +148,39 @@ public class StoreController {
 
     @PostMapping("/postRegisterStore")
     public String postRegisterStore(@ModelAttribute("storeVO") Store storeVO,
-                                  @RequestParam("userPw") String userPw,
-                                  @RequestParam(value = "bziFile", required = false) MultipartFile bziFile,
-                                  @RequestParam(value = "contractFile", required = false) MultipartFile contractFile,
-                                  @RequestParam(value = "logoFile") MultipartFile logoFile,
-                                  @ModelAttribute("pageVO") PageVO pageVO,
-                                  HttpServletRequest request,
-                                  RedirectAttributes redirectAttributes) {
-        log.info("등록 데이터 : "+storeVO + " , 비밀번호 :"+userPw);
+                                    @RequestParam("userPw") String userPw,
+                                    @RequestParam("storeBusinessRegistrationNumber") List<String> storeBusinessRegistrationNumberList,
+                                    @RequestParam(value = "bziFile", required = false) MultipartFile bziFile,
+                                    @RequestParam(value = "contractFile", required = false) MultipartFile contractFile,
+                                    @RequestParam(value = "logoFile") MultipartFile logoFile,
+                                    @ModelAttribute("pageVO") PageVO pageVO,
+                                    HttpServletRequest request,
+                                    RedirectAttributes redirectAttributes) {
+        log.info("등록 데이터 : " + storeVO + " , 비밀번호 :" + userPw);
 
-        //세션 값 get
+//        //세션 값 get
         HttpSession session = request.getSession();
 
         //LoginInfo 테이블에 아이디, 비밀번호 저장
-            LoginInfo loginInfo = new LoginInfo();
+        LoginInfo loginInfo = new LoginInfo();
 
-            loginInfo.setUserId(storeVO.getStoreId());
-            loginInfo.setUserPw(passwordEncoder.encode(userPw));
+        loginInfo.setUserId(storeVO.getStoreId());
+        loginInfo.setUserPw(passwordEncoder.encode(userPw));
 
-            loginInfoRepository.save(loginInfo);
+        loginInfoRepository.save(loginInfo);
 
         //wwRole 테이블에 권한 등록
-            WwRole wwRole = new WwRole();
+        WwRole wwRole = new WwRole();
 
-            wwRole.setUserId(storeVO.getStoreId());
-            wwRole.setRoleCode("ST");
-            wwRole.setRoleName("매장");
+        wwRole.setUserId(storeVO.getStoreId());
+        wwRole.setRoleCode("ST");
+        wwRole.setRoleName("매장");
 
-            wwRoleRepository.save(wwRole);
+        wwRoleRepository.save(wwRole);
 
         //사업자등록증 파일 등록
         if (bziFile != null && !(bziFile.isEmpty())) {
-            storeFileRepository.save(saveDBStoreFile("BSN",storeVO.getStoreId(), saveCloudFile(bziFile)));
+            storeFileRepository.save(saveDBStoreFile("BSN", storeVO.getStoreId(), saveCloudFile(bziFile)));
             log.info("사업자 등록증 등록 성공");
         }
 
@@ -199,27 +201,35 @@ public class StoreController {
         }
 
         //wwBrand 테이블에 브랜드 정보 등록
-            int checkBrandName = wwBrandRepository.checkBrandName(storeVO.getBrandName());
+        int checkBrandName = wwBrandRepository.checkBrandName(storeVO.getBrandName());
 
-            //매장의 브랜드명이 기존에 등록되어있지 않을 경우
-            if(checkBrandName == 0){
-                //새로운 브랜드 정보 등록
-                WwBrand wwBrand = new WwBrand();
-                wwBrand.setBrandLogoUrl(logoFileUrl);
-                wwBrand.setBrandName(storeVO.getBrandName());
+        //매장의 브랜드명이 기존에 등록되어있지 않을 경우
+        if (checkBrandName == 0) {
+            //새로운 브랜드 정보 등록
+            WwBrand wwBrand = new WwBrand();
+            wwBrand.setBrandLogoUrl(logoFileUrl);
+            wwBrand.setBrandName(storeVO.getBrandName());
 
-                wwBrandRepository.save(wwBrand);
-            }
+            wwBrandRepository.save(wwBrand);
+        }
 
         //VO에 세션값 세팅
-            storeVO.setStoreUpdateId(session.getAttribute("userId").toString());
-            storeVO.setStoreRegId(session.getAttribute("userId").toString());
+        storeVO.setStoreUpdateId(session.getAttribute("userId").toString());
+        storeVO.setStoreRegId(session.getAttribute("userId").toString());
 
-            //게임 타입에 따라 게임명 입력
-            if(storeVO.getStoreArGameTypeCode() == 1)
-                storeVO.setStoreArGameTypeName("캐릭터잡기");
-            else
-                storeVO.setStoreArGameTypeName("글자맞추기");
+        //게임 타입에 따라 게임명 입력
+        if (storeVO.getStoreArGameTypeCode() == 1)
+            storeVO.setStoreArGameTypeName("캐릭터잡기");
+        else
+            storeVO.setStoreArGameTypeName("글자맞추기");
+
+        //사업자 번호 set
+        String storeBusinessRegistrationNumber = "";
+        for(String brn : storeBusinessRegistrationNumberList){
+            storeBusinessRegistrationNumber += brn;
+        }
+        log.info("사업자 번호 : "+storeBusinessRegistrationNumber);
+        storeVO.setStoreBusinessRegistrationNumber(Integer.parseInt(storeBusinessRegistrationNumber));
 
         //매장 정보 저장
         customStoreRepository.save(storeVO);
@@ -253,6 +263,7 @@ public class StoreController {
                               @RequestParam(value = "bziFile", required = false) MultipartFile bziFile,
                               @RequestParam(value = "contractFile", required = false) MultipartFile contractFile,
                               @RequestParam(value = "logoFile") MultipartFile logoFile,
+                              @RequestParam("storeBusinessRegistrationNumber") List<String> storeBusinessRegistrationNumberList,
                               @ModelAttribute("pageVO") PageVO pageVO,
                               HttpServletRequest request,
                               RedirectAttributes redirectAttributes){
@@ -320,6 +331,13 @@ public class StoreController {
                 else
                     store.setStoreArGameTypeName("글자맞추기");
 
+                //사업자 번호 set
+                String storeBusinessRegistrationNumber = "";
+                for (String brn : storeBusinessRegistrationNumberList) {
+                    storeBusinessRegistrationNumber += brn;
+                }
+                store.setStoreBusinessRegistrationNumber(Integer.parseInt(storeBusinessRegistrationNumber));
+
                 //계약상태 코드가 계약종료 & 계약취소 & 계약대기일 시
                 if(storeVO.getStoreContractStatusCode().equals("CC") ||
                         storeVO.getStoreContractStatusCode().equals("CE") ||
@@ -330,7 +348,7 @@ public class StoreController {
                     //상품 비활성화 처리
                     customProductRepository.changeProductVisibleCode(0, storeVO.getStoreId());
                     //선물상품 비활성화 처리
-                    giftProductRepository.changeGiftProductVisibleCode(0, storeVO.getStoreId());
+                    giftProductRepository.changeAllGiftProductVisibleCode(0, storeVO.getStoreId());
                     //마커 비활성화 처리
                     markerRepository.changeMarkerVisibleCode(0, storeVO.getStoreId());
                     //알림 비활성화 처리
@@ -353,7 +371,7 @@ public class StoreController {
                         //상품 활성화 처리
                         customProductRepository.changeProductVisibleCode(1, storeVO.getStoreId());
                         //선물상품 활성화 처리
-                        giftProductRepository.changeGiftProductVisibleCode(1, storeVO.getStoreId());
+                        giftProductRepository.changeAllGiftProductVisibleCode(1, storeVO.getStoreId());
                         //마커 활성화 처리
                         markerRepository.changeMarkerVisibleCode(1, storeVO.getStoreId());
                         //알림 활성화 처리
@@ -382,28 +400,42 @@ public class StoreController {
 
     }
 
+    private String resultCode = "";
     //서비스운영타입코드 변경
     @GetMapping("/updateServiceOperationCode/{storeId}/{storeServiceOperationCode}")
     public ResponseEntity<String> updateServiceOperationCode(@PathVariable("storeId") String storeId,
                                  @PathVariable("storeServiceOperationCode") String storeServiceOperationCode) {
         log.info("서비스 타입 코드 : "+storeServiceOperationCode);
 
-        String resultCode = "";
+
 
         //서비스 타입 코드 변경
         customStoreRepository.findById(storeId).ifPresent(store -> {
-            if(storeServiceOperationCode.equals("ACTIVE"))
-                store.setStoreServiceOperationCode("PREACTIVE");
-            else
-                store.setStoreServiceOperationCode("ACTIVE");
+            if(store.getStoreIntroduction().equals("") || store.getStoreIntroduction() == null){
+                resultCode = "not-introduction";
+            }
+            else if(store.getStoreOpeningHour() == null || store.getStoreClosingHour() == null){
+                resultCode = "not-storeHour";
+            }
+            else if(store.getStoreAddress().equals("") || store.getStoreAddress() == null){
+                resultCode = "not-storeAddress";
+            }
+            else if(store.getStoreBenefitTypeCode().equals("N") || store.getStoreBenefitTypeCode() == null){
+                resultCode = "not-benefitCode";
+            }
+            else{
+                if(storeServiceOperationCode.equals("ACTIVE")) {
+                    store.setStoreServiceOperationCode("PREACTIVE");
+                    resultCode = "PREACTIVE";
+                }
+                else {
+                    store.setStoreServiceOperationCode("ACTIVE");
+                    resultCode = "ACTIVE";
+                }
+            }
 
             customStoreRepository.save(store);
         });
-
-        if(storeServiceOperationCode.equals("ACTIVE"))
-            resultCode = "PREACTIVE";
-        else
-            resultCode = "ACTIVE";
 
         return new ResponseEntity<>(resultCode,HttpStatus.CREATED);
     }
@@ -423,6 +455,12 @@ public class StoreController {
         pageRedirectProperty(redirectAttributes, pageVO);
 
         return new ResponseEntity<>("1",HttpStatus.CREATED);
+    }
+
+    //가맹점 리스트 가져오기
+    @GetMapping("/selectStore")
+    public ResponseEntity<List<Object[]>> selectStore() {
+        return new ResponseEntity<>(customStoreRepository.getStoreList(), HttpStatus.CREATED);
     }
 
     //고객 리스트 가져오기
@@ -460,6 +498,13 @@ public class StoreController {
         return new ResponseEntity<>(customCouponBoxRepository.getCouponBoxList(storeId), HttpStatus.CREATED);
     }
 
+    //하나의 매장 정보 가져오기
+    @GetMapping("/selectOneStore/{storeId}")
+    public ResponseEntity<Object[]> selectOneStore(@PathVariable("storeId") String storeId) {
+        log.info("코드 : " + storeId);
+        return new ResponseEntity<>(customStoreRepository.getStoreDetail(storeId), HttpStatus.CREATED);
+    }
+
     /*계약조회*/
     //리스트
     @GetMapping("/listStoreContract")
@@ -489,7 +534,7 @@ public class StoreController {
         model.addAttribute("storeContractVO", new PageMaker<>(result));
 
         //가맹점명 셀렉트 박스
-        model.addAttribute("storeNameList", customStoreRepository.getStoreNameList());
+        model.addAttribute("storeNameList", customStoreRepository.getStoreList());
 
         //총 페이지 수
         model.addAttribute("totalPages", result.getTotalElements());

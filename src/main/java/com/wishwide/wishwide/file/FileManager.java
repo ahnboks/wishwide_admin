@@ -2,12 +2,14 @@ package com.wishwide.wishwide.file;
 
 import com.ncloud.filestorage.FSRestClient;
 import com.ncloud.filestorage.model.*;
+import com.wishwide.wishwide.alarm.AlarmManager;
 import com.wishwide.wishwide.domain.*;
 import lombok.extern.java.Log;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -204,7 +206,7 @@ public class FileManager {
 
         StoreImage storeImage = new StoreImage();
         storeImage.setStoreImageName(fileName);
-        storeImage.setStoreImageDbName(dbFile);
+        storeImage.setStoreImageDbName(dbFile + "." + fileExtension);
         storeImage.setStoreImageSize(fileSize);
         storeImage.setStoreImageExtension(fileExtension);
         storeImage.setStoreImageThumbnailName("th_" + dbFile + "." + fileExtension);
@@ -217,38 +219,31 @@ public class FileManager {
     }
 
     //디바이스File 테이블에 저장
-    public static DeviceImage saveDBDeviceImage(String fileCategory,
-                                              Long deviceDomainNo,
-                                              HashMap<String, String> fileInfo) {
-        String dbFile = fileInfo.get("dbFile"); //DB파일명
-        String fileExtension = fileInfo.get("fileExtension");   //파일확장자
-        String fileName = fileInfo.get("fileName"); //실제파일명
-        String fileSize = fileInfo.get("fileSize"); //파일크기
-
-        DeviceImage deviceFile = new DeviceImage();
-
-
-        return deviceFile;
-    }
-
-    //상품File 테이블에 저장
-    public static ProductImage saveDBProductImage(Long productNo,
+    public static DeviceImage saveDBDeviceImage(String deviceImageTypeCode,
+                                                String storeId,
                                                 HashMap<String, String> fileInfo) {
         String dbFile = fileInfo.get("dbFile"); //DB파일명
         String fileExtension = fileInfo.get("fileExtension");   //파일확장자
         String fileName = fileInfo.get("fileName"); //실제파일명
-        String fileSize = fileInfo.get("fileSize"); //파일크기
+        int fileSize = Integer.parseInt(fileInfo.get("fileSize")); //파일크기
 
-        ProductImage productFile = new ProductImage();
+        DeviceImage deviceFile = new DeviceImage();
+        deviceFile.setDeviceImageName(fileName);
+        deviceFile.setDeviceImageDbName(dbFile + "." + fileExtension);
+        deviceFile.setDeviceImageSize(fileSize);
+        deviceFile.setDeviceImageExtension(fileExtension);
+        deviceFile.setDeviceImageThumbnailName("th_" + dbFile + "." + fileExtension);
+        deviceFile.setDeviceImageThumbnailUrl(cdnAddress + "th_" + dbFile + "." + fileExtension);
+        deviceFile.setDeviceImageUrl(cdnAddress + dbFile + "." + fileExtension);
+        deviceFile.setStoreId(storeId);
+        deviceFile.setDeviceImageTypeCode(deviceImageTypeCode);
 
-  
-
-        return productFile;
+        return deviceFile;
     }
 
     //MarkerDataFile 테이블에 저장
     public static MarkerDataFile saveDBMarkerDataFile(HashMap<String, String> datFileInfo,
-                                                        HashMap<String, String> xmlFileInfo) {
+                                                      HashMap<String, String> xmlFileInfo) {
         String datDbFile = datFileInfo.get("dbFile"); //DB파일명
         String datFileExtension = datFileInfo.get("fileExtension");   //파일확장자
         String datFileName = datFileInfo.get("fileName"); //실제파일명
@@ -259,22 +254,29 @@ public class FileManager {
         String xmlFileName = xmlFileInfo.get("fileName"); //실제파일명
         String xmlFileSize = xmlFileInfo.get("fileSize"); //파일크기
 
-        MarkerDataFile wwMarkerDataFile = new MarkerDataFile();
+        MarkerDataFile markerDataFile = new MarkerDataFile();
 
         //DAT 파일 설정 셋팅
-
+        markerDataFile.setMarkerDatDbFile(datDbFile + "." + datFileExtension);
+        markerDataFile.setMarkerDatFileName(datFileName);
+        markerDataFile.setMarkerDatFileExtension(datFileExtension);
+        markerDataFile.setMarkerDatFileUrl(cdnAddress + datDbFile + "." + datFileExtension);
+        markerDataFile.setMarkerDatFileSize(Integer.parseInt(datFileSize));
 
         //XML 파일 설정 셋팅
+        markerDataFile.setMarkerXmlDbFile(xmlDbFile + "." + xmlFileExtension);
+        markerDataFile.setMarkerXmlFileName(xmlFileName);
+        markerDataFile.setMarkerXmlFileExtension(xmlFileExtension);
+        markerDataFile.setMarkerXmlFileUrl(cdnAddress + xmlDbFile + "." + xmlFileExtension);
+        markerDataFile.setMarkerXmlFileSize(Integer.parseInt(xmlFileSize));
 
-        return wwMarkerDataFile;
+        return markerDataFile;
     }
 
-    //MarkerImageFile 테이블에 저장
-    public static MarkerImageFile saveDBMarkerImageFile(Long markerDataFileNo,
-                                                        Long markerNo,
-                                                        String wideManagerId,
-                                                        Long arGameNo,
-                                                        HashMap<String, String> fileInfo) {
+    //MarkerImage 테이블에 저장
+    public static MarkerImageFile saveDBMarkerImage(Long markerNo,
+                                                    String storeId,
+                                                    HashMap<String, String> fileInfo) {
         String dbFile = fileInfo.get("dbFile"); //DB파일명
         String fileExtension = fileInfo.get("fileExtension");   //파일확장자
         String fileName = fileInfo.get("fileName"); //실제파일명
@@ -282,10 +284,39 @@ public class FileManager {
 
         MarkerImageFile wwMarkerImageFile = new MarkerImageFile();
 
-        //ManagerId : 현재 등록하고자 하려는 아이디(session)
-
+        wwMarkerImageFile.setStoreId(storeId);
+        wwMarkerImageFile.setMarkerNo(markerNo);
+        wwMarkerImageFile.setMarkerDbFile(dbFile + "." + fileExtension);
+        wwMarkerImageFile.setMarkerImageName(fileName);
+        wwMarkerImageFile.setMarkerImageExtension(fileExtension);
+        wwMarkerImageFile.setMarkerImageUrl(cdnAddress + dbFile + "." + fileExtension);
+        wwMarkerImageFile.setMarkerImageThumbnailName("th_" + dbFile + "." + fileExtension);
+        wwMarkerImageFile.setMarkerImageThumbnailUrl(cdnAddress + "th_" + dbFile + "." + fileExtension);
+        wwMarkerImageFile.setMarkerImageSize(Integer.parseInt(fileSize));
 
         return wwMarkerImageFile;
+    }
+
+    //Product Image 테이블에 저장
+    public static ProductImage saveDBProductImage(String storeId,
+                                                  HashMap<String, String> fileInfo) {
+        String dbFile = fileInfo.get("dbFile"); //DB파일명
+        String fileExtension = fileInfo.get("fileExtension");   //파일확장자
+        String fileName = fileInfo.get("fileName"); //실제파일명
+        String fileSize = fileInfo.get("fileSize"); //파일크기
+
+        ProductImage productImage = new ProductImage();
+
+        productImage.setStoreId(storeId);
+        productImage.setProductImageName(fileName);
+        productImage.setProductImageDbName(dbFile + "." + fileExtension);
+        productImage.setProductImageExtension(fileExtension);
+        productImage.setProductImageUrl(cdnAddress + dbFile + "." + fileExtension);
+        productImage.setProductImageThumbnailName("th_" + dbFile + "." + fileExtension);
+        productImage.setProductImageThumbnailUrl(cdnAddress + "th_" + dbFile + "." + fileExtension);
+        productImage.setProductImageSize(Integer.parseInt(fileSize));
+
+        return productImage;
     }
 
 

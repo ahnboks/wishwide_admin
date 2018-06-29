@@ -1,0 +1,135 @@
+<div th:insert="~{layout/head::head}"></div>
+<script src="/js/validation.js"></script>
+
+<div id="wrapper">
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>마커 추가</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form method="post" class="form-horizontal" id="registerForm" enctype="multipart/form-data" >
+                        <!--가맹점명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">가맹점명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <select data-placeholder="가맹점 선택" class="chosen-select" name="storeId" tabindex="2">
+                                    <option value="ALL" >전체</option>
+                                    <option th:each="store:${storeNameList}" th:value="${store[0]}">[[${store[1]}]]</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--DAT파일-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">DAT파일<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-3">
+                                <div class="fileinput fileinput-new" data-provides="fileinput">
+                                    <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                    <div>
+                                    <span class="btn btn-default btn-file"><span class="fileinput-new">파일 선택</span>
+                                        <span class="fileinput-exists">파일 변경</span><input type="file" name="datFile" accept=".dat"/></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--XML파일-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">XML파일<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-3">
+                                <div class="fileinput fileinput-new" data-provides="fileinput">
+                                    <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                    <div>
+                                    <span class="btn btn-default btn-file"><span class="fileinput-new">파일 선택</span>
+                                        <span class="fileinput-exists">파일 변경</span><input type="file" name="xmlFile" accept=".xml"/></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+
+                        <!--QR코드이미지-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">QR코드 이미지파일<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-4">
+                                <input name="imageFiles" type="file" multiple id="imageFiles" />
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--등록, 목록 버튼-->
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" id="btnSubmit">등록</button>
+                                <a th:href="@{/wishwide/ar/listMarker(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" type="button" id="btnList">목록</button>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+    <!-- 콘텐츠 END -->
+</div>
+<th:block >
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            var registerForm = $("#registerForm");
+            $('.chosen-select').chosen({width: "100%"});
+        });
+
+        $('input[name="imageFiles"]').on('change', imageFileSelect);
+
+        function imageFileSelect(e) {
+            var files = e.target.files;
+            var filesArr = Array.prototype.slice.call(files);
+
+            filesArr.forEach(function (t) {
+                if(!t.type.match("image.*")){
+                    alert('확장자는 이미지 확장자만 가능합니다.');
+                    return;
+                }
+
+            });
+        }
+
+        $('input[name="imageFiles"]').on('click', function (e) {
+            var datFileValue = $('input[name="datFile"]').val();
+            var xmlFileValue = $('input[name="xmlFile"]').val();
+
+            console.log(datFileValue+xmlFileValue);
+
+            if((datFileValue == '') || xmlFileValue == '') {
+                alert('dat파일과 xml파일 먼저 등록해주세요.');
+                e.preventDefault();
+            }
+            else {
+                return true;
+            }
+
+        });
+
+    </script>
+</th:block>
+

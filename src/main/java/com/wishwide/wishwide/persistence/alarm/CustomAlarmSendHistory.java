@@ -12,7 +12,6 @@ public interface CustomAlarmSendHistory {
                                            String searchUserId,
                                            String roleCode,
                                            String sessionId,
-                                           int alarmJoinCode,
                                            String alarmTypeCode,
                                            String alarmPurposeCode,
                                            String alarmTargetTypeCode,

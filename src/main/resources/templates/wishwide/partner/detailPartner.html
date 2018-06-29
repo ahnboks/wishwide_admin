@@ -1,0 +1,349 @@
+<div th:insert="~{layout/head::head}"></div>
+<script src="/js/managerValidation.js"></script>
+
+<div id="wrapper">
+
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>파트너 상세</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form method="post"  th:action="@{../update}" class="form-horizontal" id="detailForm">
+                        <!--아이디-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">아이디<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <p class="form-control-static" th:text="${partnerVO[0]}"></p>
+                                <input type="hidden" th:value="${partnerVO[0]}" class="form-control" name="partnerId"/>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <!--비밀번호-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">비밀번호<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <button type="button" id="updatePassword" class="btn btn-primary">비밀번호 변경</button>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--파트너명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">파트너명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <p class="form-control-static" th:text="${partnerVO[1]}"></p>
+                                <input type="hidden" th:value="${partnerVO[1]}" class="form-control" name="partnerName"/>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--담당자명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">담당자명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="text" th:value="${partnerVO[2]}" maxlength="20" class="form-control" name="partnerOperatorName">
+                                <span class="msg-operator-name-input-validation"/>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--연락처-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">담당자 연락처<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="text" th:value="${partnerVO[4]}" maxlength="11" class="form-control phone-number-input-validation" name="partnerOperatorPhone" placeholder="ex) 01012345678">
+                                <span class="msg-phone-number-input-validation"></span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+
+                        <!--이메일-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">담당자 이메일<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="email" th:value="${partnerVO[3]}" maxlength="40" placeholder="이메일 @ sample.com" class="form-control email-input-validation" name="partnerOperatorEmail">
+                                <span class="msg-email-input-validation"></span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--가맹점 선택-->
+                        <div class="form-group" sec:authorize="hasRole('MA')">
+                            <label class="col-sm-2 control-label">가맹점 선택<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <a class="btn btn-default" name="selectStore" href="#">
+                                    <span>가맹점 선택 수정하기</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+
+                        <!--가맹점  리스트Modal-->
+                        <div class="modal inmodal fade" id="modalStore" tabindex="-1" role="dialog"  aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                        <h4 class="modal-title">가맹점 선택</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="footable table table-bordered table-hover">
+                                            <thead>
+                                            <th data-sort-ignore="true">선택</th>
+                                            <th>가맹점명</th>
+                                            <th>가입자수</th>
+                                            <th>디바이스</th>
+                                            <th>상품</th>
+                                            <th>선물거래</th>
+                                            <th>쿠폰사용</th>
+                                            <th>서비스 상태</th>
+                                            </thead>
+                                            <tbody id="selectStore">
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <td colspan="8">
+                                                    <ul class="pagination text-center"></ul>
+                                                </td>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-white" data-dismiss="modal">저장</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--수정, 목록 버튼-->
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" id="btnUpdate">수정</button>
+                                <a th:href="@{/wishwide/partner/listPartner(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" type="button" id="btnList">목록</button>
+                                </a>
+                            </div>
+                        </div>
+                        <input type="hidden" name="page" th:value="${pageVO.page}"/>
+                        <input type="hidden" name="size" th:value="${pageVO.size}"/>
+                        <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+    <!-- 콘텐츠 END -->
+</div>
+<div id="updatePasswordModal" class="modal inmodal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog">
+        <!--Modal Content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">
+                    비밀번호 변경
+                </h4>
+            </div>
+            <div class="modal-body">
+                <label>새 비밀번호</label>
+                <input type="password" class="form-control password-input-validation" name="newPassword" id="newPassword">
+                <span class="msg-password-input-validation"></span>
+                <br>
+                <label>새 비밀번호 확인</label>
+                <input type="password" class="form-control password-confirm-input-validation" name="newPasswordConfirm" id="newPasswordConfirm">
+                <span class="msg-password-confirm-input-validation"></span>
+                <br>
+
+            </div>
+            <div class="modal-footer">
+                <button id="btnUpdatePassword" class="btn btn-info">비밀번호 변경</button>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block >
+    <script th:inline="javascript">
+        var TEXTAREA_LIMIT_NUM = 300;
+        var isSelectStore = false;
+
+        $(document).ready(function () {
+            var message = /*[[${message}]]*/'fail';
+
+            if (message == "successRegister"){
+                alert('등록이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successUpdate"){
+                alert('수정이 정상적으로 처리되었습니다.');
+            }
+
+            var detailForm = $('#detailForm');
+
+            var partnerId =  detailForm.find('[name="partnerId"]').val();
+
+            getPartnerStoreList(partnerId);
+
+            //비밀번호 변경
+            $('#btnUpdatePassword').click(function () {
+                var newPassword = $("input[name='newPassword']").val();
+                var newPasswordConfirm = $("input[name='newPasswordConfirm']").val();
+
+                console.log("새 비밀번호 : "+newPassword+"확인 : "+newPasswordConfirm);
+
+                var passwordValue = $('.password-input-validation').val();
+                var passwordMsg = $('.msg-password-input-validation');
+                var passwordConfirmValue = $('.password-confirm-input-validation').val();
+                var passwordConfirmMsg = $('.msg-password-confirm-input-validation');
+
+                if (passwordValue == "") {
+                    passwordConfirmMsg.text('상단 비밀번호 먼저 입력해 주세요.').css('color', 'red');
+                    $('.password-input-validation').focus();
+                    return false;
+                }
+
+                if (passwordConfirmValue == "") {
+                    passwordConfirmMsg.text('비밀번호 확인란을 입력해 주세요.').css('color', 'red');
+                    return false;
+                }
+                else {
+                    if (passwordValue != passwordConfirmValue) {
+                        passwordConfirmMsg.text('비밀번호와 비밀번호 확인이 일치하지 않습니다.').css('color', 'red');
+                        return false;
+                    }
+                    else {
+                        if(passwordRegularExpressions.test(passwordConfirmValue)){
+                            passwordMsg.text('비밀번호가 확인 되었습니다.').css('color', 'green');
+                            passwordConfirmMsg.text('비밀번호가 확인 되었습니다.').css('color', 'green');
+                        }
+                        else{
+                            passwordConfirmMsg.text('영문또는 숫자포함 8자리 이상 15자리 이하로 입력해주세요.').css('color', 'red');
+                            return false;
+                        }
+                    }
+                }
+
+                console.log('비밀번호 변경');
+                $.ajax({
+                    url:'/wishwide/partner/detailPartner/updatePassword/'+partnerId,
+                    type:'post',
+                    data:{
+                        userPw : newPassword
+                    },
+                    success : function (data) {
+                        console.log("성공"+data);
+                        $('#updatePasswordModal').modal('hide');
+                        $("input[name='newPassword']").val("");
+                        $("input[name='newPasswordConfirm']").val("");
+                        alert("비밀번호 변경이 성공적으로 완료되었습니다");
+                    }
+                });
+            });
+
+            //가맹점 리스트 가져오기
+            $('a[name="selectStore"]').click(function (e) {
+                e.preventDefault();
+
+                $('#modalStore').modal('show');
+//
+                if(isSelectStore == false) {
+                    getPartnerStoreList(partnerId);
+                }
+            });
+
+            $('#btnUpdate').click(function (e) {
+                var checkStore = $('.store-check-validation');
+                var isStoreCheckedCnt = 0;
+                console.log(checkStore);
+
+                if(checkStore.length != 0){
+                    for (var i = 0; i < checkStore.length; i++) {
+                        if (checkStore.eq(i).prop('checked')) {
+                            isStoreCheckedCnt++;
+                        }
+                    }
+
+                    if(isStoreCheckedCnt == 0){
+                        alert('가맹점을 선택해주세요.');
+                        return false;
+                    }
+
+                }
+            });
+
+        });
+        
+        function getPartnerStoreList(partnerId) {
+            $.ajax({
+                url: "/wishwide/partner/selectAllPartnerStore/"+partnerId,
+                type: 'get',
+                contentType: 'application/json',
+                success: function (data) {
+                    console.log(data);
+                    if (data.length != 0) {
+                        $.each(data, function (index, item) {
+                            var storeServiceOperationCode = '';
+                            var storeId = '';
+
+                            if (item[14] == 'PREACTIVE')
+                                storeServiceOperationCode = '운영전';
+                            else if (item[14] == 'ACTIVE')
+                                storeServiceOperationCode = '운영중';
+                            else
+                                storeServiceOperationCode = '해지';
+
+                            /*매장아이디 존재 여부 체크*/
+                            if(!(item[15] === null))
+                                storeId = '<input name="storeId" type="checkbox" checked="" value="' + item[0] + '">';
+                            else
+                                storeId = '<input name="storeId" type="checkbox" value="' + item[0] + '">';
+
+
+                            $('#selectStore').append(
+                                '<tr>' +
+                                '<td>'+storeId+'</td>' +
+                                '<td>' + item[2] + '</td>' +
+                                '<td>' + item[9] + '</td>' +
+                                '<td>' + item[10] + '</td>' +
+                                '<td>' + item[11] + '</td>' +
+                                '<td>' + item[12] + '</td>' +
+                                '<td>' + item[13] + '</td>' +
+                                '<td>' + storeServiceOperationCode + '</td>' +
+                                '</tr>'
+                            );
+                        });
+                        $('.footable').footable({
+                            paging: {
+                                enabled: true,
+                                size: 5
+                            }
+                        });
+                    }
+
+                    isSelectStore = true;
+
+                }
+            });
+        }
+
+    </script>
+</th:block>
+
+

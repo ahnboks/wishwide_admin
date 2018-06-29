@@ -10,4 +10,7 @@ public interface CustomCouponRepository extends CrudRepository<Coupon, Long>, Cu
     @Modifying
     @Query(value = "UPDATE Coupon c SET c.couponVisibleCode = ?1 WHERE c.storeId = ?2")
     public void changeCouponVisibleCode(int visibleCode, String storeId);
+
+    @Query(value = "SELECT c FROM Coupon c WHERE c.storeId = ?1 and c.couponTargetTypeCode = 'STAMP'")
+    public Coupon findByStoreBenefitCoupon(String storeId);
 }

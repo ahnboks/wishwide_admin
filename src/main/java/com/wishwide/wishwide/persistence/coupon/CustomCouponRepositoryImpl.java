@@ -1,101 +1,104 @@
 package com.wishwide.wishwide.persistence.coupon;
 
-import com.wishwide.wishwide.domain.Coupon;
-import com.wishwide.wishwide.domain.Customer;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.JPQLQuery;
+import com.wishwide.wishwide.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implements CustomCoupon {
     public CustomCouponRepositoryImpl(){
         super(Coupon.class);
     }
-//
-//    @Override
-//    public Page<Object[]> getStorePage(String type,
-//                                       String keyword,
-//                                       String roleCode,
-//                                       String storeId,
-//                                       String serviceOperationCode,
-//                                       Pageable pageable) {
-//        QStore store = QStore.store;
-//        QStoreImage storeImage = QStoreImage.storeImage;
-//        QDevice device = QDevice.device;
-//        QProduct product = QProduct.product;
-//        QCustomer customer = QCustomer.customer;
-//        QGiftReceiveHistory giftReceiveHistory = QGiftReceiveHistory.giftReceiveHistory;
-//        QCouponBox couponBox = QCouponBox.couponBox;
-//
-//        JPQLQuery<Store> query = from(store);
-//
-//        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
-//                store.storeId,  //매장아이디0
-//                store.brandName,    //브랜드명1
-//                store.storeName,    //가맹점명2
-//                storeImage.storeImageNo,    //로고번호3
-//                storeImage.storeImageName,  //로고이미지명4
-//                storeImage.storeImageDbName,    //로고DB명5
-//                storeImage.storeImageExtension, //로고확장자
-//                storeImage.storeImageThumbnailUrl,  //로고썸네일주소
-//                storeImage.storeImageUrl,           //로고주소
-//                device.deviceNo.countDistinct(),    //디바이스수
-//                product.productNo.countDistinct(),  //상품수(판매중인)
-//                customer.customerNo.countDistinct(),    //고객수
-//                giftReceiveHistory.giftReceiveHistoryNo.countDistinct(),    //선물거래수
-//                couponBox.couponBoxNo.countDistinct(),  //쿠폰사용수
-//                store.storeServiceOperationCode //서비스운영코드
-//        );
-//
-//        tupleJPQLQuery
-//                .leftJoin(storeImage).on(store.storeId.eq(storeImage.storeId).and(storeImage.storeImageTypeCode.eq("LOGO")))
-//                .leftJoin(device).on(store.storeId.eq(device.storeId))
-//                .leftJoin(product).on(store.storeId.eq(product.productOwnerId).and(product.productSellStatusCode.eq(1)))
-//                .leftJoin(customer).on(store.storeId.eq(customer.storeId).and(customer.customerVisibleCode.eq(1)))
-//                .leftJoin(giftReceiveHistory).on(store.storeId.eq(giftReceiveHistory.storeId))
-//                .leftJoin(couponBox).on(store.storeId.eq(couponBox.storeId).and(couponBox.couponUseCode.eq(1)));
-//
-//        //조건식
-//        tupleJPQLQuery.where(store.storeServiceOperationCode.eq(serviceOperationCode));
-//
-//        //권한:매장이 로그인했을 경우 한개의 리스트만 가져오기
-//        if(roleCode.equals("ST"))
-//            tupleJPQLQuery.where(store.storeId.eq(storeId));
-//
-//        //검색조건 : 가맹점명
-//        if(type != null) {
-//            switch (type.trim()) {
-//                case "storeName" :
-//                    tupleJPQLQuery.where(store.storeName.like("%" + keyword + "%"));
-//                    break;
-//            }
-//        }
-//
-//        //Group By
-//        tupleJPQLQuery.groupBy(store.storeId).groupBy(storeImage.storeImageNo);
-//
-//        //정렬;
-//        tupleJPQLQuery.orderBy(store.storeRegdate.desc());
-//
-//        //전체 row count 값
-//        List<Tuple> countTuple = tupleJPQLQuery.fetch();
-//
-//        //페이징
-//        tupleJPQLQuery
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize());
-//
-//        //패치
-//        List<Tuple> tuples = tupleJPQLQuery.fetch();
-//
-//        List<Object[]> resultList = new ArrayList<>();
-//
-//        tuples.forEach(tuple -> {
-//            resultList.add(tuple.toArray());
-//        });
-//
-////        long total = tupleJPQLQuery.fetchCount();
-//        long total = countTuple.size();
-//
-//        return new PageImpl<>(resultList, pageable, total);
-//    }
+
+    @Override
+    public Page<Object[]> getCouponPage(String type,
+                                        String keyword,
+                                        String searchUserId,
+                                        String roleCode,
+                                        String sessionId,
+                                        String couponTypeCode,
+                                        String couponTargetTypeCode,
+                                        String couponPublishTypeCode,
+                                        Pageable pageable) {
+        QCoupon coupon = QCoupon.coupon;
+        QStore store = QStore.store;
+        QCouponType couponType = QCouponType.couponType;
+
+
+        JPQLQuery<Coupon> query = from(coupon);
+
+        //매장명 ^v, 쿠폰유형, 쿠폰명 ^v, 대상자 ^v, 발행방법 ^v, 예약발송시간 ^v, 발행일시 ^v
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
+                coupon.couponNo,    //쿠폰번호0
+                store.storeId,  //매장아이디1
+                store.storeName,    //매장명2
+                coupon.couponTypeNo,    //쿠폰유형번호3
+                couponType.couponTypeName ,  //쿠폰유형4
+                coupon.couponTitle, //쿠폰명5
+                coupon.couponTargetTypeCode,    //대상자코드6
+                coupon.couponPublishTypeCode,   //발행유형코드7
+                coupon.couponReservationTime,   //쿠폰예약발송시간8
+                coupon.couponRegDate,   //발행일시9
+                coupon.productTitle //상품명10
+        );
+
+        tupleJPQLQuery
+                .join(store).on(coupon.storeId.eq(store.storeId))
+                .join(couponType).on(coupon.couponTypeNo.eq(couponType.couponTypeNo));
+
+        //조건식
+
+        //권한:매장이 로그인했을 경우 한개의 리스트만 가져오기
+        if(roleCode.equals("ST"))
+            tupleJPQLQuery.where(coupon.storeId.eq(sessionId));
+
+        //검색조건 : 가맹점명, 쿠폰명
+        if(type != null) {
+            switch (type.trim()) {
+                case "ALL" :
+                    tupleJPQLQuery.where(store.storeName.like("%" + keyword + "%")
+                                    .or(coupon.couponTitle.like("%" + keyword + "%")));
+                    break;
+                case "storeName" :
+                    tupleJPQLQuery.where(store.storeName.like("%" + keyword + "%"));
+                    break;
+                case "couponTitle" :
+                    tupleJPQLQuery.where(store.storeName.like("%" + keyword + "%"));
+                    break;
+            }
+        }
+
+        //정렬;
+        tupleJPQLQuery.orderBy(coupon.couponRegDate.desc());
+
+        //전체 row count 값
+        List<Tuple> countTuple = tupleJPQLQuery.fetch();
+
+        //페이징
+        tupleJPQLQuery
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
+
+        //패치
+        List<Tuple> tuples = tupleJPQLQuery.fetch();
+
+        List<Object[]> resultList = new ArrayList<>();
+
+        tuples.forEach(tuple -> {
+            resultList.add(tuple.toArray());
+        });
+
+//        long total = tupleJPQLQuery.fetchCount();
+        long total = countTuple.size();
+
+        return new PageImpl<>(resultList, pageable, total);
+    }
 
 
 

@@ -5,15 +5,18 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 public interface CustomAlarmSetRepository extends CrudRepository<Alarm, Long>, CustomAlarmSet {
+    default void onTimeout() {
+        System.out.println("레파지토리 호출");
+    }
+
     @Modifying
     @Query(value = "UPDATE Alarm a SET a.alarmVisibleCode = ?1 WHERE a.storeId = ?2")
     public void changeAlarmVisibleCode(int visibleCode, String storeId);
 
-    @Query(nativeQuery = true,
-            value = "insert into msg_queue (msg_type,dstaddr,callback,stat,text,request_time) " +
-                    "values ('3',?1,?2,'0',?3, ?4)")
-    public void insertMsgQueue(String receiverPhone, String SenderPhone, String text, LocalDateTime requestTime);
+    @Query(value = "select a from Alarm a WHERE a.storeId = ?1")
+    public List<Alarm> findByAlarmSetByStoreId(String storeId);
+
 }

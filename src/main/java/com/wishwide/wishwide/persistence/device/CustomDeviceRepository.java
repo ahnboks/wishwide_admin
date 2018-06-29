@@ -10,4 +10,6 @@ public interface CustomDeviceRepository extends CrudRepository<Device, Long>, Cu
     @Modifying
     @Query(value = "UPDATE Device d SET d.deviceVisibleCode = ?1 WHERE d.storeId = ?2")
     public void changeDeviceVisibleCode(int visibleCode, String storeId);
+
+    public Device findTop1ByOrderByDeviceNoDesc();
 }

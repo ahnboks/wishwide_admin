@@ -1,0 +1,414 @@
+<div th:insert="~{layout/head::head}"/>
+<div id="wrapper">
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"/>
+    <!-- 사이드바 END -->
+
+    <div id="page-wrapper" class="gray-bg">
+        <!-- 헤더 START -->
+        <div th:insert="~{layout/header::header}"/>
+        <!-- 헤더 END -->
+
+        <!-- 콘텐츠 START -->
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>파트너 관리</h2>
+                </div>
+                <div class="ibox-content">
+                    <div class="col-lg-10">
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr sec:authorize="hasRole('MA')">
+                                    <th class="col-sm-3 m-b-xs">파트너명</th>
+                                    <td>
+                                        <div class="col-sm-6 m-b-xs text-left">
+                                            <select data-placeholder="파트너 선택" class="chosen-select" id="userId" tabindex="2">
+                                                <option value="ALL" >전체</option>
+                                                <option th:each="partner:${partnerNameList}" name="partnerName" th:value="${partner[0]}"
+                                                        th:selected="${pageVO.userId} == ${partner[0]}">[[${partner[1]}]]</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-lg-6">
+                            <table class="custom-table">
+                                <tr sec:authorize="hasRole('MA')">
+                                    <th class="col-sm-3 m-b-xs">검색 키워드</th>
+                                    <td>
+                                        <div class="col-sm-8 m-b-xs input-group">
+                                            <input type="text" placeholder="키워드 입력" class="input-sm form-control"
+                                                   id="searchKeyword" th:value="${pageVO.keyword}">
+                                            <span class="input-group-btn">
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                                id="searchButton">검색</button>
+                                                    </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!--등록 버튼-->
+                    <div class="col-lg-12" sec:authorize="hasRole('MA')">
+                        <div class="pull-right">
+                            <a th:href="@{registerPartner}"><button class="btn btn-primary">파트너 등록</button></a>
+                        </div>
+                    </div>
+                    <!--테이블-->
+                    <div class="row" th:with="partner=${partnerVO.result}">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <th>상세</th>
+                                <th sec:authorize="hasRole('MA')">파트너명</th>
+                                <th>가맹점</th>
+                                <th>상품</th>
+                                </thead>
+                                <tbody>
+                                <tr th:each="vo:${partner.content}" name="table">
+                                    <td>
+                                        <a th:href="@{/wishwide/partner/detailPartner/{partnerId}(partnerId=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
+                                            <img src="/img/menu.png" style="width: 35px; height: 35px;">
+                                        </a>
+                                    </td>
+                                    <td sec:authorize="hasRole('MA')">[[${vo[1]}]]</td>
+                                    <td>
+                                       <span th:if="${vo[2]} != 0">
+                                           <a href="#" name="selectPartnerStore">[[${vo[2]}]]</a>
+                                       </span>
+                                        <span th:if="${vo[2]} == 0">-</span>
+                                    </td>
+                                    <td>
+                                       <span th:if="${vo[3]} != 0">
+                                           <a href="#" name="selectPartnerProduct">[[${vo[3]}]]</a>
+                                       </span>
+                                        <span th:if="${vo[3]} == 0">-</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--페이징-->
+                <nav class="text-center">
+                    <div>
+                        <!--현재 페이지 번호 구분 : th:classappend="${page.pageNumber == productVO.currentPageNum - 1}?active : ''"-->
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${partnerVO.prevPage}"><a th:href="${partnerVO.prevPage.pageNumber} + 1">이전[[${partnerVO.prevPage.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:each="page:${partnerVO.pageList}" th:classappend="${page.pageNumber == (partnerVO.currentPageNum - 1)}?active : ''"><a th:href="${page.pageNumber} + 1" id="currentPage">[[${page.pageNumber} + 1]]</a></li>
+                            <li class="page-item" th:if="${partnerVO.nextPage}"><a th:href="${partnerVO.nextPage.pageNumber} + 1">다음[[${partnerVO.nextPage.pageNumber} + 1]]</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <!--페이지 및 검색조건 get방식으로 넘김-->
+                <form id="pageInfo" th:action="@{listPartner}" method="get">
+                    <input type="hidden" name="page" th:value="${partnerVO.currentPageNum}"/>
+                    <input type="hidden" name="size" th:value="${partnerVO.currentPage.pageSize}"/>
+                    <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    <input type="hidden" name="serviceOperationCode" th:value="${pageVO.serviceOperationCode}"/>
+                    <input type="hidden" name="userId" th:value="${pageVO.userId}"/>
+                </form>
+            </div>
+        </div>
+        <!-- 콘텐츠 END -->
+
+        <!-- 푸터 START -->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+</div>
+<!--매장 고객 리스트Modal-->
+<div class="modal inmodal fade" id="modalPartnerStore" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">가맹점 정보</h4>
+            </div>
+            <div class="modal-body">
+                <table class="footable table table-bordered table-hover">
+                    <thead>
+                    <th>가맹점명</th>
+                    <th>가입자수</th>
+                    <th>디바이스</th>
+                    <th>상품</th>
+                    <th>선물거래</th>
+                    <th>쿠폰사용</th>
+                    <th>서비스 상태</th>
+                    </thead>
+                    <tbody id="selectPartnerStore">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--매장 상품 리스트Modal-->
+<div class="modal inmodal fade" id="modalPartnerProduct" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">상품 정보</h4>
+            </div>
+            <div class="modal-body">
+                <table class="footable table table-bordered table-hover">
+                    <thead>
+                    <th>이미지</th>
+                    <th>카테고리</th>
+                    <th>상품명</th>
+                    <th>판매가격</th>
+                    <th>판매상태</th>
+                    </thead>
+                    <tbody id="selectPartnerProduct">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block >
+    <script th:inline="javascript">
+
+        $(window).on('load', function() {
+            var message = /*[[${message}]]*/'fail';
+
+            if (message == "successRegister"){
+                alert('등록이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successUpdate"){
+                alert('수정이 정상적으로 처리되었습니다.');
+            }
+            if (message == "successDelete"){
+                alert('삭제가 정상적으로 처리되었습니다.');
+            }
+        });
+
+        $(document).ready(function () {
+            var pageSize = /*[[${totalPages}]]*/'';
+
+            console.log(pageSize);
+
+            $('.chosen-select').chosen({width: "100%"});
+
+
+            //가맹점 리스트 가져오기
+            $('a[name="selectPartnerStore"]').click(function (e) {
+                e.preventDefault();
+
+                var parentNode = $(this).parent().parent().parent();
+                var partnerId = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log(parentNode);
+
+                $('#selectPartnerStore').empty();
+                $('#modalPartnerStore').modal('show');
+
+                $.ajax({
+                    url: "/wishwide/partner/selectPartnerStore/" + partnerId,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data.length != 0) {
+                            $.each(data, function (index, item) {
+                                var storeServiceOperationCode = '';
+
+                                if(item[14] == 'PREACTIVE')
+                                    storeServiceOperationCode = '운영전';
+                                else if(item[14] == 'ACTIVE')
+                                    storeServiceOperationCode = '운영중';
+                                else
+                                    storeServiceOperationCode = '해지';
+
+                                $('#selectPartnerStore').append(
+                                    '<tr>' +
+                                    '<td>' + item[2] + '</td>' +
+                                    '<td>' + item[9] + '</td>' +
+                                    '<td>' + item[10] + '</td>' +
+                                    '<td>' + item[11] + '</td>' +
+                                    '<td>' + item[12] + '</td>' +
+                                    '<td>' + item[13] + '</td>' +
+                                    '<td>' + storeServiceOperationCode + '</td>' +
+                                    '</tr>'
+                                );
+                            });
+//                                $('.footable').footable({
+//                                    paging: {
+//                                        enabled: true,
+//                                        size: 5
+//                                    }
+//                                });
+                        }
+                    }
+                });
+            });
+
+            //매장 상품리스트 가져오기
+            $('a[name="selectPartnerProduct"]').click(function (e) {
+                e.preventDefault();
+
+                var parentNode = $(this).parent().parent().parent();
+                var partnerId = parentNode.children().eq(0).children().eq(0).attr('value');
+
+                console.log(parentNode);
+
+                $('#selectPartnerProduct').empty();
+                $('#modalPartnerProduct').modal('show');
+
+                $.ajax({
+                    url: "/wishwide/partner/selectPartnerProduct/" + partnerId,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data.length != 0) {
+                            $.each(data, function (index, item) {
+                                var majorCategoryTitle = '';
+                                var subCategoryTitle = '';
+                                var productSellStatusCode = '';
+                                var productImage = '';
+
+                                /*대분류명*/
+                                if(!(item[4] === null))
+                                    majorCategoryTitle = item[4];
+                                else
+                                    majorCategoryTitle = '-';
+
+                                /*중분류명*/
+                                if(!(item[5] === null))
+                                    subCategoryTitle = item[5];
+                                else
+                                    subCategoryTitle = '-';
+
+                                /*판매여부*/
+                                if(item[8] != 0)
+                                    productSellStatusCode = '판매';
+                                else
+                                    productSellStatusCode = '미판매';
+
+                                /*상품 이미지*/
+                                if(!(item[15] === null))
+                                    productImage = '/img/no_image.png';
+                                else
+                                    productImage = item[15];
+
+
+                                    $('#selectPartnerProduct').append(
+                                    '<tr>' +
+                                    '<td><img src="'+productImage+'" style="width: 35px; height: 35px;"></td>' +
+                                    '<td>' + majorCategoryTitle + '/' + subCategoryTitle + '</td>' +
+                                    '<td>' + item[6] + '</td>' +
+                                    '<td>' + item[7] + '원</td>' +
+                                    '<td>' + productSellStatusCode + '</td>' +
+                                    '</tr>'
+                                );
+                            });
+//                                $('.footable').footable({
+//                                    paging: {
+//                                        enabled: true,
+//                                        size: 5
+//                                    }
+//                                });
+                        }
+                    }
+                });
+            });
+
+        });
+
+    </script>
+</th:block>
+<!-- DataTables :
+            var dtLang = {
+                en : {
+                    "sEmptyTable" : "No data available in table",
+                    "sInfo" : "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "sInfoEmpty" : "Showing 0 to 0 of 0 entries",
+                    "sInfoFiltered" : "(filtered from _MAX_ total entries)",
+                    "sInfoPostFix" : "",
+                    "sInfoThousands" : ",",
+                    "sLengthMenu" : "Show _MENU_ entries",
+                    "sLoadingRecords" : "Loading...",
+                    "sProcessing" : "Processing...",
+                    "sSearch" : "Search:",
+                    "sZeroRecords" : "No matching records found",
+                    "oPaginate" : {
+                        "sFirst" : "First",
+                        "sLast" : "Last",
+                        "sNext" : "Next",
+                        "sPrevious" : "Previous"
+                    },
+                    "oAria" : {
+                        "sSortAscending" : ": activate to sort column ascending",
+                        "sSortDescending" : ": activate to sort column descending"
+                    }
+                },
+                ko : {
+                    "sEmptyTable" : "데이터가 없습니다",
+                    "sInfo" : "_START_ ~ _END_ / 전체: _TOTAL_",
+                    "sInfoEmpty" : "0 - 0 / 0",
+                    "sInfoFiltered" : "(총 _MAX_ 개)",
+                    "sInfoPostFix" : "",
+                    "sInfoThousands" : ",",
+                    "sLengthMenu" : "페이지당 줄수 _MENU_",
+                    "sLoadingRecords" : "읽는중...",
+                    "sProcessing" : "처리중...",
+                    "sSearch" : "검색:",
+                    "sZeroRecords" : "검색 결과가 없습니다",
+                    "oPaginate" : {
+                        "sFirst" : "처음",
+                        "sLast" : "마지막",
+                        "sNext" : "다음",
+                        "sPrevious" : "이전"
+                    },
+                    "oAria" : {
+                        "sSortAscending" : ": 오름차순 정렬",
+                        "sSortDescending" : ": 내림차순 정렬"
+                    }
+                },
+
+            };
+
+            $.extend(true, $.fn.DataTable.defaults, {
+                "searching" : true,
+                "ordering" : true,
+                "columnDefs":[{
+                    "targets": [0,2,8],
+                    "orderable": false
+                }],
+                "info": true,
+                "paging": true,
+                "lengthChange": true,
+                "language": dtLang["ko"]
+            });
+
+            var table = $('.dataTables-example').DataTable({
+                pageLength: 10,
+                responsive: true,
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    {
+                        extend: 'print',
+                        customize: function (win) {
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            });
+-->

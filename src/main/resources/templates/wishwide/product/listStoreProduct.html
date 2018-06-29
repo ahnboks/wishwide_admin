@@ -19,7 +19,7 @@
                     <div class="col-lg-10">
                         <div class="col-lg-6">
                             <table class="custom-table">
-                                <tr>
+                                <tr sec:authorize="hasRole('MA')">
                                     <th class="col-sm-3 m-b-xs">가맹점명</th>
                                     <td>
                                         <div class="col-sm-6 m-b-xs text-left">
@@ -69,7 +69,6 @@
                                                 <option value="subCategoryTitle" th:selected="${pageVO.type} == 'subCategoryTitle'" >중분류명</option>
                                                 <option value="productTitle" th:selected="${pageVO.type} == 'productTitle'">상품명</option>
                                                 <option value="productPrice" th:selected="${pageVO.type} == 'productPrice'">판매가격</option>
-                                                <option value="giftProductDiscountPrice" th:selected="${pageVO.type} == 'giftProductDiscountPrice'">할인가격</option>
                                             </select>
                                         </div>
                                     </td>
@@ -91,7 +90,7 @@
                     <div class="col-lg-12">
                         <div class="pull-right">
                             <a href="#"><button class="btn btn-primary">파트너 상품 묶음추가</button></a>
-                            <a th:href="@{registerProduct}"><button class="btn btn-primary">상품 추가</button></a>
+                            <a th:href="@{registerStoreProduct}"><button class="btn btn-primary">상품 추가</button></a>
                         </div>
                     </div>
                     <!--테이블-->
@@ -106,7 +105,6 @@
                                 <th>카테고리</th>
                                 <th>상품명</th>
                                 <th>판매가격</th>
-                                <th>할인가격</th>
                                 <th>판매상태</th>
                                 <th>등록일</th>
                                 </thead>
@@ -123,7 +121,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a th:href="@{/wishwide/product/detailProduct/{productId}(productId=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
+                                        <a th:href="@{/wishwide/product/detailStoreProduct/{productNo}(productNo=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
                                             <img src="/img/menu.png" style="width: 35px; height: 35px;">
                                         </a>
                                     </td>
@@ -146,10 +144,11 @@
                                         <span th:if="${vo[4]} == null">-</span>
                                     </td>
                                     <td>[[${vo[6]}]]</td>
-                                    <td>[[${#numbers.formatDecimal(vo[7], 0, 'COMMA', -1, 'POINT')}]]원</td>
                                     <td>
-                                        <span th:if="${vo[8]} != null">[[${#numbers.formatDecimal(vo[8], 0, 'COMMA', -1, 'POINT')}]]원</span>
-                                        <span th:if="${vo[8]} == null">-</span>
+                                        <span th:if="${vo[7]} == 0">-</span>
+                                        <span th:if="${vo[7]} != 0">
+                                            [[${#numbers.formatDecimal(vo[7], 0, 'COMMA', -1, 'POINT')}]]원
+                                        </span>
                                     </td>
                                     <td>
                                         <a class="btn btn-default" name="updateProductSellStatusCode" href="#">

@@ -19,7 +19,7 @@
                     <div class="col-lg-10">
                         <div class="col-lg-6">
                             <table class="custom-table">
-                                <tr>
+                                <tr sec:authorize="hasRole('MA')">
                                     <th class="col-sm-3 m-b-xs">파트너명</th>
                                     <td>
                                         <div class="col-sm-6 m-b-xs text-left">
@@ -78,8 +78,8 @@
                     <!--등록 버튼-->
                     <div class="col-lg-12">
                         <div class="pull-right">
-                            <a href="#"><button class="btn btn-primary">가맹점 상품 묶음추가</button></a>
-                            <a th:href="@{registerProduct}"><button class="btn btn-primary">상품 추가</button></a>
+                            <!--<a href="#"><button class="btn btn-primary">가맹점 상품 묶음추가</button></a>-->
+                            <a th:href="@{registerPartnerProduct}"><button class="btn btn-primary">상품 추가</button></a>
                         </div>
                     </div>
                     <!--테이블-->
@@ -90,7 +90,7 @@
                                 <th>상세</th>
                                 <th sec:authorize="hasRole('MA')">파트너명</th>
                                 <th>상품 이미지</th>
-                                <th>카테고리</th>
+                                <!--<th>카테고리</th>-->
                                 <th>상품명</th>
                                 <th>판매가격</th>
                                 <th>판매상태</th>
@@ -99,7 +99,7 @@
                                 <tbody>
                                 <tr th:each="vo:${product.content}" name="table">
                                     <td>
-                                        <a th:href="@{/wishwide/product/detailProduct/{productId}(productId=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
+                                        <a th:href="@{/wishwide/product/detailPartnerProduct/{productNo}(productNo=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
                                             <img src="/img/menu.png" style="width: 35px; height: 35px;">
                                         </a>
                                     </td>
@@ -116,13 +116,18 @@
                                              </a>
                                         </span>
                                     </td>
-                                    <td>
-                                        <span th:if="${vo[4]} != null">[[${vo[3]}]]/[[${vo[4]}]]</span>
-                                        <span th:if="${vo[4]} == null">[[${vo[3]}]]</span>
-                                        <span th:if="${vo[3]} == null">-</span>
-                                    </td>
+                                    <!--<td>-->
+                                        <!--<span th:if="${vo[4]} != null">[[${vo[3]}]]/[[${vo[4]}]]</span>-->
+                                        <!--<span th:if="${vo[4]} == null">[[${vo[3]}]]</span>-->
+                                        <!--<span th:if="${vo[3]} == null">-</span>-->
+                                    <!--</td>-->
                                     <td>[[${vo[5]}]]</td>
-                                    <td>[[${#numbers.formatDecimal(vo[6], 0, 'COMMA', -1, 'POINT')}]]원</td>
+                                    <td>
+                                        <span th:if="${vo[6]} == 0">-</span>
+                                        <span th:if="${vo[6]} != 0">
+                                            [[${#numbers.formatDecimal(vo[6], 0, 'COMMA', -1, 'POINT')}]]원
+                                        </span>
+                                    </td>
                                     <td>
                                         <a class="btn btn-default" name="updateProductSellStatusCode" href="#">
                                             <span class="sell" th:if="${vo[7]} == 1" th:value="${vo[7]}">판매</span>

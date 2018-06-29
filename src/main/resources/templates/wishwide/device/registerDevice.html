@@ -1,0 +1,262 @@
+<div th:insert="~{layout/head::head}"></div>
+<script src="/js/managerValidation.js"></script>
+
+<div id="wrapper">
+
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>디바이스 등록</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form method="post" th:action="@{postRegisterDevice}" class="form-horizontal" id="registerForm" enctype="multipart/form-data">
+                        <!--가맹점명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">가맹점명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <select data-placeholder="가맹점 선택" class="chosen-select" name="storeId" tabindex="2">
+                                    <option value="ALL" >전체</option>
+                                    <option th:each="store:${storeNameList}" th:value="${store[0]}">[[${store[1]}]]</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--디바이스타입-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">디바이스 타입<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2" >
+                                <label class="radio-inline"><input type="radio" name="deviceTypeCode" value="TABLET">태블릿</label>
+                                <label class="radio-inline"><input type="radio" name="deviceTypeCode" value="BEACON">비콘</label>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--모델 선택-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">모델 선택<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2" >
+                                <select name="deviceModelNo" class="form-control" tabindex="2">
+                                    <option>모델 선택</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--디바이스명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">디바이스명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="text" maxlength="20" class="form-control title-input-validation" name="deviceTitle">
+                                <span class="msg-title-input-validation"/>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--MAC 주소-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">MAC 주소<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-5">
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" name="deviceMacAddress" maxlength="2">
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--디바이스 이미지-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">이미지</label>
+                            <div class="col-sm-2">
+                                <div class="fileinput fileinput-new" data-provides="fileinput">
+                                    <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                    <span class="fileinput-filename"></span>
+                                    <div>
+                                        <span class="btn btn-default btn-file">
+                                            <span class="fileinput-new">파일 선택</span>
+                                            <span class="fileinput-exists">파일 변경</span>
+                                            <input type="file" name="deviceImage"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+
+                        <!--등록, 목록 버튼-->
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" id="btnSubmit">등록</button>
+                                <a th:href="@{/wishwide/device/listDevice(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" type="button" id="btnList">목록</button>
+                                </a>
+                            </div>
+                        </div>
+                        <input type="hidden" name="page" th:value="${pageVO.page}"/>
+                        <input type="hidden" name="size" th:value="${pageVO.size}"/>
+                        <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+    <!-- 콘텐츠 END -->
+</div>
+<th:block >
+<script th:inline="javascript">
+        var isSelectStore = false;
+        var registerForm = $('#registerForm');
+
+        $(document).ready(function () {
+
+
+            var partnerId =  registerForm.find('[name="partnerId"]').val();
+
+            $('.chosen-select').chosen({width: "100%"});
+
+            registerForm.find('[name="deviceTypeCode"]').change(function (e) {
+                var deviceTypeCode = registerForm.find('[name="deviceTypeCode"]:checked').val();
+
+                console.log(deviceTypeCode + '값');
+
+                getDeviceModelList(deviceTypeCode);
+
+            });
+
+            //가맹점 리스트 가져오기
+            $('a[name="selectStore"]').click(function (e) {
+                e.preventDefault();
+
+                $('#modalStore').modal('show');
+
+                if(isSelectStore == false) {
+                    $('#selectStore').empty();
+                    $.ajax({
+                        url: "/wishwide/store/selectStore",
+                        type: 'get',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            console.log(data);
+                            if (data.length != 0) {
+                                $.each(data, function (index, item) {
+                                    var storeServiceOperationCode = '';
+
+                                    if (item[14] == 'PREACTIVE')
+                                        storeServiceOperationCode = '운영전';
+                                    else if (item[14] == 'ACTIVE')
+                                        storeServiceOperationCode = '운영중';
+                                    else
+                                        storeServiceOperationCode = '해지';
+
+                                    $('#selectStore').append(
+                                        '<tr>' +
+                                        '<td><input class="store-check-validation" name="storeId" type="checkbox" value="' + item[0] + '"></td>' +
+                                        '<td>' + item[1] + '</td>' +
+                                        '<td>' + item[9] + '</td>' +
+                                        '<td>' + item[10] + '</td>' +
+                                        '<td>' + item[11] + '</td>' +
+                                        '<td>' + item[12] + '</td>' +
+                                        '<td>' + item[13] + '</td>' +
+                                        '<td>' + storeServiceOperationCode + '</td>' +
+                                        '</tr>'
+                                    );
+                                });
+                                $('.footable').footable({
+                                    paging: {
+                                        enabled: true,
+                                        size: 5
+                                    }
+                                });
+                            }
+
+                            isSelectStore = true;
+
+                        }
+                    });
+                }
+            });
+
+            $('#btnSubmit').click(function () {
+                var checkStore = $('.store-check-validation');
+                var isStoreCheckedCnt = 0;
+                console.log(checkStore);
+
+                if(checkStore.length != 0){
+                    for (var i = 0; i < checkStore.length; i++) {
+                        if (checkStore.eq(i).prop('checked')) {
+                            isStoreCheckedCnt++;
+                        }
+                    }
+
+                    if(isStoreCheckedCnt == 0){
+                        alert('가맹점을 선택해주세요.');
+                        return false;
+                    }
+
+                }
+            });
+
+        });
+
+        function getDeviceModelList(deviceTypeCode) {
+            $.ajax({
+                url: "/wishwide/device/selectDeviceModel/"+deviceTypeCode,
+                type: 'get',
+                contentType: 'application/json',
+                success: function (data) {
+                    console.log(data);
+                    if (data.length != 0) {
+                        registerForm.find('[name="deviceModelNo"]').empty();
+
+                        $.each(data, function (index, item) {
+                            registerForm.find('[name="deviceModelNo"]').append(
+                                '<option value="'+item[0]+'" >'+item[2]+'</option>'
+                            );
+                        });
+                    }
+                    else{
+                        console.log('데이터없음');
+                    }
+                }
+            });
+        }
+
+</script>
+</th:block>
+
+

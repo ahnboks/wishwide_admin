@@ -1,0 +1,794 @@
+<div th:insert="~{layout/head::head}"></div>
+<script src="/js/managerValidation.js"></script>
+
+<div id="wrapper">
+
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>상품 등록</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form method="post" th:action="@{postRegisterStoreProduct}" class="form-horizontal" id="registerForm" enctype="multipart/form-data">
+                        <!--선물등록여부-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">선물등록<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-5">
+                                <div class="checkbox checkbox-primary">
+                                    <input type="checkbox" class="form-control-static checkbox-primary" aria-label="Single checkbox Two"
+                                           name="giftProductRegisterCode" value="0" >
+                                    <label></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--가맹점명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">가맹점명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <select data-placeholder="가맹점 선택" class="chosen-select" name="productOwnerId" tabindex="2">
+                                    <option value="ALL" >전체</option>
+                                    <option th:each="store:${storeNameList}" th:value="${store[0]}">[[${store[1]}]]</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--상품카테고리-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">상품 카테고리<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2" id="majorCategoryNo">
+                                <select class="form-control m-b" name="majorCategoryNo">
+                                    <option value="0">대분류 선택</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2" id="subCategoryName" style="display: none">
+                                <select class="form-control m-b" name="subCategoryNo">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--상품명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">상품명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-7">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <div class="col-sm-5">
+                                            <input type="text" maxlength="20" class="form-control" name="productTitle">
+                                            <span class="msg-operator-name-input-validation"></span>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <a href="#" name="addSubProduct">
+                                                <i class="fa fa-plus-circle"></i>
+                                            </a><label class="form-control-static" > 서브상품 추가</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="sub1" style="display:none;">
+                                    <div class="hr-line-dashed"></div>
+                                    <label class="col-sm-2 form-control-static"><a href="#" name="minusSubProduct" class="minusSubProduct"><i class="fa fa-minus-circle"></i></a>서브상품명</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductName">
+                                    </div>
+                                    <label class="col-sm-3 form-control-static">서브상품가격(원)</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductPrice">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="sub2" style="display:none;">
+                                    <div class="hr-line-dashed"></div>
+                                    <label class="col-sm-2 form-control-static"><a href="#" name="minusSubProduct" class="minusSubProduct"><i class="fa fa-minus-circle"></i></a>서브상품명</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductName">
+                                    </div>
+                                    <label class="col-sm-3 form-control-static">서브상품가격(원)</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductPrice">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="sub3" style="display:none;">
+                                    <div class="hr-line-dashed"></div>
+                                    <label class="col-sm-2 form-control-static"><a href="#" name="minusSubProduct" class="minusSubProduct"><i class="fa fa-minus-circle"></i></a>서브상품명</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductName">
+                                    </div>
+                                    <label class="col-sm-3 form-control-static">서브상품가격(원)</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductPrice">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="sub4" style="display:none;">
+                                    <div class="hr-line-dashed"></div>
+                                    <label class="col-sm-2 form-control-static"><a href="#" name="minusSubProduct" class="minusSubProduct"><i class="fa fa-minus-circle"></i></a>서브상품명</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductName">
+                                    </div>
+                                    <label class="col-sm-3 form-control-static">서브상품가격(원)</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductPrice">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" id="sub5" style="display:none;">
+                                    <div class="hr-line-dashed"></div>
+                                    <label class="col-sm-2 form-control-static"><a href="#" name="minusSubProduct" class="minusSubProduct"><i class="fa fa-minus-circle"></i></a>서브상품명</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductName">
+                                    </div>
+                                    <label class="col-sm-3 form-control-static">서브상품가격(원)</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" maxlength="20" class="form-control" name="subProductPrice">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--판매가격-->
+                        <div class="form-group" id="productPrice">
+                            <label class="col-sm-2 control-label">판매가격(원)</label>
+                            <div class="col-sm-2">
+                                <input type="text" maxlength="5" class="form-control" value="0" name="productPrice">
+                                <span class="msg-operator-name-input-validation"/>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--상품 이미지-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">이미지<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <div class="fileinput fileinput-new" data-provides="fileinput">
+                                    <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                    <span class="fileinput-filename"></span>
+                                    <div>
+                                        <span class="btn btn-default btn-file">
+                                            <span class="fileinput-new">파일 선택</span>
+                                            <span class="fileinput-exists">파일 변경</span>
+                                            <input type="file" name="productImage" id="productImage"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--할인가격-->
+                        <div class="form-group" id="giftProductDiscountPrice" style="display: none" >
+                            <label class="col-sm-2 control-label">할인가격(원))</label>
+                            <div class="col-sm-3">
+                                <input type="text" maxlength="5" class="form-control" value="0" name="giftProductDiscountPrice">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--묶음할인-->
+                        <div class="form-group" id="giftProductDiscountUse" style="display: none" >
+                            <label class="col-sm-2 control-label">묶음 할인</label>
+                            <div class="col-sm-5">
+                                <label class="radio-inline"><input type="radio" name="giftProductDiscountCode" value="0" checked="checked">미사용</label>
+                                <label class="radio-inline"><input type="radio" name="giftProductDiscountCode" value="1">사용</label>
+                            </div>
+                        </div>
+
+                        <!--묶음할인 정보-->
+                        <div class="form-group" id="giftProductDiscountInfo" style="display: none">
+                            <div class="col-sm-offset-1 col-md-10" >
+                                <div class="panel panel-default ">
+                                    <div class="panel-heading"><h5>묶음할인 정보</h5></div>
+                                    <div class="panel-body">
+                                        <div class="panel-group">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">묶음할인시작수량</label>
+                                                <div class="col-sm-1">
+                                                    <input type="text" maxlength="3" class="form-control " name="giftProductDiscountInitQuantity">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">할인타입</label>
+                                                <div class="col-sm-2">
+                                                    <label class="radio-inline"><input type="radio" name="giftProductDiscountTypeCode" value="DCR" checked="checked">할인율</label>
+                                                    <label class="radio-inline"><input type="radio" name="giftProductDiscountTypeCode" value="DCP">할인가</label>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" maxlength="20" class="form-control" name="giftProductDiscountValue">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--메모-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">설명</label>
+                            <div class="col-sm-2">
+                                <textarea class="form-control" name="productDescription" rows="7"></textarea>
+                                <span class="textarea-limit-validation"></span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--수정, 목록 버튼-->
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" id="btnSubmit">등록</button>
+                                <a th:href="@{/wishwide/product/listStoreProduct(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" type="button" id="btnList">목록</button>
+                                </a>
+                            </div>
+                        </div>
+                        <input type="hidden" name="page" th:value="${pageVO.page}"/>
+                        <input type="hidden" name="size" th:value="${pageVO.size}"/>
+                        <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+    <!-- 콘텐츠 END -->
+</div>
+<th:block >
+<script th:inline="javascript">
+    var registerForm = $('#registerForm');
+
+        $(document).ready(function () {
+
+            $('.chosen-select').chosen({width: "100%"});
+
+            //매장명에 따른 대분류명
+            registerForm.find('[name="productOwnerId"]').change(function () {
+                var productOwnerId = registerForm.find('[name="productOwnerId"]').val();
+
+                $.ajax({
+                    url: "/wishwide/product/selectMajorCategory/"+productOwnerId,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        if (data.length != 0) {
+                            registerForm.find('[name="majorCategoryNo"] option').remove();
+
+                            if (data.length == 1) {
+                                $.each(data, function (index, item) {
+                                    console.log(item);
+
+                                    registerForm.find('[name="majorCategoryNo"]').append(
+                                        '<option value="'+item[0]+'" >'+item[2]+'</option>'
+                                    );
+
+                                    var majorCategoryNo =item[0];
+                                    selectSubCategory(majorCategoryNo);
+                                });
+                            }
+                            else{
+                                $.each(data, function (index, item) {
+                                    console.log(item);
+
+                                    registerForm.find('[name="majorCategoryNo"]').append(
+                                        '<option value="'+item[0]+'" >'+item[2]+'</option>'
+                                    );
+
+                                    //등록된 중분류가 없을 시
+                                    if(item[3] == 0){
+                                        registerForm.find('[name="subCategoryNo"] option').remove();
+                                        registerForm.find('[name="subCategoryNo"]').append('<option value="0">중분류 선택</option>');
+                                        $('#subCategoryName').css('display', 'none');
+                                    }
+                                });
+                            }
+                        }
+                        else{
+                            console.log('데이터없음');
+                            registerForm.find('[name="majorCategoryNo"] option').remove();
+                            registerForm.find('[name="majorCategoryNo"]').append('<option value="0">대분류 선택</option>');
+                            registerForm.find('[name="subCategoryNo"] option').remove();
+                            registerForm.find('[name="subCategoryNo"]').append('<option value="0">중분류 선택</option>');
+                            $('#subCategoryName').css('display', 'none');
+
+                            alert('등록된 카테고리가 없습니다.');
+                        }
+                    }
+                });
+            });
+
+            //대분류에 따른 중분류명
+            registerForm.find('[name="majorCategoryNo"]').change(function () {
+                var majorCategoryNo = registerForm.find('[name="majorCategoryNo"]').val();
+
+                selectSubCategory(majorCategoryNo);
+            });
+
+            var subProductCnt = 1;
+
+            //선물등록 코드에 따른 CSS
+            registerForm.find('[name="giftProductRegisterCode"]').change(function (e) {
+                var giftProductRegisterCode = registerForm.find('[name="giftProductRegisterCode"]:checked').val();
+                var giftProductDiscountCode = registerForm.find('[name="giftProductDiscountCode"]:checked').val();
+
+                console.log(giftProductRegisterCode + '값');
+
+                if(giftProductRegisterCode == 1){
+                    $('#giftProductDiscountUse').css('display','block');
+                    $('#giftProductDiscountPrice').css('display','block');
+
+                    registerForm.find('[name="giftProductRegisterCode"]').attr('value', 0);
+
+                    if(giftProductDiscountCode == 1)
+                        $('#giftProductDiscountInfo').css('display','block');
+                }
+                else{
+                    $('#giftProductDiscountUse').css('display','none');
+                    $('#giftProductDiscountInfo').css('display','none');
+                    $('#giftProductDiscountPrice').css('display','none');
+
+                    registerForm.find('[name="giftProductRegisterCode"]').attr('value', 1);
+                }
+            });
+
+            //묶음할인 코드에 따른 CSS
+            registerForm.find('[name="giftProductDiscountCode"]').change(function (e) {
+                var giftProductDiscountCode = registerForm.find('[name="giftProductDiscountCode"]:checked').val();
+
+                console.log(giftProductDiscountCode + '값');
+
+                if(giftProductDiscountCode == 1){
+                    $('#giftProductDiscountInfo').css('display','block');
+                }
+                else{
+                    $('#giftProductDiscountInfo').css('display','none');
+                }
+            });
+
+            //서브상품 추가
+            $('a[name="addSubProduct"]').click(function (e) {
+                e.preventDefault();
+
+                if(subProductCnt == 1) {
+                    $('#sub1').css('display', 'block');
+                    subProductCnt++;
+
+                    $('#productPrice').css('display', 'none');
+                }
+                else if(subProductCnt == 2){
+                    $('#sub2').css('display', 'block');
+                    subProductCnt++;
+                }
+                else if(subProductCnt == 3){
+                    $('#sub3').css('display', 'block');
+                    subProductCnt++;
+                }
+                else if(subProductCnt == 4){
+                    $('#sub4').css('display', 'block');
+                    subProductCnt++;
+                }
+                else if(subProductCnt == 5){
+                    $('#sub5').css('display', 'block');
+                    subProductCnt++;
+                }
+                else{
+                    alert('서브상품은 최대 5개까지 등록 가능합니다.');
+                }
+
+//                var parentNode = $(this).parent().parent().parent();
+//
+//                parentNode.append('<div class="col-sm-12">' +
+//                    '<div class="hr-line-dashed"></div>' +
+//                    '<label class="col-sm-3 "><a href="#" name="minusSubProduct" class="minusSubProduct"><i class="fa fa-minus-circle"></i></a>서브상품명</label>' +
+//                    '<div class="col-sm-3"><input type="text" maxlength="20" class="form-control" name="productTitle"></div>' +
+//                    '<label class="col-sm-3 ">서브상품가격</label>' +
+//                    '<div class="col-sm-3"><input type="text" maxlength="20" class="form-control" name="productTitle"></div>' +
+//                    '</div>');
+//
+//                console.log(parentNode);
+
+            });
+
+            //서브상품 제거
+            $('.minusSubProduct').click(function (e) {
+                e.preventDefault();
+
+                if(subProductCnt == 2) {
+                    $('#sub1').css('display', 'none');
+                    $('#productPrice').css('display', 'block');
+                    subProductCnt--;
+                }
+                else if(subProductCnt == 3){
+                    $('#sub2').css('display', 'none');
+                    subProductCnt--;
+                }
+                else if(subProductCnt == 4){
+                    $('#sub3').css('display', 'none');
+                    subProductCnt--;
+                }
+                else if(subProductCnt == 5){
+                    $('#sub4').css('display', 'none');
+                    subProductCnt--;
+                }
+                else if(subProductCnt == 6){
+                    $('#sub5').css('display', 'none');
+                    subProductCnt--;
+                }
+
+            });
+
+//            $('#btnSubmit').click(function (e) {
+//                e.preventDefault();
+//
+//                var subProductList = new Array();
+//
+//                /*유효성 검사*/
+//                if($("#sub1").css("display") == "block"){
+//                    var element = $("#sub1");
+//
+//                    var subProductName = element.find('[name="subProductName"]').val();
+//                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+//
+//                    if(subProductName == '' || subProductPrice == ''){
+//                        alert('서브상품 정보를 입력해주세요.');
+//                        return false;
+//                    }
+//                    else{
+//                        var subProductObj = {
+//                            subProductName : subProductName,
+//                            subProductPrice : subProductPrice
+//                        };
+//                        subProductList.push(subProductObj);
+//                    }
+//                }
+//
+//                if($("#sub2").css("display") == "block"){
+//                    var element = $("#sub2");
+//
+//                    var subProductName = element.find('[name="subProductName"]').val();
+//                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+//                    console.log(subProductName + subProductPrice);
+//                    if(subProductName == '' || subProductPrice == ''){
+//                        alert('서브상품 정보를 입력해주세요.');
+//                        return false;
+//                    }
+//                    else{
+//                        var subProductObj = {
+//                            subProductName : subProductName,
+//                            subProductPrice : subProductPrice
+//                        };
+//                        subProductList.push(subProductObj);
+//                    }
+//
+//                }
+//
+//                if($("#sub3").css("display") == "block"){
+//                    var element = $("#sub3");
+//
+//                    var subProductName = element.find('[name="subProductName"]').val();
+//                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+//
+//                    if(subProductName == '' || subProductPrice == ''){
+//                        alert('서브상품 정보를 입력해주세요.');
+//                        return false;
+//                    }
+//                    else{
+//                        var subProductObj = {
+//                            subProductName : subProductName,
+//                            subProductPrice : subProductPrice
+//                        };
+//                        subProductList.push(subProductObj);
+//                    }
+//
+//                }
+//
+//                if($("#sub4").css("display") == "block"){
+//                    var element = $("#sub4");
+//
+//                    var subProductName = element.find('[name="subProductName"]').val();
+//                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+//
+//                    if(subProductName == '' || subProductPrice == ''){
+//                        alert('서브상품 정보를 입력해주세요.');
+//                        return false;
+//                    }
+//                    else{
+//                        var subProductObj = {
+//                            subProductName : subProductName,
+//                            subProductPrice : subProductPrice
+//                        };
+//                        subProductList.push(subProductObj);
+//                    }
+//                }
+//
+//                if($("#sub5").css("display") == "block"){
+//                    var element = $("#sub5");
+//
+//                    var subProductName = element.find('[name="subProductName"]').val();
+//                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+//
+//                    if(subProductName == '' || subProductPrice == ''){
+//                        alert('서브상품 정보를 입력해주세요.');
+//                        return false;
+//                    }
+//                    else{
+//                        var subProductObj = {
+//                            subProductName : subProductName,
+//                            subProductPrice : subProductPrice
+//                        };
+//                        subProductList.push(subProductObj);
+//                    }
+//
+//                }
+//
+//                var productImage = $('input[name="productImage"]').val();
+//
+//                console.log(productImage);
+//
+//                if(productImage == '') {
+//                    alert('이미지를 등록해주세요');
+//                    return false;
+//                }
+//
+//                /*ajax 데이터 set*/
+//                var giftProductRegisterCode = registerForm.find('[name="giftProductRegisterCode"]:checked').val();
+//                var productOwnerId = registerForm.find('[name="productOwnerId"]').val();
+//                var majorCategoryNo = registerForm.find('[name="majorCategoryNo"]').val();
+//                var subCategoryNo = registerForm.find('[name="subCategoryNo"]').val();
+//                var productTitle = registerForm.find('[name="productTitle"]').val();
+//                var productPrice = registerForm.find('[name="productPrice"]').val();
+//                var productDescription = registerForm.find('[name="productDescription"]').text();
+//                var giftProductDiscountCode = registerForm.find('[name="giftProductDiscountCode"]:checked').val();
+//                var giftProductVO = new Object();
+//
+//                //선물등록여부 코드 1일시
+//                if(giftProductRegisterCode == 1){
+//                    giftProductVO.giftProductDiscountCode = giftProductDiscountCode;
+//                    if(giftProductDiscountCode == 1){
+//                        var giftProductDiscountInitQuantity = registerForm.find('[name="giftProductDiscountInitQuantity"]').val();
+//                        var giftProductDiscountTypeCode = registerForm.find('[name="giftProductDiscountTypeCode"]').val();
+//                        var giftProductDiscountValue = registerForm.find('[name="giftProductDiscountValue"]').val();
+//
+//                        if(giftProductDiscountInitQuantity == '' || giftProductDiscountTypeCode == '' || giftProductDiscountValue == ''){
+//                            alert('묶음할인 정보를 입력해주세요.');
+//                            return false;
+//                        }
+//                        else{
+//                            giftProductVO.giftProductDiscountInitQuantity = giftProductDiscountInitQuantity;
+//                            giftProductVO.giftProductDiscountTypeCode = giftProductDiscountTypeCode;
+//                            giftProductVO.giftProductDiscountValue = giftProductDiscountValue;
+//                            giftProductVO.giftProductVisibleCode = 1;
+//                        }
+//                    }
+//                }
+//
+//                var productVO = {
+//                    productOwnerId : productOwnerId,
+//                    majorCategoryNo : majorCategoryNo,
+//                    subCategoryNo : subCategoryNo,
+//                    productTitle : productTitle,
+//                    productPrice : productPrice,
+//                    productDescription : productDescription,
+//                    giftProductRegisterCode : giftProductRegisterCode
+//
+//                };
+//
+//                if(giftProductVO.length == 0){
+//                    giftProductVO.giftProductVisibleCode = 0;
+//                }
+////                if(subProductList.length == 0){
+////                    subProductList.push('result')
+////                }
+//
+//                var form = $('#registerForm')[0];
+//
+//                var formData = new FormData(document.getElementById('registerForm'));
+//                formData.append("productImage", $("#productImage")[0].files[0]);
+//
+//                console.log(formData);
+//
+//                console.log(giftProductVO);
+//                console.log(subProductList);
+//                console.log(productVO);
+//                console.log(JSON.stringify({productVO:productVO, giftProductVO:giftProductVO, subProductList:subProductList}));
+//
+//                var array = {"productVO":JSON.stringify(productVO), "giftProductVO":JSON.stringify(giftProductVO), "subProductList":JSON.stringify(subProductList)};
+//
+//                $.ajax({
+//                    url: "/wishwide/product/postRegisterStoreProduct",
+//                    type: 'post',
+//                    data: array,
+////                    contentType: 'application/json',
+//                    success: function (data) {
+//                        console.log(data);
+//                        alert('성공!');
+////                        if (data.length != 0) {
+////                            $('#subCategoryName').css('display', 'block');
+////                            registerForm.find('[name="subCategoryNo"] option').remove();
+////
+////                            $.each(data, function (index, item) {
+////                                console.log(item);
+////
+////                                registerForm.find('[name="subCategoryNo"]').append(
+////                                    '<option value="'+item[0]+'" >'+item[2]+'</option>'
+////                                );
+////                            });
+////                        }
+////                        else{
+////                            console.log('데이터없음');
+////
+////                            registerForm.find('[name="subCategoryNo"] option').remove();
+////                            registerForm.find('[name="subCategoryNo"]').append('<option value="0">중분류 선택</option>');
+////                            $('#subCategoryName').css('display', 'none');
+////
+////                            alert('등록된 중분류가 없습니다.');
+////                        }
+//                    }
+//                });
+//
+//
+//
+//            });
+            $('#btnSubmit').click(function (e){
+//                e.preventDefault();
+                /*유효성 검사*/
+                if($("#sub1").css("display") == "block"){
+                    var element = $("#sub1");
+
+                    var subProductName = element.find('[name="subProductName"]').val();
+                    var subProductPrice = element.find('[name="subProductName"]').val();
+
+                    if(subProductName == '' || subProductPrice == ''){
+                        alert('서브상품 정보를 입력해주세요.');
+                        return false;
+                    }
+                    else{
+                        renameForModelAttribute(element, 0);
+                    }
+                }
+                else{
+                    var element = $("#sub1");
+
+                    element.find('[name="subProductName"]').attr('value', 'none');
+                    element.find('[name="subProductPrice"]').attr('value', 0);
+
+                    renameForModelAttribute(element, 0);
+                }
+
+                if($("#sub2").css("display") == "block"){
+                    var element = $("#sub2");
+
+                    var subProductName = element.find('[name="subProductName"]').val();
+                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+                    console.log(subProductName + subProductPrice);
+                    if(subProductName == '' || subProductPrice == ''){
+                        alert('서브상품 정보를 입력해주세요.');
+                        return false;
+                    }
+                    else{
+                        renameForModelAttribute(element, 1);
+                    }
+
+                }
+
+                if($("#sub3").css("display") == "block"){
+                    var element = $("#sub3");
+
+                    var subProductName = element.find('[name="subProductName"]').val();
+                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+
+                    if(subProductName == '' || subProductPrice == ''){
+                        alert('서브상품 정보를 입력해주세요.');
+                        return false;
+                    }
+                    else{
+                        renameForModelAttribute(element, 2);
+                    }
+
+                }
+
+                if($("#sub4").css("display") == "block"){
+                    var element = $("#sub4");
+
+                    var subProductName = element.find('[name="subProductName"]').val();
+                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+
+                    if(subProductName == '' || subProductPrice == ''){
+                        alert('서브상품 정보를 입력해주세요.');
+                        return false;
+                    }
+                    else{
+                        renameForModelAttribute(element, 3);
+                    }
+                }
+
+                if($("#sub5").css("display") == "block"){
+                    var element = $("#sub5");
+
+                    var subProductName = element.find('[name="subProductName"]').val();
+                    var subProductPrice = element.find('[name="subProductPrice"]').val();
+
+                    if(subProductName == '' || subProductPrice == ''){
+                        alert('서브상품 정보를 입력해주세요.');
+                        return false;
+                    }
+                    else{
+                        renameForModelAttribute(element, 4);
+                    }
+                }
+
+                var productImage = $('input[name="productImage"]').val();
+
+                console.log(productImage);
+
+                if(productImage == '') {
+                    alert('이미지를 등록해주세요');
+                    return false;
+                }
+
+                var giftProductRegisterCode = registerForm.find('[name="giftProductRegisterCode"]:checked').val();
+
+                if(giftProductRegisterCode == 0){
+                    registerForm.find('[name="giftProductDiscountInitQuantity"]').attr('value', '0');
+                    registerForm.find('[name="giftProductDiscountValue"]').attr('value', 0);
+                }
+
+            });
+        });
+
+
+        function selectSubCategory(majorCategoryNo) {
+            $.ajax({
+                url: "/wishwide/product/selectSubCategory/"+majorCategoryNo,
+                type: 'get',
+                contentType: 'application/json',
+                success: function (data) {
+                    console.log(data);
+                    if (data.length != 0) {
+                        $('#subCategoryName').css('display', 'block');
+                        registerForm.find('[name="subCategoryNo"] option').remove();
+
+                        $.each(data, function (index, item) {
+                            console.log(item);
+
+                            registerForm.find('[name="subCategoryNo"]').append(
+                                '<option value="'+item[0]+'" >'+item[2]+'</option>'
+                            );
+                        });
+                    }
+                    else{
+                        console.log('데이터없음');
+
+                        registerForm.find('[name="subCategoryNo"] option').remove();
+                        registerForm.find('[name="subCategoryNo"]').append('<option value="0">중분류 선택</option>');
+                        $('#subCategoryName').css('display', 'none');
+
+                        alert('등록된 중분류가 없습니다.');
+                    }
+                }
+            });
+        }
+
+    function renameForModelAttribute(element, index) {
+        $(element).find("input[name=subProductName]").attr("name", "subProductList[" + index + "].subProductName");
+        $(element).find("input[name=subProductPrice]").attr("name", "subProductList[" + index + "].subProductPrice");
+    }
+
+</script>
+</th:block>
+
+

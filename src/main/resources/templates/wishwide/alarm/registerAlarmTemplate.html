@@ -33,19 +33,12 @@
                                     <option value="C">쿠폰</option>
                                     <option value="S">도장</option>
                                     <option value="P">포인트</option>
+                                    <option value="ETC">기타</option>
                                 </select>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
-                        <!--신규가입 전송 여부-->
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">신규가입 전송 여부<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-3" >
-                                <label class="radio-inline"><input type="radio" name="alarmJoinCode" value="1" checked="checked">사용 안함</label>
-                                <label class="radio-inline"><input type="radio" name="alarmJoinCode" value="0">사용</label>
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
+
                         <!--알림목적-->
                         <div class="form-group">
                             <label class="col-sm-2 control-label">알림목적<label class="notnull-mark-color"> *</label></label>
@@ -59,6 +52,7 @@
                                             <option value="3">유효기간 만료</option>
                                             <option value="4">적립</option>
                                             <option value="5">차감</option>
+                                            <option value="6">신규가입</option>
                                         </select>
                                     </div>
                                     <div id="alarmSendPointCode" style="display:none;">
@@ -86,7 +80,6 @@
                                 <select class="form-control m-b" name="alarmTargetTypeCode">
                                     <option value="BC">구매자</option>
                                     <option value="RC">수신자</option>
-                                    <option value="AC">적립자</option>
                                 </select>
                             </div>
                         </div>
@@ -200,7 +193,7 @@
                     contentType: 'application/json',
                     success: function (data) {
                         console.log(data);
-                        if (data != "") {
+                        if (data.length != 0) {
                             $.each(data, function (index, item) {
                                 $('#alarmVariable').append('<tr>' +
                                     '<td>' + item[2] + '</td>' +

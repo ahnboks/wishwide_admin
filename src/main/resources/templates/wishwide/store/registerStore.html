@@ -44,6 +44,7 @@
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
+
                                     <!--비밀번호-->
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label">비밀번호<label class="notnull-mark-color"> *</label></label>
@@ -53,6 +54,7 @@
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
+
                                     <!--비밀번호확인-->
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label">비밀번호 확인<label class="notnull-mark-color"> *</label></label>
@@ -62,64 +64,6 @@
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
-                                    <!--이메일-->
-                                    <div class="form-group">
-                                        <label class="col-sm-2 control-label">이메일</label>
-                                        <div class="col-sm-2">
-                                            <input type="email" maxlength="40" placeholder="이메일 @ sample.com" class="form-control email-input-validation" name="storeEmail">
-                                            <span id="msg-email-input-validation"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="hr-line-dashed"></div>
-
-                                    <!--연락처-->
-                                    <div class="form-group">
-                                        <label class="col-sm-2 control-label">연락처<label class="notnull-mark-color"> *</label></label>
-                                        <div class="col-sm-2">
-                                            <input type="text" maxlength="11" class="form-control phone-number-input-validation" name="storePhone" placeholder="ex) 01012345678">
-                                            <span id="msg-phone-number-input-validation"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="hr-line-dashed"></div>
-                                    <!--우편번호-->
-                                    <div class="form-group">
-                                        <label class="col-sm-2 control-label">우편번호</label>
-                                        <div class="col-sm-5">
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <input type="text" class="form-control" name="storeZipCode" id="storeZipCode" onclick="searchAddress();" readonly>
-                                                </div>
-                                                <div>
-                                                    <button type="button" class="btn btn-primary" onclick="searchAddress();">우편번호 검색</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="hr-line-dashed"></div>
-
-                                    <!--주소-->
-                                    <div class="form-group">
-                                        <label class="col-sm-2 control-label">주소</label>
-                                        <div class="col-sm-5">
-                                            <input type="text" class="form-control" name="storeAddress"  id="storeAddress" readonly>
-                                        </div>
-                                    </div>
-
-                                    <div class="hr-line-dashed"></div>
-
-                                    <!--상세주소-->
-                                    <div class="form-group">
-                                        <label class="col-sm-2 control-label">상세주소</label>
-
-                                        <div class="col-sm-5">
-                                            <input type="text" class="form-control" name="storeAddressDetail"  id="storeAddressDetail">
-                                        </div>
-                                    </div>
-                                    <div class="hr-line-dashed"></div>
-
                                 </div>
                                 <!--위도/경도-->
                                 <input type="hidden" class="form-control" name="storeLatitude" id="storeLatitude"/>
@@ -139,6 +83,26 @@
                                     </div>
                                 </div>
                                 <div class="ibox-content">
+                                    <!--로고-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">로고<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-5">
+                                            <div class="fileinput fileinput-new" data-provides="fileinput" id="file1">
+                                                <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                                <span class="fileinput-filename"></span>
+                                                <div>
+                                                    <span class="btn btn-default btn-file">
+                                                        <span class="fileinput-new">파일 선택</span>
+                                                        <span class="fileinput-exists">파일 수정</span>
+                                                        <input type="file" name="logoFile" class="file-validation" onchange="fileUploadValidation(this, 'image', '2')">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
                                     <!--브랜드명-->
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label">브랜드명<label class="notnull-mark-color"> *</label></label>
@@ -146,7 +110,6 @@
                                             <input type="text" maxlength="20" class="form-control title-input-validation" name="brandName">
                                         </div>
                                     </div>
-
                                     <div class="hr-line-dashed"></div>
 
                                     <!--가맹점명-->
@@ -156,31 +119,31 @@
                                             <input type="text" maxlength="20" class="form-control title-input-validation" name="storeName">
                                         </div>
                                     </div>
-
                                     <div class="hr-line-dashed"></div>
 
-                                    <!--매장소개-->
-                                    <div class="form-group">
-                                        <label class="col-sm-2 control-label">매장소개</label>
-                                        <div class="col-sm-2">
-                                            <textarea class="form-control" name="storeIntroduction" rows="7"></textarea>
-                                            <span class="textarea-limit-validation"></span>
-                                        </div>
-                                    </div>
                                     <!--사업자번호-->
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label">사업자 번호<label class="notnull-mark-color"> *</label></label>
 
-                                        <div class="col-sm-2">
-                                            <input type="text" maxlength="10" class="form-control business-no-input-validation" name="storeBusinessRegistrationNumber">
-                                            <span id="msg-business-no-input-validation"></span>
+                                        <div class="col-sm-5">
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <input type="text" data-mask="999" class="form-control" name="storeBusinessRegistrationNumber" maxlength="3">
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <input type="text" data-mask="99999" class="form-control" name="storeBusinessRegistrationNumber" maxlength="5">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="text" data-mask="99" class="form-control" name="storeBusinessRegistrationNumber" maxlength="2">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
 
                                     <!--사업자등록증-->
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">사업자 등록증</label>
+                                        <label class="col-sm-2 control-label">사업자 등록증<label class="notnull-mark-color"> *</label></label>
 
                                         <div class="col-sm-10">
                                             <div class="fileinput fileinput-new" data-provides="fileinput">
@@ -197,23 +160,24 @@
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
-                                    <!--로고-->
-                                    <div class="form-group">
-                                        <label class="col-sm-2 control-label"><label class="notnull-mark-color"> *</label>로고</label>
-                                        <div class="col-sm-5">
-                                            <div class="fileinput fileinput-new" data-provides="fileinput" id="file1">
-                                                <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
-                                                <span class="fileinput-filename"></span>
-                                                <div>
-                                        <span class="btn btn-default btn-file">
-                                            <span class="fileinput-new">파일 선택</span>
-                                            <span class="fileinput-exists">파일 수정</span>
-                                            <input type="file" name="logoFile" class="file-validation" onchange="fileUploadValidation(this, 'image', '2')">
-                                        </span>
-                                                </div>
-                                            </div>
-                                        </div>
 
+                                    <!--연락처-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">연락처<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-2">
+                                            <input type="text" maxlength="11" class="form-control phone-number-input-validation" name="storePhone" placeholder="ex) 01012345678">
+                                            <span class="msg-phone-number-input-validation"></span>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--이메일-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">이메일</label>
+                                        <div class="col-sm-2">
+                                            <input type="email" maxlength="40" placeholder="이메일 @ sample.com" class="form-control email-input-validation" name="storeEmail">
+                                            <span class="msg-email-input-validation"></span>
+                                        </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
 
@@ -225,7 +189,6 @@
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
-
 
                                     <!--담당자정보-->
                                     <div class="form-group">
@@ -249,34 +212,40 @@
                                     </div>
                                     <div class="hr-line-dashed"></div>
 
-                                    <!--개점시간-->
+                                    <!--우편번호-->
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">개점시간</label>
-                                        <div class="col-sm-2">
-                                            <div class="input-group clockpicker" data-autoclose="true">
-                                                <input type="time" class="form-control" value="09:30" name="storeOpeningHour">
-                                                <span class="input-group-addon">
-                                                    <span class="fa fa-clock-o"></span>
-                                                </span>
+                                        <label class="col-sm-2 control-label">우편번호</label>
+                                        <div class="col-sm-5">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <input type="text" class="form-control" name="storeZipCode" id="storeZipCode" onclick="searchAddress();" readonly>
+                                                </div>
+                                                <div>
+                                                    <button type="button" class="btn btn-primary" onclick="searchAddress();">우편번호 검색</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
 
-                                    <!--폐점시간-->
+                                    <!--주소-->
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">폐점시간</label>
-                                        <div class="col-sm-2">
-                                            <div class="input-group clockpicker" data-autoclose="true">
-                                                <input type="time" class="form-control" value="22:30" name="storeClosingHour">
-                                                <span class="input-group-addon">
-                                                    <span class="fa fa-clock-o"></span>
-                                                </span>
-                                            </div>
+                                        <label class="col-sm-2 control-label">주소</label>
+                                        <div class="col-sm-5">
+                                            <input type="text" class="form-control" name="storeAddress"  id="storeAddress" readonly>
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
 
+                                    <!--상세주소-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">상세주소</label>
+
+                                        <div class="col-sm-5">
+                                            <input type="text" class="form-control" name="storeAddressDetail"  id="storeAddressDetail">
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
 
                                     <!--카카오 옐로우 아이디-->
                                     <div class="form-group">
@@ -295,6 +264,117 @@
                         <div class="col-lg-12">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
+                                    <h5>서비스정보</h5>
+                                    <div class="ibox-tools">
+                                        <input type="checkbox" name="storeServiceUseCode" class="js-switch" value="1" checked />
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <!--매장소개-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">매장소개<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-2">
+                                            <textarea class="form-control" name="storeIntroduction" rows="7"></textarea>
+                                            <span class="textarea-limit-validation"></span>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--혜택타입-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">혜택타입<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-3" >
+                                            <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" value="N" checked="checked">미사용</label>
+                                            <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" value="S">도장</label>
+                                            <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" value="P">포인트</label>
+                                        </div>
+                                    </div>
+                                    <!--도장 혜택 정보-->
+                                    <div class="form-group" id="stampBenefitInfo" style="display: none;">
+                                        <div class="col-sm-offset-1 col-md-10" >
+                                            <div class="panel panel-default ">
+                                                <!--<div class="panel-heading"><h5>도장 혜택 정보</h5></div>-->
+                                                <div class="panel-body">
+                                                    <div class="panel-group">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-3 control-label">쿠폰발급 도장개수 기준</label>
+                                                            <div class="col-sm-5">
+                                                                <label class="checkbox-inline"><input type="text" name="storeStampGoal" style="width: 70px;"> 개</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-3 control-label">단골등업 도장개수 기준</label>
+                                                            <div class="col-sm-5">
+                                                                <label class="checkbox-inline"><input type="text" name="storeStampVipGoal" style="width: 70px;"> 개</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--포인트 혜택 정보-->
+                                    <div class="form-group" id="pointBenefitInfo" style="display: none">
+                                        <div class="col-sm-offset-1 col-md-10" >
+                                            <div class="panel panel-default ">
+                                                <!--<div class="panel-heading"><h5>포인트 혜택 정보</h5></div>-->
+                                                <div class="panel-body">
+                                                    <div class="panel-group">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">포인트 사용기준</label>
+                                                            <div class="col-sm-5">
+                                                                <label class="checkbox-inline"><input type="text" name="storePointUseGoal"  style="width: 70px;"> P</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">단골등업 포인트 기준</label>
+                                                            <div class="col-sm-5">
+                                                                <label class="checkbox-inline"><input type="text" name="storePointVipGoal"  style="width: 70px;"> P</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--개점시간-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">개점시간<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-2">
+                                            <div class="input-group clockpicker" data-autoclose="true">
+                                                <input type="time" class="form-control" value="09:30" name="storeOpeningHour">
+                                                <span class="input-group-addon">
+                                                    <span class="fa fa-clock-o"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <!--폐점시간-->
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">폐점시간<label class="notnull-mark-color"> *</label></label>
+                                        <div class="col-sm-2">
+                                            <div class="input-group clockpicker" data-autoclose="true">
+                                                <input type="time" class="form-control" value="22:30" name="storeClosingHour">
+                                                <span class="input-group-addon">
+                                                    <span class="fa fa-clock-o"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
                                     <h5>계약정보
                                         <small class="m-l-sm"></small>
                                     </h5>
@@ -307,7 +387,7 @@
                                 <div class="ibox-content">
                                     <!--계약서-->
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">계약서</label>
+                                        <label class="col-sm-2 control-label">계약서<label class="notnull-mark-color"> *</label></label>
                                         <div class="col-sm-10">
                                             <div class="fileinput fileinput-new" data-provides="fileinput">
                                                 <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
@@ -335,7 +415,6 @@
                                             </select>
                                         </div>
                                     </div>
-
                                     <div class="hr-line-dashed"></div>
 
                                     <!--계약기간-->
@@ -347,86 +426,12 @@
                                                 <span class="input-group-addon"> ~ </span>
                                                 <input type="date" class="input-sm form-control contract-finish-date-input-validation" name="storeContractFinishdate" />
                                             </div>
-                                            <span id="msg-contract-period-input-validation"></span>
+                                            <span class="msg-contract-period-input-validation"></span>
                                         </div>
                                     </div>
-
                                     <div class="hr-line-dashed"></div>
 
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="ibox float-e-margins">
-                            <div class="ibox-title">
-                                <h5>혜택정보
-                                    <small class="m-l-sm"></small>
-                                </h5>
-                                <div class="ibox-tools">
-                                    <a class="collapse-link">
-                                        <i class="fa fa-chevron-up"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="ibox-content">
-                                <!--혜택타입-->
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">혜택타입<label class="notnull-mark-color"> *</label></label>
-                                    <div class="col-sm-3" >
-                                        <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" value="N" checked="checked">사용 안함</label>
-                                        <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" value="S">도장</label>
-                                        <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" value="P">포인트</label>
-                                    </div>
-                                </div>
-                                <!--도장 혜택 정보-->
-                                <div class="form-group" id="stampBenefitInfo" style="display: none;">
-                                    <div class="col-sm-offset-1 col-md-10" >
-                                        <div class="panel panel-default ">
-                                            <!--<div class="panel-heading"><h5>도장 혜택 정보</h5></div>-->
-                                            <div class="panel-body">
-                                                <div class="panel-group">
-                                                    <div class="form-group">
-                                                        <label class="col-sm-2 control-label">쿠폰발급 도장개수 기준</label>
-                                                        <div class="col-sm-5">
-                                                            <label class="checkbox-inline"><input type="text" name="storeStampGoal" style="width: 70px;"> 개</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label class="col-sm-2 control-label">단골등업 도장개수 기준</label>
-                                                        <div class="col-sm-5">
-                                                            <label class="checkbox-inline"><input type="text" name="storeStampVipGoal" style="width: 70px;"> 개</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!--포인트 혜택 정보-->
-                                <div class="form-group" id="pointBenefitInfo" style="display: none">
-                                    <div class="col-sm-offset-1 col-md-10" >
-                                        <div class="panel panel-default ">
-                                            <!--<div class="panel-heading"><h5>포인트 혜택 정보</h5></div>-->
-                                            <div class="panel-body">
-                                                <div class="panel-group">
-                                                    <div class="form-group">
-                                                        <label class="col-sm-2 control-label">포인트 사용기준</label>
-                                                        <div class="col-sm-5">
-                                                            <label class="checkbox-inline"><input type="text" name="storePointUseGoal"  style="width: 70px;"> P</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label class="col-sm-2 control-label">단골등업 포인트 기준</label>
-                                                        <div class="col-sm-5">
-                                                            <label class="checkbox-inline"><input type="text" name="storePointVipGoal"  style="width: 70px;"> P</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             </div>
                         </div>
                         <div class="col-lg-12">
@@ -446,11 +451,12 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label">AR게임<label class="notnull-mark-color"> *</label></label>
                                         <div class="col-sm-5" >
-                                            <label class="radio-inline"><input type="radio" name="storeArGameUseCode" value="0" checked="checked">사용 안함</label>
+                                            <label class="radio-inline"><input type="radio" name="storeArGameUseCode" value="0" checked="checked">미사용</label>
                                             <label class="radio-inline"><input type="radio" name="storeArGameUseCode" value="1">사용</label>
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
+
                                     <!--게임타입-->
                                     <div class="form-group" id="storeArGameTypeCode" style="display:none;">
                                         <label class="col-sm-2 control-label">게임타입</label>
@@ -464,8 +470,9 @@
                                                 </div>
                                                 <div id="storeArGameWord" style="display:none;">
                                                     <label class="col-sm-2 control-label">단어 입력</label>
-                                                    <div class="col-md-3">
-                                                        <input type="text" maxlength="20" class="form-control " name="storeArGameWord">
+                                                    <div class="col-md-4">
+                                                        <input type="text" maxlength="10" class="form-control only-alpha-validation" name="storeArGameWord">
+                                                        <p class="form-control-static" style="color: red">*a~z까지 10자이내로<br> 원하는 단어를 입력해주세요. </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -530,6 +537,9 @@
 
             $('.clockpicker').clockpicker();
 
+            var elem = document.querySelector('.js-switch');
+            var switchery = new Switchery(elem, { color: '#1AB394' });
+
             //혜택타입 코드에 따른 CSS
             registerForm.find('[name="storeBenefitTypeCode"]').change(function (e) {
                 var storeBenefitTypeCode = registerForm.find('[name="storeBenefitTypeCode"]:checked').val();
@@ -580,12 +590,53 @@
                 }
             });
 
-           $('#btnSubmit').click(function (e) {
-              e.preventDefault();
+            var onlyAlphaRegularExpressions = /^[A-Za-z]*$/ ;  //영어만
+            //영어 유효성 체크
+            $('.only-alpha-validation').blur(function () {
+                var value = $('.only-alpha-validation').val();
 
+                if (!(onlyAlphaRegularExpressions.test(value))) {
+                    $('.only-alpha-validation').val('');
+                }
+            });
+
+            $('.switchery').click(function () {
+                var storeServiceUseCode = registerForm.find('[name="storeServiceUseCode"]').val();
+
+                console.log(storeServiceUseCode + '서비스사용코드');
+
+                if(storeServiceUseCode == 1){
+                    registerForm.find('[name="storeServiceUseCode"]').attr('value', 0);
+                }
+                else{
+                    registerForm.find('[name="storeServiceUseCode"]').attr('value', 1);
+                }
+            });
+
+           $('#btnSubmit').click(function (e) {
+//               e.preventDefault();
                var storeAddress = $('#storeAddress').val();
 
                codeAddress(storeAddress);
+
+               var bziFile = $('input[name="bziFile"]').val();
+               var contractFile = $('input[name="contractFile"]').val();
+               var logoFile = $('input[name="logoFile"]').val();
+
+               console.log(bziFile+contractFile+logoFile);
+
+               if((bziFile == '')) {
+                   alert('사업자 등록증을 등록해주세요');
+                   return false;
+               }
+               if( contractFile == '') {
+                   alert('계약서를 등록해주세요');
+                   return false;
+               }
+               if(logoFile == '') {
+                   alert('로고이미지를 등록해주세요');
+                   return false;
+               }
            });
         });
 

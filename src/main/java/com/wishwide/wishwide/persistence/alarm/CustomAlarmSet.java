@@ -12,11 +12,13 @@ public interface CustomAlarmSet {
                                           String searchUserId,
                                           String roleCode,
                                           String sessionId,
-                                          int alarmJoinCode,
                                           String alarmTypeCode,
                                           String alarmPurposeCode,
                                           String alarmTargetTypeCode,
                                           Pageable pageable);
+
+    //알림 발송 설정 리스트 페이지
+    public List<Object[]> getAlarmSetList(String storeId);
 
     //알림 메시지 불러오기
     public List<Object[]> getAlarmMessage();

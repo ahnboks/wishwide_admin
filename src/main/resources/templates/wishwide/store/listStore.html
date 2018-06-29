@@ -19,7 +19,7 @@
                     <div class="col-lg-10">
                         <div class="col-lg-6">
                             <table class="custom-table">
-                                <tr>
+                                <tr sec:authorize="hasRole('MA')">
                                     <th class="col-sm-3 m-b-xs">가맹점명</th>
                                     <td>
                                         <div class="col-sm-6 m-b-xs text-left">
@@ -79,7 +79,7 @@
                                 <th>상세</th>
                                 <th sec:authorize="hasRole('MA')">가맹점명</th>
                                 <th>로고 이미지</th>
-                                <th>가입멤버</th>
+                                <th>가입자수</th>
                                 <th>디바이스</th>
                                 <th>상품</th>
                                 <th>선물거래</th>
@@ -137,7 +137,7 @@
                                         <span th:if="${vo[13]}== 0">-</span>
                                     </td>
                                     <td>
-                                        <a class="btn btn-default" name="updateServiceOperationCode" href="#">
+                                        <a class="btn btn-default" name="updateServiceOperationCode" th:href="${vo[15]}">
                                             <span class="PREACTIVE" th:if="${vo[14]} == 'PREACTIVE'" th:value="${vo[14]}">운영전</span>
                                             <span class="ACTIVE"  th:if="${vo[14]} == 'ACTIVE'" th:value="${vo[14]}" >운영중</span>
                                             <span class="TERMINATE"  th:if="${vo[14]} == 'TERMINATE'" th:value="${vo[14]}" >해지</span>
@@ -202,9 +202,9 @@
                     <th>등급</th>
                     <th>방문횟수</th>
                     <th>선물구매</th>
-                    <th>선물수신</th>
+                    <th>선물(사용/수신)</th>
                     <th>쿠폰(사용/수신)</th>
-                    <th>적립수</th>
+                    <th>적립 혜택</th>
                     </thead>
                     <tbody id="selectStoreCustomer">
                     </tbody>
@@ -232,7 +232,6 @@
                     <th>디바이스명</th>
                     <th>디바이스 ID/POS ID</th>
                     <th>사용/미사용</th>
-                    <th>등록일</th>
                     </thead>
                     <tbody id="selectStoreDevice">
                     </tbody>
@@ -373,17 +372,36 @@
                     contentType: 'application/json',
                     success: function (data) {
                         console.log(data);
-                        if (data != "") {
+                        if (data.length != 0) {
                             $.each(data, function (index, item) {
+                                var customerGradeTypeCode = '';
+                                var customerBenefitTypeCode = '';
+
+                                //등급
+                                if(item[4] == 'BASIC')
+                                    customerGradeTypeCode = '일반';
+                                else if(item[4] == 'NEW')
+                                    customerGradeTypeCode = '신규';
+                                else if(item[4] == 'VIP')
+                                    customerGradeTypeCode = '단골';
+                                else
+                                    customerGradeTypeCode = '비멤버쉽';
+
+                                //혜택값
+                                if(item[10] == 'S')
+                                    customerBenefitTypeCode = item[11]+'개';
+                                else
+                                    customerBenefitTypeCode = item[11]+'P';
+
                                 $('#selectStoreCustomer').append(
                                     '<tr>' +
                                     '<td>' + item[1].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
-                                    '<td>' + item[4] + '</td>' +
+                                    '<td>' + customerGradeTypeCode + '</td>' +
                                     '<td>' + item[5] + '</td>' +
                                     '<td>' + item[6] + '</td>' +
-                                    '<td>' + item[7] + '</td>' +
+                                    '<td>' + item[14] + '/' + item[15] + '</td>' +
                                     '<td>' + item[8] + '/' + item[9] + '</td>' +
-                                    '<td>' + item[11] + '</td>' +
+                                    '<td>' + customerBenefitTypeCode + '</td>' +
                                     '</tr>'
                                 );
                             });
@@ -417,7 +435,7 @@
                     contentType: 'application/json',
                     success: function (data) {
                         console.log(data);
-                        if (data != "") {
+                        if (data.length != 0) {
                             $.each(data, function (index, item) {
                                 var deviceTypeCode = '';
                                 var deviceVisibleCode = '';
@@ -455,7 +473,6 @@
                                     '<td>' + item[5] + '</td>' +
                                     '<td>' + deviceId + '/' + posId + '</td>' +
                                     '<td>' + deviceVisibleCode + '</td>' +
-                                    '<td>' + item[9].replace('T', ' ') + '</td>' +
                                     '</tr>'
                                 );
                             });
@@ -488,7 +505,7 @@
                     contentType: 'application/json',
                     success: function (data) {
                         console.log(data);
-                        if (data != "") {
+                        if (data.length != 0) {
                             $.each(data, function (index, item) {
                                 var giftProductRegisterCode = '';
                                 var majorCategoryTitle = '';
@@ -567,7 +584,7 @@
                     contentType: 'application/json',
                     success: function (data) {
                         console.log(data);
-                        if (data != "") {
+                        if (data.length != 0) {
                             $.each(data, function (index, item) {
                                 $('#selectStoreGiftPayment').append(
                                     '<tr>' +
@@ -609,7 +626,7 @@
                     contentType: 'application/json',
                     success: function (data) {
                         console.log(data);
-                        if (data != "") {
+                        if (data.length != 0) {
                             $.each(data, function (index, item) {
                                 var couponTargetTypeCode = '';
                                 var couponPublishTypeCode = '';
@@ -675,50 +692,73 @@
                 });
             });
 
-            $('#storeNameList').on('change', function(){
-                console.log('dddd');
-                table.search(this.value).draw();
-            });
-
             $('a[name="updateServiceOperationCode"]').click(function (e) {
                 e.preventDefault();
 
-                console.log($(this));
-
-                var node = $(this);
-                var storeServiceOperationCode = $(this).children().eq(0).attr('value');
-                var parentNode = $(this).parent().parent();
-                var storeId = parentNode.children().eq(0).children().eq(0).attr('value');
-
-                console.log(storeId + storeServiceOperationCode);
-
-                if(storeServiceOperationCode == 'TERMINATE'){
-                    alert('서비스 계약이 종료되었습니다. 매장에 문의해주세요.')
-                }
+                if(confirm('서비스 상태가 변경됩니다. 변경하시겠습니까?') != true) return false;
                 else{
-                    $.ajax({
-                        url: "/wishwide/store/updateServiceOperationCode/" + storeId + "/" + storeServiceOperationCode,
-                        type: 'get',
-                        contentType: 'application/json',
-                        success: function (data) {
-                            console.log("변경 성공" + data);
-                            if (data == 'ACTIVE'){
-                                console.log(node);
-                                node.empty();
-                                node.html('<span class="ACTIVE" value="ACTIVE" >운영중</span>');
-                                alert('서비스 운영중 상태로 변경되었습니다.');
+                    console.log($(this));
+
+                    var node = $(this);
+                    var storeServiceOperationCode = $(this).children().eq(0).attr('value');
+                    var parentNode = $(this).parent().parent();
+                    var storeId = parentNode.children().eq(0).children().eq(0).attr('value');
+                    var storeServiceUseCode = node.attr('href');
+
+                    console.log(storeId + storeServiceOperationCode);
+
+                    //서비스 운영코드 변경 시 체크리스트
+                    /*매장소개, 개점시간, 폐점시간, 주소, 혜택정보*/
+
+                    if(storeServiceUseCode == 0){
+                        alert('상세페이지에서 서비스정보를 사용상태로 변경 후 정보를 입력해주세요.');
+                        return false;
+                    }
+
+                    if(storeServiceOperationCode == 'TERMINATE'){
+                        alert('서비스 계약이 종료되었습니다. 계약상태를 확인해주세요.')
+                    }
+                    else {
+                        $.ajax({
+                            url: "/wishwide/store/updateServiceOperationCode/" + storeId + "/" + storeServiceOperationCode,
+                            type: 'get',
+                            contentType: 'application/json',
+                            success: function (data) {
+                                console.log("변경 성공" + data);
+                                if (data == 'ACTIVE') {
+                                    console.log(node);
+                                    node.empty();
+                                    node.html('<span class="ACTIVE" value="ACTIVE" >운영중</span>');
+                                    alert('서비스 운영중 상태로 변경되었습니다.');
+                                }
+                                else if (data == 'PREACTIVE') {
+                                    console.log(node);
+                                    node.empty();
+                                    node.html('<span class="PREACTIVE" value="PREACTIVE">운영전</span>');
+                                    alert('서비스 운영전 상태로 변경되었습니다.')
+                                }
+                                else if (data == 'not-introduction') {
+                                    console.log(node);
+                                    alert('매장 소개를 입력해주세요.')
+                                }
+                                else if (data == 'not-storeHour') {
+                                    console.log(node);
+                                    alert('매장 개점시간, 폐점시간을 입력해주세요.')
+                                }
+                                else if (data == 'not-storeAddress') {
+                                    console.log(node);
+                                    alert('매장 주소를 입력해주세요.')
+                                }
+                                else if (data == 'not-benefitCode') {
+                                    console.log(node);
+                                    alert('매장 혜택타입을 지정해주세요.')
+                                }
+
+
                             }
-                            else{
-                                console.log(node);
-                                node.empty();
-                                node.html('<span class="PREACTIVE" value="PREACTIVE">운영전</span>');
-                                alert('서비스 운영전 상태로 변경되었습니다.')
-                            }
-                        }
-                    });
+                        });
+                    }
                 }
-
-
             });
         });
 

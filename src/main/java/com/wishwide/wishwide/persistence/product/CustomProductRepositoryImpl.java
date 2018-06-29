@@ -27,7 +27,6 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                                               Pageable pageable) {
         QProduct product = QProduct.product;
         QProductImage productImage = QProductImage.productImage;
-        QGiftProduct giftProduct = QGiftProduct.giftProduct;
         QStore store = QStore.store;
 
         JPQLQuery<Product> query = from(product);
@@ -41,7 +40,7 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 product.subCategoryTitle,   //중분류명5
                 product.productTitle,   //상품명6
                 product.productPrice,   //판매가격7
-                giftProduct.giftProductDiscountPrice,   //할인가격8
+                product.productImageUrl,   //할인가격8
                 product.productSellStatusCode,  //판매상태코드9
                 product.productRegdate, //등록일10
                 productImage.productImageNo,    //상품이미지번호11
@@ -55,7 +54,6 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
         //조인문
         tupleJPQLQuery
                 .join(store).on(product.productOwnerId.eq(store.storeId))
-                .leftJoin(giftProduct).on(product.productNo.eq(giftProduct.productNo))
                 .leftJoin(productImage).on(product.productNo.eq(productImage.productNo));
 
         //조건식
@@ -88,7 +86,6 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                             .or(product.subCategoryTitle.like("%" + keyword + "%"))
                             .or(product.productTitle.like("%" + keyword + "%"))
                             .or(product.productPrice.like("%" + keyword + "%"))
-                            .or(giftProduct.giftProductDiscountPrice.like("%" + keyword + "%"))
                     );
                     break;
                 case "majorCategoryTitle" :
@@ -102,9 +99,6 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                     break;
                 case "productPrice" :
                     tupleJPQLQuery.where(product.productPrice.like("%" + keyword + "%"));
-                    break;
-                case "giftProductDiscountPrice" :
-                    tupleJPQLQuery.where(giftProduct.giftProductDiscountPrice.like("%" + keyword + "%"));
                     break;
             }
         }
@@ -239,10 +233,9 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public List<Object[]> getStoreProductList(String storeId) {
+    public Object[] getStoreProductDetail(Long productNo) {
         QProduct product = QProduct.product;
         QProductImage productImage = QProductImage.productImage;
-        QGiftProduct giftProduct = QGiftProduct.giftProduct;
         QStore store = QStore.store;
 
         JPQLQuery<Product> query = from(product);
@@ -256,7 +249,96 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 product.subCategoryTitle,   //중분류명5
                 product.productTitle,   //상품명6
                 product.productPrice,   //판매가격7
-                giftProduct.giftProductDiscountPrice,   //할인가격8
+                product.productSellStatusCode,  //판매상태코드8
+                product.productRegdate, //등록일9
+                productImage.productImageNo,    //상품이미지번호10
+                productImage.productImageName,  //상품이미지명11
+                productImage.productImageDbName,    //상품이미지db명12
+                productImage.productImageExtension, //상품이미지확장자13
+                productImage.productImageThumbnailUrl,  //상품이미지썸네일주소14
+                productImage.productImageUrl,    //상품이미지주소15
+                product.productDescription,  //상품설명16
+                product.majorCategoryNo,    //17
+                product.subCategoryNo,   //18
+                product.productSubProductCode  //19
+        );
+
+        //조인문
+        tupleJPQLQuery
+                .join(store).on(product.productOwnerId.eq(store.storeId))
+                .leftJoin(productImage).on(product.productNo.eq(productImage.productNo));
+
+        //조건식
+        tupleJPQLQuery.where(product.productNo.eq(productNo));
+
+        //한 레코드만 반환
+        Tuple tuple = tupleJPQLQuery.fetchOne();
+
+        return tuple.toArray();
+    }
+
+    @Override
+    public Object[] getPartnerProductDetail(Long productNo) {
+        QProduct product = QProduct.product;
+        QProductImage productImage = QProductImage.productImage;
+        QPartner partner = QPartner.partner;
+
+        JPQLQuery<Product> query = from(product);
+
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
+                product.productNo,  //상품번호0
+                partner.partnerId,  //파트너아이디1
+                partner.partnerName,    //파트너명2
+                product.majorCategoryTitle, //대분류명3
+                product.subCategoryTitle,   //중분류명4
+                product.productTitle,   //상품명5
+                product.productPrice,   //판매가격6
+                product.productSellStatusCode,  //판매상태코드7
+                product.productRegdate, //등록일8
+                productImage.productImageNo,    //상품이미지번호9
+                productImage.productImageName,  //상품이미지명10
+                productImage.productImageDbName,    //상품이미지db명11
+                productImage.productImageExtension, //상품이미지확장자12
+                productImage.productImageThumbnailUrl,  //상품이미지썸네일주소13
+                productImage.productImageUrl,    //상품이미지주소14
+                product.productDescription, //15
+                product.giftProductRegisterCode,    //16
+                product.productSubProductCode   //17
+        );
+
+        //조인문
+        tupleJPQLQuery
+                .join(partner).on(product.productOwnerId.eq(partner.partnerId))
+                .leftJoin(productImage).on(product.productNo.eq(productImage.productNo));
+
+        //조건식
+        tupleJPQLQuery.where(product.productNo.eq(productNo));
+
+        //한 레코드만 반환
+        Tuple tuple = tupleJPQLQuery.fetchOne();
+
+        return tuple.toArray();
+
+    }
+
+    @Override
+    public List<Object[]> getStoreProductList(String storeId) {
+        QProduct product = QProduct.product;
+        QProductImage productImage = QProductImage.productImage;
+        QStore store = QStore.store;
+
+        JPQLQuery<Product> query = from(product);
+
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
+                product.productNo,  //상품번호0
+                product.giftProductRegisterCode,    //선물등록여부코드1
+                store.storeId,  //매장아이디2
+                store.storeName,    //가맹점명3
+                product.majorCategoryTitle, //대분류명4
+                product.subCategoryTitle,   //중분류명5
+                product.productTitle,   //상품명6
+                product.productPrice,   //판매가격7
+                product.productOwnerRole,   //상품등록자 권한8
                 product.productSellStatusCode,  //판매상태코드9
                 product.productRegdate, //등록일10
                 productImage.productImageNo,    //상품이미지번호11
@@ -270,7 +352,6 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
         //조인문
         tupleJPQLQuery
                 .join(store).on(product.productOwnerId.eq(store.storeId))
-                .leftJoin(giftProduct).on(product.productNo.eq(giftProduct.productNo))
                 .leftJoin(productImage).on(product.productNo.eq(productImage.productNo));
 
         //조건식
@@ -279,6 +360,130 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
 
         //정렬;
         tupleJPQLQuery.orderBy(product.productRegdate.desc());
+
+        //패치
+        List<Tuple> tuples = tupleJPQLQuery.fetch();
+
+        List<Object[]> resultList = new ArrayList<>();
+
+        tuples.forEach(tuple -> {
+            resultList.add(tuple.toArray());
+        });
+
+        return resultList;
+    }
+
+    @Override
+    public List<Object[]> getPartnerProductList(String partnerId) {
+        QProduct product = QProduct.product;
+        QProductImage productImage = QProductImage.productImage;
+        QPartner partner = QPartner.partner;
+
+        JPQLQuery<Product> query = from(product);
+
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
+                product.productNo,  //상품번호0
+                product.giftProductRegisterCode,    //선물등록여부코드1
+                partner.partnerId,  //매장아이디2
+                partner.partnerName,    //가맹점명3
+                product.majorCategoryTitle, //대분류명4
+                product.subCategoryTitle,   //중분류명5
+                product.productTitle,   //상품명6
+                product.productPrice,   //판매가격7
+                product.productSellStatusCode,  //판매상태코드8
+                product.productRegdate, //등록일9
+                productImage.productImageNo,    //상품이미지번호10
+                productImage.productImageName,  //상품이미지명11
+                productImage.productImageDbName,    //상품이미지db명12
+                productImage.productImageExtension, //상품이미지확장자13
+                productImage.productImageThumbnailUrl,  //상품이미지썸네일주소14
+                productImage.productImageUrl    //상품이미지주소15
+        );
+
+        //조인문
+        tupleJPQLQuery
+                .join(partner).on(product.productOwnerId.eq(partner.partnerId))
+                .leftJoin(productImage).on(product.productNo.eq(productImage.productNo));
+
+        //조건식
+
+        tupleJPQLQuery.where(product.productOwnerId.eq(partnerId));
+
+        //정렬;
+        tupleJPQLQuery.orderBy(product.productRegdate.desc());
+
+        //패치
+        List<Tuple> tuples = tupleJPQLQuery.fetch();
+
+        List<Object[]> resultList = new ArrayList<>();
+
+        tuples.forEach(tuple -> {
+            resultList.add(tuple.toArray());
+        });
+
+        return resultList;
+    }
+
+    @Override
+    public List<Object[]> getSubProductList(Long productNo) {
+        QProduct product = QProduct.product;
+        QSubProduct subProduct = QSubProduct.subProduct;
+
+        JPQLQuery<SubProduct> query = from(subProduct);
+
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
+                subProduct.subProductNo,    //서브상품번호0
+                product.productNo,  //상품번호1
+                subProduct.subProductName,  //서브상품명2
+                subProduct.subProductPrice  //서브상품가격3
+        );
+
+        //조인문
+        tupleJPQLQuery
+                .join(product).on(subProduct.productNo.eq(product.productNo));
+
+        //조건식
+
+        tupleJPQLQuery.where(subProduct.productNo.eq(productNo));
+
+        //정렬;
+        tupleJPQLQuery.orderBy(subProduct.subProductName.desc());
+
+        //패치
+        List<Tuple> tuples = tupleJPQLQuery.fetch();
+
+        List<Object[]> resultList = new ArrayList<>();
+
+        tuples.forEach(tuple -> {
+            resultList.add(tuple.toArray());
+        });
+
+        return resultList;
+    }
+
+    @Override
+    public List<Object[]> getGiftProduct(Long productNo) {
+        QProduct product = QProduct.product;
+        QGiftProduct giftProduct = QGiftProduct.giftProduct;
+
+        JPQLQuery<GiftProduct> query = from(giftProduct);
+
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
+                giftProduct.giftProductNo,  //선물상품번호0
+                product.productNo,  //상품번호1
+                giftProduct.giftProductDiscountCode,    //묶음할인여부코드2
+                giftProduct.giftProductDiscountInitQuantity,    //묶음할인수량3
+                giftProduct.giftProductDiscountTypeCode,    //할인타입코드4
+                giftProduct.giftProductDiscountValue,   //할인값5
+                giftProduct.giftProductDiscountPrice    //선물할인가격6
+        );
+
+        //조인문
+        tupleJPQLQuery
+                .join(product).on(giftProduct.productNo.eq(product.productNo));
+
+        //조건식
+        tupleJPQLQuery.where(giftProduct.productNo.eq(productNo));
 
         //패치
         List<Tuple> tuples = tupleJPQLQuery.fetch();

@@ -19,7 +19,7 @@
                     <div class="col-lg-10">
                         <div class="col-lg-6">
                             <table class="custom-table">
-                                <tr>
+                                <tr sec:authorize="hasRole('MA')">
                                     <th class="col-sm-3 m-b-xs">가맹점명</th>
                                     <td>
                                         <div class="col-sm-6 m-b-xs text-left">
@@ -83,7 +83,7 @@
                         <div class="col-lg-12">
                             <table class="table table-bordered table-hover">
                                 <thead>
-                                <th>상세</th>
+                                <!--<th>상세</th>-->
                                 <th sec:authorize="hasRole('MA')">가맹점명</th>
                                 <th>구매자전화번호</th>
                                 <th>구매자명</th>
@@ -97,11 +97,11 @@
                                 </thead>
                                 <tbody>
                                 <tr th:each="vo:${giftPayment.content}" name="table">
-                                    <td>
-                                        <a th:href="@{/wishwide/gift/detailGiftPayment/{giftPaymentNo}(giftPaymentNo=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
-                                            <img src="/img/menu.png" style="width: 35px; height: 35px;">
-                                        </a>
-                                    </td>
+                                    <!--<td>-->
+                                        <!--<a th:href="@{/wishwide/gift/detailGiftPayment/{giftPaymentNo}(giftPaymentNo=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">-->
+                                            <!--<img src="/img/menu.png" style="width: 35px; height: 35px;">-->
+                                        <!--</a>-->
+                                    <!--</td>-->
                                     <td sec:authorize="hasRole('MA')">[[${vo[2]}]]</td>
                                     <td>
                                         <span th:if="${#strings.length(vo[3])} == 10">[[${#strings.substring(vo[3], 0, 3)}]] - [[${#strings.substring(vo[3], 3, 6)}]] - [[${#strings.substring(vo[3], 6, 10)}]]</span>
