@@ -6,6 +6,7 @@ import com.wishwide.wishwide.file.FileManager;
 import com.wishwide.wishwide.persistence.ar.MarkerDataFileRepository;
 import com.wishwide.wishwide.persistence.ar.MarkerImageRepository;
 import com.wishwide.wishwide.persistence.device.DeviceImageRepository;
+import com.wishwide.wishwide.persistence.device.DeviceModelImageRepository;
 import com.wishwide.wishwide.persistence.product.ProductImageRepository;
 import com.wishwide.wishwide.persistence.store.StoreFileRepository;
 import com.wishwide.wishwide.persistence.store.StoreImageRepository;
@@ -53,6 +54,9 @@ public class FileController {
 
     @Autowired
     MarkerImageRepository markerImageRepository;
+
+    @Autowired
+    DeviceModelImageRepository deviceModelImageRepository;
 
     @GetMapping(value = "/download")
     public void downloadFile(@RequestParam("fileName") String fileName,
@@ -139,10 +143,9 @@ public class FileController {
         return new ResponseEntity("success", HttpStatus.OK);
     }
 
-    @GetMapping("/remove/deviceImage/{storeId}/{deviceImageTypeCode}")
-    public ResponseEntity removeDeviceImage(@PathVariable("storeId") String storeId,
-                                           @PathVariable("deviceImageTypeCode") String deviceImageTypeCode) {
-        DeviceImage deviceImage = deviceImageRepository.findByDeviceImageAndDeviceImageTypeCode(storeId, deviceImageTypeCode);
+    @GetMapping("/remove/deviceImage/{deviceNo}")
+    public ResponseEntity removeDeviceImage(@PathVariable("deviceNo") Long deviceNo) {
+        DeviceImage deviceImage = deviceImageRepository.findByDeviceImageAndDeviceNo(deviceNo);
 
         if(deviceImage != null){
             //클라우드 파일 삭제
@@ -151,6 +154,23 @@ public class FileController {
 
             //DB 정보 삭제
             deviceImageRepository.deleteById(deviceImage.getDeviceImageNo());
+            log.info("DB 삭제 완료");
+        }
+
+        return new ResponseEntity("success", HttpStatus.OK);
+    }
+
+    @GetMapping("/remove/deviceModelImage/{deviceModelNo}")
+    public ResponseEntity removeDeviceModelImage(@PathVariable("deviceModelNo") Long deviceModelNo) {
+        DeviceModelImage deviceModelImage = deviceModelImageRepository.findByDeviceModelImageAndDeviceModelNo(deviceModelNo);
+
+        if(deviceModelImage != null){
+            //클라우드 파일 삭제
+            removeCloudFile(deviceModelImage.getDeviceModelImageDbName());
+            log.info("클라우드 파일삭제 완료");
+
+            //DB 정보 삭제
+            deviceModelImageRepository.deleteById(deviceModelImage.getDeviceModelImageNo());
             log.info("DB 삭제 완료");
         }
 

@@ -1,0 +1,187 @@
+<div th:insert="~{layout/head::head}"></div>
+<script src="/js/managerValidation.js"></script>
+
+<div id="wrapper">
+
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>디바이스 모델 상세</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form method="post"  th:action="@{../updateDeviceModel}" class="form-horizontal" id="detailForm" enctype="multipart/form-data">
+                        <!--디바이스타입-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">디바이스 타입<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2" >
+                                <label class="radio-inline"><input type="radio" th:checked="${deviceModelVO[1]} == 'TABLET'" name="deviceTypeCode" value="TABLET">태블릿</label>
+                                <label class="radio-inline"><input type="radio" th:checked="${deviceModelVO[1]} == 'BEACON'" name="deviceTypeCode" value="BEACON">비콘</label>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--모델명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">모델명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="text" th:value="${deviceModelVO[2]}" maxlength="20" class="form-control title-input-validation" name="deviceModelTitle">
+                                <span class="msg-title-input-validation"/>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--해상도-->
+                        <div class="form-group" id="deviceModelResolution">
+                            <label class="col-sm-2 control-label">해상도<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-5">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <input type="text" th:value="${deviceModelVO[3]}" class="form-control" value="0" name="deviceModelResolutionWidth" maxlength="4" placeholder="1200">
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <input type="text" th:value="${deviceModelVO[4]}" class="form-control" value="0" name="deviceModelResolutionHeight" maxlength="4" placeholder="800">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+
+                        <!--디바이스 이미지-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">이미지</label>
+                            <div class="col-sm-2">
+                                <div class="fileinput fileinput-new" data-provides="fileinput" id="file1">
+                                    <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                    <a th:href="@{/file/download(fileName=${deviceModelVO[7]}, dbFileName=${deviceModelVO[8]})}"
+                                       class="btn btn-default file-download" th:if="${deviceModelVO[11]} != null">
+                                        <span class="fileinput-filename"></span>
+                                    </a>
+                                    <span class="fileinput-filename" th:if="${deviceModelVO[11]} == null"></span>
+                                    <div>
+                                        <span class="btn btn-default btn-file" onclick="removeDeviceModel(event, 'update');">
+                                            <span class="fileinput-new">파일 선택</span>
+                                            <span class="fileinput-exists">파일 변경</span>
+                                            <input type="file" name="deviceModelImage" class="file-validation" onchange="fileUploadValidation(this, 'image', '1')">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--수정, 목록 버튼-->
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" id="btnUpdate">수정</button>
+                                <a th:href="@{/wishwide/device/listDeviceModel(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" type="button" id="btnList">목록</button>
+                                </a>
+                            </div>
+                        </div>
+                        <input type="hidden" name="page" th:value="${pageVO.page}"/>
+                        <input type="hidden" name="size" th:value="${pageVO.size}"/>
+                        <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                        <input type="hidden" name="deviceModelNo" th:value="${deviceModelVO[0]}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+    <!-- 콘텐츠 END -->
+</div>
+<th:block >
+    <script th:inline="javascript">
+        var detailForm = $('#detailForm');
+
+        var isDeviceModelAlert = false;
+
+        var deviceModelNo = /*[[${deviceModelVO[0]}]]*/'';
+        var deviceModelImageNo = /*[[${deviceModelVO[6]}]]*/'';
+        var deviceModelImageName = /*[[${deviceModelVO[7]}]]*/'';
+        var deviceModelImageExtension = /*[[${deviceModelVO[9]}]]*/'';
+        var deviceModelImageThumbnailUrl = /*[[${deviceModelVO[10]}]]*/'';
+
+        $(document).ready(function () {
+            var deviceTypeCode = detailForm.find('[name="deviceTypeCode"]:checked').val();
+
+            if (deviceTypeCode == 'BEACON'){
+                $('#deviceModelResolution').css('display', 'none');
+            }
+
+            if(deviceModelImageNo != null) {
+                console.log('들어오니1');
+                isDeviceModelAlert = true;
+                processFile(deviceModelImageName, deviceModelImageExtension, deviceModelImageThumbnailUrl, 1);
+            }
+
+            detailForm.find('[name="deviceTypeCode"]').change(function (e) {
+                console.log(deviceTypeCode + '값');
+
+                //디바이스타입이 비콘일 경우 값 초기화 및 해상도란 없애기
+                if(deviceTypeCode == 'BEACON'){
+                    $('#deviceModelResolution').css('display', 'none');
+                    detailForm.find('[name="deviceModelResolutionWidth"]').val('0');
+                    detailForm.find('[name="deviceModelResolutionHeight"]').val('0');
+                }
+                else{
+                    $('#deviceModelResolution').css('display', 'block');
+                }
+            });
+
+
+            $('#btnUpdate').click(function (e) {
+                if(deviceTypeCode == 'TABLET'){
+                    var deviceModelResolutionWidth = detailForm.find('[name="deviceModelResolutionWidth"]').val();
+                    var deviceModelResolutionHeight = detailForm.find('[name="deviceModelResolutionHeight"]').val();
+
+                    if (deviceModelResolutionWidth == 0 || deviceModelResolutionHeight == 0){
+                        alert('해상도를 입력해주세요.');
+                        return false;
+                    }
+                }
+            });
+
+        });
+
+        function removeDeviceModel(e, type) {
+            if(isDeviceModelAlert == true) {
+                if (confirm('현재 파일이 삭제됩니다. \n계속 진행하시겠습니까?.')) {
+                    console.log('왜안넘어가');
+                    removeDeviceModelImage(deviceModelNo);
+                    $('#file1').find('.file-download').hide();
+                    isDeviceModelAlert = false;
+
+                    var element = $('#file1');
+                    element.addClass('fileinput-new').removeClass('fileinput-exists');
+                    element.find('.fileinput-filename').text('');
+                    element.find('.fileinput-preview thumbnail').css('display', 'none');
+                    element.find('.fileinput-preview').empty();
+                }
+                else {
+                    console.log(type);
+                    if (type == 'remove') e.stopPropagation();
+                    else if (type == 'update') e.preventDefault();
+                }
+            }
+        }
+
+    </script>
+</th:block>
+
+

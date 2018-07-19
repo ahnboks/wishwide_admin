@@ -471,11 +471,11 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
                 giftProduct.giftProductNo,  //선물상품번호0
                 product.productNo,  //상품번호1
-                giftProduct.giftProductDiscountCode,    //묶음할인여부코드2
-                giftProduct.giftProductDiscountInitQuantity,    //묶음할인수량3
-                giftProduct.giftProductDiscountTypeCode,    //할인타입코드4
+                giftProduct.giftBundleDiscountCode,    //묶음할인여부코드2
+                giftProduct.giftBundleDiscountInitQuantity,    //묶음할인수량3
+                giftProduct.giftBundleDiscountTypeCode,    //할인타입코드4
                 giftProduct.giftProductDiscountValue,   //할인값5
-                giftProduct.giftProductDiscountPrice    //선물할인가격6
+                giftProduct.productPrice    //선물할인가격6
         );
 
         //조인문

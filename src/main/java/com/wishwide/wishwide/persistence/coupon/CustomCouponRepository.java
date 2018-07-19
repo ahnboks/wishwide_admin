@@ -1,7 +1,6 @@
 package com.wishwide.wishwide.persistence.coupon;
 
 import com.wishwide.wishwide.domain.Coupon;
-import com.wishwide.wishwide.domain.Customer;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -13,4 +12,7 @@ public interface CustomCouponRepository extends CrudRepository<Coupon, Long>, Cu
 
     @Query(value = "SELECT c FROM Coupon c WHERE c.storeId = ?1 and c.couponTargetTypeCode = 'STAMP'")
     public Coupon findByStoreBenefitCoupon(String storeId);
+
+    @Query(value = "SELECT count(c) FROM Coupon c WHERE c.storeId = ?1 and c.couponTargetTypeCode = ?2")
+    public int findByStoreRegisterCoupon(String storeId, String couponTargetTypeCode);
 }

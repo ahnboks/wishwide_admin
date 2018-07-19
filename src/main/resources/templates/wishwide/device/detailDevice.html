@@ -107,7 +107,7 @@
                                         <span class="btn btn-default btn-file" onclick="removeDevice(event, 'update');">
                                             <span class="fileinput-new">파일 선택</span>
                                             <span class="fileinput-exists">파일 변경</span>
-                                            <input type="file" name="deviceImage">
+                                            <input type="file" name="deviceImage" class="file-validation" onchange="fileUploadValidation(this, 'image', '1')">
                                         </span>
                                     </div>
                                 </div>
@@ -148,8 +148,12 @@
         var deviceImageName = /*[[${deviceVO[12]}]]*/'';
         var deviceImageExtension = /*[[${deviceVO[14]}]]*/'';
         var deviceImageThumbnailUrl = /*[[${deviceVO[16]}]]*/'';
+        var deviceNo = /*[[${deviceVO[0]}]]*/'';
+
 
         $(document).ready(function () {
+            var deviceTypeCode = detailForm.find('[name="deviceTypeCode"]:checked').val();
+
             if(deviceImageNo != null) {
                 console.log('들어오니1');
                 isDeviceAlert = true;
@@ -157,7 +161,7 @@
             }
 
             detailForm.find('[name="deviceTypeCode"]').change(function (e) {
-                var deviceTypeCode = detailForm.find('[name="deviceTypeCode"]:checked').val();
+
 
                 console.log(deviceTypeCode + '값');
 
@@ -168,8 +172,10 @@
 
             $('#btnUpdate').click(function (e) {
                 var checkStore = $('.store-check-validation');
+                var deviceMacAddress =  detailForm.find('[name="deviceMacAddress"]').val();
                 var isStoreCheckedCnt = 0;
                 console.log(checkStore);
+                console.log(deviceMacAddress);
 
                 if(checkStore.length != 0){
                     for (var i = 0; i < checkStore.length; i++) {
@@ -183,6 +189,11 @@
                         return false;
                     }
 
+                }
+
+                if (deviceMacAddress == ''){
+                    alert('MAC주소를 입력해주세요.');
+                    return false;
                 }
             });
 
@@ -214,7 +225,7 @@
         function removeDevice(e, type) {
             if(isDeviceAlert == true) {
                 if (confirm('현재 파일이 삭제됩니다. \n계속 진행하시겠습니까?.')) {
-                    removeDeviceImage(storeId, "DV");
+                    removeDeviceImage(deviceNo);
                     $('#file1').find('.file-download').hide();
                     isDeviceAlert = false;
 

@@ -52,7 +52,7 @@ public class CustomDeviceRepositoryImpl extends QuerydslRepositorySupport implem
 
         //조인문
         tupleJPQLQuery
-                .leftJoin(deviceImage).on(device.storeId.eq(deviceImage.storeId).and(deviceImage.deviceImageTypeCode.eq("DV")))
+                .leftJoin(deviceImage).on(device.deviceNo.eq(deviceImage.deviceNo))
                 .join(store).on(device.storeId.eq(store.storeId));
 
         //조건식
@@ -153,7 +153,7 @@ public class CustomDeviceRepositoryImpl extends QuerydslRepositorySupport implem
         //조인문
         tupleJPQLQuery
                 .join(store).on(device.storeId.eq(store.storeId))
-                .leftJoin(deviceImage).on(device.storeId.eq(deviceImage.storeId).and(deviceImage.deviceImageTypeCode.eq("DV")));
+                .leftJoin(deviceImage).on(device.deviceNo.eq(deviceImage.deviceNo));
 
         //조건식
         tupleJPQLQuery.where(device.deviceNo.eq(deviceNo));
@@ -194,7 +194,7 @@ public class CustomDeviceRepositoryImpl extends QuerydslRepositorySupport implem
 
         //조인문
         tupleJPQLQuery
-                .leftJoin(deviceImage).on(device.storeId.eq(deviceImage.storeId).and(deviceImage.deviceImageTypeCode.eq("DV")))
+                .leftJoin(deviceImage).on(device.deviceNo.eq(deviceImage.deviceNo))
                 .join(store).on(device.storeId.eq(store.storeId));
 
         //조건식

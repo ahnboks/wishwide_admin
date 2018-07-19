@@ -90,7 +90,7 @@
                         <!--수정,삭제,목록 버튼-->
                         <div class="form-group">
                             <div class="text-center">
-                                <button class="btn btn-primary" type="submit" id="btnUpdate">수정</button>
+                                <button class="btn btn-primary" type="submit" id="btnUpdate" sec:authorize="hasRole('MA')">수정</button>
                                 <a th:href="@{/wishwide/ar/listMarker(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
                                     <button class="btn btn-white" type="button" id="btnList">목록</button>
                                 </a>

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport implements CustomBenefit {
     public CustomBenefitRepositoryImpl(){
-        super(Customer.class);
+        super(MembershipCustomer.class);
     }
 
     @Override
@@ -23,20 +23,20 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
                                          String roleCode,
                                          String sessionId,
                                          Pageable pageable) {
-        QCustomer customer = QCustomer.customer;
+        QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
         QStore store = QStore.store;
 
-        JPQLQuery<Customer> query = from(customer);
+        JPQLQuery<MembershipCustomer> query = from(customer);
 
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
-                customer.customerNo,    //고객번호0
+                customer.membershipCustomerNo,    //멤버쉽고객번호0
                 store.storeId,  //매장아이디1
                 store.storeName,        //매장명2
                 customer.customerPhone, //고객전화번호3
                 customer.customerName,  //고객명4
                 customer.customerBenefitTypeCode,   //고객혜택타입5
                 customer.customerBenefitValue,  //고객혜택값6
-                customer.customerRegdate    //고객 가입일시7
+                customer.membershipCustomerRegdate    //고객 가입일시7
         );
 
         //조인문
@@ -72,7 +72,7 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
         }
 
         //정렬;
-        tupleJPQLQuery.orderBy(customer.customerRegdate.desc());
+        tupleJPQLQuery.orderBy(customer.membershipCustomerRegdate.desc());
 
         //페이징
         tupleJPQLQuery
@@ -95,17 +95,17 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
 
     @Override
     public List<Object[]> getStoreCustomerList(String storeId) {
-        QCustomer customer = QCustomer.customer;
+        QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
         QStore store = QStore.store;    //매장
         QCustomerVisitHistory customerVisitHistory = QCustomerVisitHistory.customerVisitHistory;    //고객 방문수
         QGiftReceiveHistory giftReceiveHistory = QGiftReceiveHistory.giftReceiveHistory;    //선물구매수
         QCouponBox useCouponBox = new QCouponBox("use");    //사용한 쿠폰수
         QCouponBox notUsecouponBox = new QCouponBox("notUse");  //미사용한 쿠폰수
 
-        JPQLQuery<Customer> query = from(customer);
+        JPQLQuery<MembershipCustomer> query = from(customer);
 
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
-                customer.customerNo,    //고객번호0
+                customer.membershipCustomerNo,    //멤버쉽고객번호0
                 customer.customerPhone, //고객전화번호1
                 store.storeId,  //매장아이디2
                 store.storeName,    //가맹점명3
@@ -118,15 +118,15 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
                 customer.customerBenefitTypeCode,   //고객혜택타입10
                 customer.customerBenefitValue,  //고객혜택값11
                 customer.customerBirth, //고객생일12
-                customer.customerRegdate    //고객 가입일시13
+                customer.membershipCustomerRegdate    //고객 가입일시13
         );
 
         //조인문
         tupleJPQLQuery.join(store).on(customer.storeId.eq(store.storeId))
-                .leftJoin(giftReceiveHistory).on(customer.customerNo.eq(giftReceiveHistory.customerNo))
-                .leftJoin(customerVisitHistory).on(customer.customerNo.eq(customerVisitHistory.customerNo))
-                .leftJoin(useCouponBox).on(customer.customerNo.eq(useCouponBox.customerNo).and(useCouponBox.couponUseCode.eq(1)))
-                .leftJoin(notUsecouponBox).on(customer.customerNo.eq(notUsecouponBox.customerNo));
+                .leftJoin(giftReceiveHistory).on(customer.membershipCustomerNo.eq(giftReceiveHistory.membershipCustomerNo))
+                .leftJoin(customerVisitHistory).on(customer.membershipCustomerNo.eq(customerVisitHistory.membershipCustomerNo))
+                .leftJoin(useCouponBox).on(customer.membershipCustomerNo.eq(useCouponBox.membershipCustomerNo).and(useCouponBox.couponUseCode.eq(1)))
+                .leftJoin(notUsecouponBox).on(customer.membershipCustomerNo.eq(notUsecouponBox.membershipCustomerNo));
 
         //조건식
 
@@ -134,10 +134,10 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
         tupleJPQLQuery.where(customer.storeId.eq(storeId));
 
         //Group By
-        tupleJPQLQuery.groupBy(customer.customerNo);
+        tupleJPQLQuery.groupBy(customer.membershipCustomerNo);
 
         //정렬;
-        tupleJPQLQuery.orderBy(customer.customerRegdate.desc());
+        tupleJPQLQuery.orderBy(customer.membershipCustomerRegdate.desc());
 
         //패치
         List<Tuple> tuples = tupleJPQLQuery.fetch();
@@ -152,15 +152,15 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public List<Object[]> getStampHistoryList(Long customerNo, String storeId) {
+    public List<Object[]> getStampHistoryList(Long membershipCustomerNo, String storeId) {
         QStampHistory stampHistory = QStampHistory.stampHistory;
-        QCustomer customer = QCustomer.customer;
+        QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
 
         JPQLQuery<StampHistory> query = from(stampHistory);
 
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
                 stampHistory.stampHistoryNo,    //도장내역번호0
-                customer.customerNo,    //고객번호1
+                customer.membershipCustomerNo,    //멤버쉽고객번호1
                 customer.customerPhone, //고객전화번호2
                 customer.customerName,  //고객명3
                 stampHistory.stampSavingCnt,    //적립도장4
@@ -172,10 +172,10 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
         );
 
         //조인문
-        tupleJPQLQuery.join(customer).on(stampHistory.customerNo.eq(customer.customerNo));
+        tupleJPQLQuery.join(customer).on(stampHistory.membershipCustomerNo.eq(customer.membershipCustomerNo));
 
         //조건식
-        tupleJPQLQuery.where(stampHistory.customerNo.eq(customerNo).and(stampHistory.storeId.eq(storeId)));
+        tupleJPQLQuery.where(stampHistory.membershipCustomerNo.eq(membershipCustomerNo).and(stampHistory.storeId.eq(storeId)));
 
         //정렬;
         tupleJPQLQuery.orderBy(stampHistory.stampHistoryRegdate.desc());
@@ -193,15 +193,15 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public List<Object[]> getPointHistoryList(Long customerNo, String storeId) {
+    public List<Object[]> getPointHistoryList(Long membershipCustomerNo, String storeId) {
         QPointHistory pointHistory = QPointHistory.pointHistory;
-        QCustomer customer = QCustomer.customer;
+        QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
 
         JPQLQuery<PointHistory> query = from(pointHistory);
 
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
                 pointHistory.pointHistoryNo,    //포인트내역번호0
-                customer.customerNo,    //고객번호1
+                customer.membershipCustomerNo,    //멤버쉽고객번호1
                 customer.customerPhone, //고객전화번호2
                 customer.customerName,  //고객명3
                 pointHistory.pointSavingCnt,    //적립포인트4
@@ -213,10 +213,10 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
         );
 
         //조인문
-        tupleJPQLQuery.join(customer).on(pointHistory.customerNo.eq(customer.customerNo));
+        tupleJPQLQuery.join(customer).on(pointHistory.membershipCustomerNo.eq(customer.membershipCustomerNo));
 
         //조건식
-        tupleJPQLQuery.where(pointHistory.customerNo.eq(customerNo).and(pointHistory.storeId.eq(storeId)));
+        tupleJPQLQuery.where(pointHistory.membershipCustomerNo.eq(membershipCustomerNo).and(pointHistory.storeId.eq(storeId)));
 
         //정렬;
         tupleJPQLQuery.orderBy(pointHistory.pointHistoryRegdate.desc());

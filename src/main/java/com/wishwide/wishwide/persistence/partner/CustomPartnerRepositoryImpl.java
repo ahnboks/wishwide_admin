@@ -128,7 +128,7 @@ public class CustomPartnerRepositoryImpl extends QuerydslRepositorySupport imple
         QStoreImage storeImage = QStoreImage.storeImage;
         QDevice device = QDevice.device;
         QProduct product = QProduct.product;
-        QCustomer customer = QCustomer.customer;
+        QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
         QGiftReceiveHistory giftReceiveHistory = QGiftReceiveHistory.giftReceiveHistory;
         QCouponBox couponBox = QCouponBox.couponBox;
 
@@ -146,7 +146,7 @@ public class CustomPartnerRepositoryImpl extends QuerydslRepositorySupport imple
                 storeImage.storeImageUrl,           //로고주소8
                 device.deviceNo.countDistinct(),    //디바이스수9
                 product.productNo.countDistinct(),  //상품수(판매중인)10
-                customer.customerNo.countDistinct(),    //고객수11
+                customer.membershipCustomerNo.countDistinct(),    //고객수11
                 giftReceiveHistory.giftReceiveHistoryNo.countDistinct(),    //선물거래수12
                 couponBox.couponBoxNo.countDistinct(),  //쿠폰사용수13
                 store.storeServiceOperationCode //서비스운영코드14
@@ -194,7 +194,7 @@ public class CustomPartnerRepositoryImpl extends QuerydslRepositorySupport imple
         QStoreImage storeImage = QStoreImage.storeImage;
         QDevice device = QDevice.device;
         QProduct product = QProduct.product;
-        QCustomer customer = QCustomer.customer;
+        QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
         QGiftReceiveHistory giftReceiveHistory = QGiftReceiveHistory.giftReceiveHistory;
         QCouponBox couponBox = QCouponBox.couponBox;
 
@@ -212,7 +212,7 @@ public class CustomPartnerRepositoryImpl extends QuerydslRepositorySupport imple
                 storeImage.storeImageUrl,           //로고주소8
                 device.deviceNo.countDistinct(),    //디바이스수9
                 product.productNo.countDistinct(),  //상품수(판매중인)10
-                customer.customerNo.countDistinct(),    //고객수11
+                customer.membershipCustomerNo.countDistinct(),    //고객수11
                 giftReceiveHistory.giftReceiveHistoryNo.countDistinct(),    //선물거래수12
                 couponBox.couponBoxNo.countDistinct(),  //쿠폰사용수13
                 store.storeServiceOperationCode, //서비스운영코드14

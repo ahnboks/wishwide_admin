@@ -475,7 +475,7 @@ public class ProductController {
         });
 
         //VO 세팅
-        productVO.setProductOwnerRole("ST");
+        productVO.setProductOwnerRole("PT");
 
         //상품 이미지 파일 값 저장
         ProductImage pm = saveDBProductImage(productVO.getProductOwnerId(), saveCloudFile(productImage));

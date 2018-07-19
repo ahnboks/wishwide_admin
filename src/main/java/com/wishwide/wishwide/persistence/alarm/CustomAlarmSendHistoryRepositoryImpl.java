@@ -28,7 +28,7 @@ public class CustomAlarmSendHistoryRepositoryImpl extends QuerydslRepositorySupp
                                                   Pageable pageable) {
         QAlarmSendHistory alarmSendHistory = QAlarmSendHistory.alarmSendHistory;
         QStore store = QStore.store;
-        QCustomer customer = QCustomer.customer;
+        QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
 
         JPQLQuery<AlarmSendHistory> query = from(alarmSendHistory);
 
@@ -51,7 +51,7 @@ public class CustomAlarmSendHistoryRepositoryImpl extends QuerydslRepositorySupp
                 alarmSendHistory.alarmMessageUpdateCode,    //알림메시지업데이트여부코드15
                 alarmSendHistory.alarmSendHistoryRegdate,    //알림발송일시 16
                 alarmSendHistory.alarmSendTypeCode, //알림발송유형코드17
-                customer.customerNo,    //고객번호18
+                customer.membershipCustomerNo,    //멤버쉽고객번호18
                 customer.customerPhone,  //고객전화번호19
                 customer.customerName   //고객명20
         );
@@ -59,7 +59,7 @@ public class CustomAlarmSendHistoryRepositoryImpl extends QuerydslRepositorySupp
         //조인문
         tupleJPQLQuery
                 .leftJoin(store).on(alarmSendHistory.storeId.eq(store.storeId))
-                .leftJoin(customer).on(alarmSendHistory.customerNo.eq(customer.customerNo));
+                .leftJoin(customer).on(alarmSendHistory.membershipCustomerNo.eq(customer.membershipCustomerNo));
 
         //검색조건 : 가맹점명
         if(!searchUserId.equals("ALL")){

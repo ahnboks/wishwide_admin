@@ -46,7 +46,7 @@ public class BenefitController {
 
         log.info("세션 : "+sessionId+roleCode);
 
-        Pageable pageable = pageVO.makePageable(0, "customerNo");
+        Pageable pageable = pageVO.makePageable(0, "membershipCustomerNo");
 
         Page<Object[]> result = customBenefitRepository.getBenefitPage(
                 pageVO.getType(),   //검색조건
@@ -77,18 +77,18 @@ public class BenefitController {
     }
 
     //도장내역 리스트 가져오기
-    @GetMapping("/selectStampHistory/{storeId}/{customerNo}")
+    @GetMapping("/selectStampHistory/{storeId}/{membershipCustomerNo}")
     public ResponseEntity<List<Object[]>> selectStampHistory(@PathVariable("storeId") String storeId,
-                                                             @PathVariable("customerNo") Long customerNo) {
+                                                             @PathVariable("membershipCustomerNo") Long membershipCustomerNo) {
         log.info("코드 : " + storeId);
-        return new ResponseEntity<>(customBenefitRepository.getStampHistoryList(customerNo,storeId), HttpStatus.CREATED);
+        return new ResponseEntity<>(customBenefitRepository.getStampHistoryList(membershipCustomerNo,storeId), HttpStatus.CREATED);
     }
 
     //포인트내역 리스트 가져오기
-    @GetMapping("/selectPointHistory/{storeId}/{customerNo}")
+    @GetMapping("/selectPointHistory/{storeId}/{membershipCustomerNo}")
     public ResponseEntity<List<Object[]>> selectPointHistory(@PathVariable("storeId") String storeId,
-                                                             @PathVariable("customerNo") Long customerNo) {
+                                                             @PathVariable("membershipCustomerNo") Long membershipCustomerNo) {
         log.info("코드 : " + storeId);
-        return new ResponseEntity<>(customBenefitRepository.getPointHistoryList(customerNo,storeId), HttpStatus.CREATED);
+        return new ResponseEntity<>(customBenefitRepository.getPointHistoryList(membershipCustomerNo,storeId), HttpStatus.CREATED);
     }
 }

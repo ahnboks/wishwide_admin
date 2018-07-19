@@ -98,14 +98,14 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">이미지</label>
                             <div class="col-sm-2">
-                                <div class="fileinput fileinput-new" data-provides="fileinput">
+                                <div class="fileinput fileinput-new" data-provides="fileinput" id="file1">
                                     <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
                                     <span class="fileinput-filename"></span>
                                     <div>
                                         <span class="btn btn-default btn-file">
                                             <span class="fileinput-new">파일 선택</span>
                                             <span class="fileinput-exists">파일 변경</span>
-                                            <input type="file" name="deviceImage"/>
+                                            <input type="file" name="deviceImage" class="file-validation" onchange="fileUploadValidation(this, 'image', '1')"/>
                                         </span>
                                     </div>
                                 </div>
@@ -213,6 +213,7 @@
 
             $('#btnSubmit').click(function () {
                 var checkStore = $('.store-check-validation');
+                var deviceMacAddress =  registerForm.find('[name="deviceMacAddress"]').val();
                 var isStoreCheckedCnt = 0;
                 console.log(checkStore);
 
@@ -228,6 +229,10 @@
                         return false;
                     }
 
+                }
+                if (deviceMacAddress == ''){
+                    alert('MAC주소를 입력해주세요.');
+                    return false;
                 }
             });
 

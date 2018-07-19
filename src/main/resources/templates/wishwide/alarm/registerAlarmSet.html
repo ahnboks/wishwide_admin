@@ -374,7 +374,7 @@
 
                                 $('#selectStoreCustomer').append(
                                     '<tr>' +
-                                    '<td><input type="checkbox" class="customer-check-validation" name="customerNo" value="' + item[0] + '"></td>' +
+                                    '<td><input type="checkbox" class="membershipCustomer-check-validation" name="membershipCustomerNo" value="' + item[0] + '"></td>' +
                                     '<td>' + item[1].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/, "$1-$2-$3") + '</td>' +
                                     '<td>' + customerGradeTypeCode + '</td>' +
                                     '<td>' + item[5] + '</td>' +
@@ -487,7 +487,7 @@
                     return false;
                 }
 
-                var checkCustomer = $('.customer-check-validation');
+                var checkCustomer = $('.membershipCustomer-check-validation');
                 var isCustomerCheckedCnt = 0;
                 console.log(checkCustomer);
 

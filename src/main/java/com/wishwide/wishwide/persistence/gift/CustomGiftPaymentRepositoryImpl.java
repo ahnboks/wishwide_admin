@@ -166,4 +166,50 @@ public class CustomGiftPaymentRepositoryImpl extends QuerydslRepositorySupport i
 
         return resultList;
     }
+
+    @Override
+    public List<Object[]> getCustomerGiftPaymentList(Long customerNo) {
+        QGiftPayment giftPayment = QGiftPayment.giftPayment;
+        QStore store = QStore.store;
+        QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
+
+        JPQLQuery<GiftPayment> query = from(giftPayment);
+
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
+                giftPayment.giftPaymentNo,  //선물결제번호0
+                store.storeId,  //매장아이디1
+                store.storeName,    //가맹점명2
+                giftPayment.giftSenderPhone,    //구매자 전화번호3
+                giftPayment.giftSenderName, //구매자명4
+                giftPayment.giftReceiverPhone,  //수신자 전화번호5
+                giftPayment.giftReceiverName,   //수신자명6
+                giftPayment.productTitle,   //상품명7
+                giftPayment.giftQuantity,   //선물수량8
+                giftPayment.giftPaymentPrice,   //선물결제가격9
+                giftPayment.giftPaymentStatusCode,  //선물결제상태10
+                giftPayment.giftPaymentRegdate  //선물결제일11
+        );
+
+        //조인문
+        tupleJPQLQuery.join(store).on(giftPayment.storeId.eq(store.storeId))
+                .join(customer).on(giftPayment.membershipCustomerNo.eq(customer.membershipCustomerNo));
+
+        //조건식
+        tupleJPQLQuery.where(customer.membershipCustomerNo.eq(customerNo)
+                .and(customer.storeId.eq(giftPayment.storeId)));
+
+        //정렬;
+        tupleJPQLQuery.orderBy(giftPayment.giftPaymentRegdate.desc());
+
+        //패치
+        List<Tuple> tuples = tupleJPQLQuery.fetch();
+
+        List<Object[]> resultList = new ArrayList<>();
+
+        tuples.forEach(tuple -> {
+            resultList.add(tuple.toArray());
+        });
+
+        return resultList;
+    }
 }

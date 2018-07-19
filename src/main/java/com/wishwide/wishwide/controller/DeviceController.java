@@ -1,9 +1,12 @@
 package com.wishwide.wishwide.controller;
 
 import com.wishwide.wishwide.domain.Device;
-import com.wishwide.wishwide.persistence.device.DeviceImageRepository;
+import com.wishwide.wishwide.domain.DeviceModel;
+import com.wishwide.wishwide.domain.DeviceModelImage;
 import com.wishwide.wishwide.persistence.device.CustomDeviceModelRepository;
 import com.wishwide.wishwide.persistence.device.CustomDeviceRepository;
+import com.wishwide.wishwide.persistence.device.DeviceImageRepository;
+import com.wishwide.wishwide.persistence.device.DeviceModelImageRepository;
 import com.wishwide.wishwide.persistence.store.CustomStoreRepository;
 import com.wishwide.wishwide.vo.PageMaker;
 import com.wishwide.wishwide.vo.PageVO;
@@ -28,6 +31,7 @@ import java.util.List;
 import static com.wishwide.wishwide.controller.DefaultController.pageRedirectProperty;
 import static com.wishwide.wishwide.file.FileManager.saveCloudFile;
 import static com.wishwide.wishwide.file.FileManager.saveDBDeviceImage;
+import static com.wishwide.wishwide.file.FileManager.saveDBDeviceModelImage;
 
 @Log
 @Controller
@@ -44,6 +48,125 @@ public class DeviceController {
 
     @Autowired
     DeviceImageRepository deviceImageRepository;
+
+    @Autowired
+    DeviceModelImageRepository deviceModelImageRepository;
+
+    /*디바이스모델*/
+
+    //리스트
+    @GetMapping("/listDeviceModel")
+    public void listDeviceModel(HttpServletRequest request,
+                           @ModelAttribute("pageVO") PageVO pageVO,
+                           Model model) {
+        Pageable pageable = pageVO.makePageable(0, "deviceModelNo");
+
+        Page<Object[]> result = customDeviceModelRepository.getDeviceModelPage(
+                pageVO.getType(),   //검색조건
+                pageVO.getKeyword(),    //키워드
+                pageVO.getDeviceTypeCode(),
+                pageable);
+
+        log.info("결과 값 : " + result);
+
+        log.info("총 페이지 수 : " + result.getTotalPages());
+
+        log.info("총 행 수" + result.getTotalElements());
+
+        result.forEach(deviceModel -> {
+            log.info("디바이스모델 정보"+ Arrays.toString(deviceModel));
+        });
+
+        //디바이스모델 리스트
+        model.addAttribute("deviceModelVO", new PageMaker<>(result));
+
+        //총 페이지 수
+        model.addAttribute("totalPages", result.getTotalElements());
+    }
+
+    //등록
+    @GetMapping("/registerDeviceModel")
+    public void registerDeviceModel(@ModelAttribute("pageVO") PageVO pageVO,
+                                  Model model) {
+        log.info("디바이스모델 등록 페이지");
+    }
+
+    @PostMapping("/postRegisterDeviceModel")
+    public String postRegisterDeviceModel(@ModelAttribute("deviceModelVO") DeviceModel deviceModelVO,
+                                          @RequestParam(value = "deviceModelImage", required = false) MultipartFile deviceModelImage,
+                                          RedirectAttributes redirectAttributes,
+                                          PageVO pageVO) {
+        log.info("등록 데이터 : " + deviceModelVO);
+
+        //디바이스 정보 저장
+        Long deviceModelNo = customDeviceModelRepository.save(deviceModelVO).getDeviceModelNo();
+
+        //디바이스모델 이미지 파일 등록
+        if (deviceModelImage != null && !(deviceModelImage.isEmpty())) {
+            deviceModelImageRepository.save(saveDBDeviceModelImage(deviceModelNo, "DVM", saveCloudFile(deviceModelImage)));
+            log.info("디바이스모델 이미지 등록 성공");
+        }
+
+        redirectAttributes.addFlashAttribute("message", "successRegister");
+        pageRedirectProperty(redirectAttributes, pageVO);
+
+        log.info("디바이스모델 등록 성공");
+
+        return "redirect:/wishwide/device/listDeviceModel";
+    }
+
+    //상세
+    @GetMapping("/detailDeviceModel/{deviceModelNo}")
+    public String detailDeviceModel(@PathVariable("deviceModelNo") Long deviceModelNo,
+                              @ModelAttribute("pageVO") PageVO pageVO,
+                              Model model){
+        //디바이스 정보
+        model.addAttribute("deviceModelVO", customDeviceModelRepository.getDeviceModelDetail(deviceModelNo));
+
+        //페이징 정보
+        model.addAttribute("pageVO", pageVO);
+
+        return "wishwide/device/detailDeviceModel";
+    }
+
+    //수정
+    @PostMapping("/updateDeviceModel")
+    public String updateDeviceModel(@ModelAttribute("deviceModelVO") DeviceModel deviceModelVO,
+                                    @RequestParam(value = "deviceModelImage", required = false) MultipartFile deviceModelImage,
+                                    RedirectAttributes redirectAttributes,
+                                    PageVO pageVO){
+        log.info("수정 데이터 : "+deviceModelVO);
+
+        //매장 정보 조회
+        customDeviceModelRepository.findById(deviceModelVO.getDeviceModelNo()).ifPresent(deviceModel -> {
+
+            //디바이스모델 이미지 파일 등록
+            if (deviceModelImage != null && !(deviceModelImage.isEmpty())) {
+                deviceModelImageRepository.save(saveDBDeviceModelImage(deviceModel.getDeviceModelNo(), "DVM", saveCloudFile(deviceModelImage)));
+                log.info("디바이스모델 이미지 등록 성공");
+            }
+
+            //수정 값 세팅
+            deviceModel.setDeviceModelTitle(deviceModelVO.getDeviceModelTitle());
+            deviceModel.setDeviceTypeCode(deviceModelVO.getDeviceTypeCode());
+            deviceModel.setDeviceModelResolutionHeight(deviceModelVO.getDeviceModelResolutionHeight());
+            deviceModel.setDeviceModelResolutionWidth(deviceModelVO.getDeviceModelResolutionWidth());
+
+            customDeviceModelRepository.save(deviceModel);
+
+            redirectAttributes.addFlashAttribute("message", "successUpdate");
+
+            pageRedirectProperty(redirectAttributes, pageVO);
+
+            log.info("디바이스모델 수정 성공");
+        });
+
+
+        return "redirect:/wishwide/device/listDeviceModel";
+
+    }
+
+    /*디바이스*/
 
     //리스트
     @GetMapping("/listDevice")
@@ -109,12 +232,6 @@ public class DeviceController {
                                      PageVO pageVO) {
         log.info("등록 데이터 : "+deviceVO + ", 디바이스 맥주소 : "+deviceMacAddressList);
 
-        //디바이스 이미지 파일 등록
-        if (deviceImage != null && !(deviceImage.isEmpty())) {
-            deviceImageRepository.save(saveDBDeviceImage("DV", deviceVO.getStoreId(), saveCloudFile(deviceImage)));
-            log.info("디바이스 이미지 등록 성공");
-        }
-
         //VO에 세션값 세팅
 
         String deviceMacAddress = "";
@@ -145,19 +262,25 @@ public class DeviceController {
         }
 
         //디바이스 정보 저장
-        customDeviceRepository.save(deviceVO);
+        Long deviceNo = customDeviceRepository.save(deviceVO).getDeviceNo();
+
+        //디바이스 이미지 파일 등록
+        if (deviceImage != null && !(deviceImage.isEmpty())) {
+            deviceImageRepository.save(saveDBDeviceImage(deviceNo, "DV", deviceVO.getStoreId(), saveCloudFile(deviceImage)));
+            log.info("디바이스 이미지 등록 성공");
+        }
 
         redirectAttributes.addFlashAttribute("message", "successRegister");
         pageRedirectProperty(redirectAttributes, pageVO);
 
-        log.info("파트너 등록 성공");
+        log.info("디바이스 등록 성공");
 
         return "redirect:/wishwide/device/listDevice";
     }
 
     //상세
     @GetMapping("/detailDevice/{deviceNo}")
-    public String detailStore(@PathVariable("deviceNo") Long deviceNo,
+    public String detailDevice(@PathVariable("deviceNo") Long deviceNo,
                               @ModelAttribute("pageVO") PageVO pageVO,
                               Model model){
         //디바이스 정보
@@ -182,7 +305,7 @@ public class DeviceController {
         customDeviceRepository.findById(deviceVO.getDeviceNo()).ifPresent(device -> {
             //디바이스 이미지 파일 등록
             if (deviceImage != null && !(deviceImage.isEmpty())) {
-                deviceImageRepository.save(saveDBDeviceImage("DV", deviceVO.getStoreId(), saveCloudFile(deviceImage)));
+                deviceImageRepository.save(saveDBDeviceImage(device.getDeviceNo(),"DV", deviceVO.getStoreId(), saveCloudFile(deviceImage)));
                 log.info("디바이스 이미지 등록 성공");
             }
 

@@ -7,7 +7,6 @@ import com.wishwide.wishwide.persistence.customer.CustomCustomerRepository;
 import com.wishwide.wishwide.persistence.store.CustomStoreRepository;
 import com.wishwide.wishwide.vo.PageMaker;
 import com.wishwide.wishwide.vo.PageVO;
-import javafx.scene.input.DataFormat;
 import lombok.extern.java.Log;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,24 +112,24 @@ public class AlarmController {
     public String postRegisterAlarmSet(@ModelAttribute("alarmSendHistoryVO") AlarmSendHistory alarmSendHistoryVO,
                                        @RequestParam(value = "reserveDate", required = false) String reserveDate,
                                        @RequestParam(value = "reserveTime", required = false) String reserveTime,
-                                       @RequestParam("customerNo") List<Long> customerNoList,
+                                       @RequestParam("membershipCustomerNo") List<Long> membershipCustomerNoList,
                                        @ModelAttribute("pageVO") PageVO pageVO,
                                        RedirectAttributes redirectAttributes) {
-        log.info("데이터 : " + alarmSendHistoryVO + ", 날짜 : " + reserveDate + reserveTime + ", 고객" + customerNoList);
+        log.info("데이터 : " + alarmSendHistoryVO + ", 날짜 : " + reserveDate + reserveTime + ", 고객" + membershipCustomerNoList);
 
 
-        if (customerNoList != null) {
-            for (Long customerNo : customerNoList) {
-                Customer customer = customCustomerRepository.findById(customerNo).get();
+        if (membershipCustomerNoList != null) {
+            for (Long membershipCustomerNo : membershipCustomerNoList) {
+                MembershipCustomer membershipCustomer = customCustomerRepository.findById(membershipCustomerNo).get();
 
-                String message = setAlarmMessage(alarmSendHistoryVO.getAlarmMessage(), customer, alarmSendHistoryVO.getStoreId());
+                String message = setAlarmMessage(alarmSendHistoryVO.getAlarmMessage(), membershipCustomer, alarmSendHistoryVO.getStoreId());
 
                 //내역 저장
                 AlarmSendHistory alarmSendHistory = new AlarmSendHistory();
-                alarmSendHistory.setCustomerNo(customerNo);
-                alarmSendHistory.setCustomerPhone(customer.getCustomerPhone());
-                alarmSendHistory.setCustomerGradeTypeCode(customer.getCustomerGradeTypeCode());
-                alarmSendHistory.setCustomerName(customer.getCustomerName());
+                alarmSendHistory.setMembershipCustomerNo(membershipCustomerNo);
+                alarmSendHistory.setCustomerPhone(membershipCustomer.getCustomerPhone());
+                alarmSendHistory.setCustomerGradeTypeCode(membershipCustomer.getCustomerGradeTypeCode());
+                alarmSendHistory.setCustomerName(membershipCustomer.getCustomerName());
                 alarmSendHistory.setAlarmMessage(message);
                 alarmSendHistory.setStoreId(alarmSendHistoryVO.getStoreId());
                 alarmSendHistory.setAlarmSendTypeCode(alarmSendHistoryVO.getAlarmSendTypeCode());
@@ -152,10 +151,10 @@ public class AlarmController {
 
                 //로그 저장
                 AlarmSendLog alarmSendLog = new AlarmSendLog();
-                alarmSendLog.setCustomerNo(customerNo);
-                alarmSendLog.setCustomerPhone(customer.getCustomerPhone());
-                alarmSendLog.setCustomerGradeTypeCode(customer.getCustomerGradeTypeCode());
-                alarmSendLog.setCustomerName(customer.getCustomerName());
+                alarmSendLog.setMembershipCustomerNo(membershipCustomerNo);
+                alarmSendLog.setCustomerPhone(membershipCustomer.getCustomerPhone());
+                alarmSendLog.setCustomerGradeTypeCode(membershipCustomer.getCustomerGradeTypeCode());
+                alarmSendLog.setCustomerName(membershipCustomer.getCustomerName());
                 alarmSendLog.setAlarmMessage(message);
                 alarmSendLog.setStoreId(alarmSendHistoryVO.getStoreId());
                 alarmSendLog.setAlarmSendTypeCode(alarmSendHistoryVO.getAlarmSendTypeCode());
@@ -178,7 +177,7 @@ public class AlarmController {
                 MsgQueue msgQueue = new MsgQueue();
                 msgQueue.setMsg_type("3");
                 msgQueue.setFilecnt(0);
-                msgQueue.setDstaddr(customer.getCustomerPhone());
+                msgQueue.setDstaddr(membershipCustomer.getCustomerPhone());
                 msgQueue.setCallback("01088041229");
                 msgQueue.setText(alarmSendHistoryVO.getAlarmMessage());
 
@@ -544,21 +543,21 @@ public class AlarmController {
     /*메소드*/
 
     //알림 메시지 set
-    private String setAlarmMessage(String alarmMessage, Customer customer, String storeId) {
+    private String setAlarmMessage(String alarmMessage, MembershipCustomer membershipCustomer, String storeId) {
         if (alarmMessage.contains("#{매장명}")) {
             System.out.println("1");
             alarmMessage = alarmMessage.replace("#{매장명}", customStoreRepository.findById(storeId).get().getStoreName());
         }
         if (alarmMessage.contains("#{수신자명}")) {
             System.out.println("2");
-            if (customer.getCustomerName() != null)
-                alarmMessage = alarmMessage.replace("#{수신자명}", customer.getCustomerName());
+            if (membershipCustomer.getCustomerName() != null)
+                alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerName());
             else
-                alarmMessage = alarmMessage.replace("#{수신자명}", customer.getCustomerPhone());
+                alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerPhone());
         }
         if (alarmMessage.contains("#{수신자전화번호}")) {
             System.out.println("3");
-            alarmMessage = alarmMessage.replace("#{수신자전화번호}", customer.getCustomerPhone());
+            alarmMessage = alarmMessage.replace("#{수신자전화번호}", membershipCustomer.getCustomerPhone());
         }
 
         System.out.println(alarmMessage);

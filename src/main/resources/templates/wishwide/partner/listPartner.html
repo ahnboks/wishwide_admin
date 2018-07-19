@@ -309,7 +309,7 @@
                                     '<td><img src="'+productImage+'" style="width: 35px; height: 35px;"></td>' +
                                     '<td>' + majorCategoryTitle + '/' + subCategoryTitle + '</td>' +
                                     '<td>' + item[6] + '</td>' +
-                                    '<td>' + item[7] + '원</td>' +
+                                    '<td>' + item[7].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원</td>' +
                                     '<td>' + productSellStatusCode + '</td>' +
                                     '</tr>'
                                 );

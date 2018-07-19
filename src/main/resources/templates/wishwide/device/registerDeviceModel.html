@@ -1,0 +1,147 @@
+<div th:insert="~{layout/head::head}"></div>
+<script src="/js/managerValidation.js"></script>
+
+<div id="wrapper">
+
+    <!-- 사이드바 START -->
+    <div th:insert="~{layout/sidebar::sidebar}"></div>
+    <!-- 사이드바 END -->
+
+    <!-- 콘텐츠 START -->
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <!-- 헤더 START-->
+        <div th:insert="~{layout/header::header}"></div>
+        <!-- 헤더 END-->
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h2>디바이스 모델 등록</h2>
+                </div>
+                <div class="ibox-content">
+                    <!--폼 START-->
+                    <form method="post" th:action="@{postRegisterDeviceModel}" class="form-horizontal" id="registerForm" enctype="multipart/form-data">
+                        <!--디바이스타입-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">디바이스 타입<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2" >
+                                <label class="radio-inline"><input type="radio" name="deviceTypeCode" value="TABLET" checked>태블릿</label>
+                                <label class="radio-inline"><input type="radio" name="deviceTypeCode" value="BEACON">비콘</label>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--모델명-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">모델명<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-2">
+                                <input type="text" maxlength="20" class="form-control title-input-validation" name="deviceModelTitle">
+                                <span class="msg-title-input-validation"/>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--해상도-->
+                        <div class="form-group" id="deviceModelResolution">
+                            <label class="col-sm-2 control-label">해상도<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-5">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value="0" name="deviceModelResolutionWidth" maxlength="4" placeholder="1200">
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value="0" name="deviceModelResolutionHeight" maxlength="4" placeholder="800">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <!--디바이스 이미지-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">이미지</label>
+                            <div class="col-sm-2">
+                                <div class="fileinput fileinput-new" data-provides="fileinput" id="file1">
+                                    <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
+                                    <span class="fileinput-filename"></span>
+                                    <div>
+                                        <span class="btn btn-default btn-file">
+                                            <span class="fileinput-new">파일 선택</span>
+                                            <span class="fileinput-exists">파일 변경</span>
+                                            <input type="file" name="deviceModelImage" class="file-validation" onchange="fileUploadValidation(this, 'image', '1')"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+
+                        <!--등록, 목록 버튼-->
+                        <div class="form-group">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" id="btnSubmit">등록</button>
+                                <a th:href="@{/wishwide/device/listDeviceModel(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
+                                    <button class="btn btn-white" type="button" id="btnList">목록</button>
+                                </a>
+                            </div>
+                        </div>
+                        <input type="hidden" name="page" th:value="${pageVO.page}"/>
+                        <input type="hidden" name="size" th:value="${pageVO.size}"/>
+                        <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 START-->
+        <div th:insert="~{layout/footer::footer}"/>
+        <!-- 푸터 END -->
+    </div>
+    <!-- 콘텐츠 END -->
+</div>
+<th:block >
+<script th:inline="javascript">
+        var registerForm = $('#registerForm');
+
+        $(document).ready(function () {
+            $('.chosen-select').chosen({width: "100%"});
+
+            registerForm.find('[name="deviceTypeCode"]').change(function (e) {
+                var deviceTypeCode = registerForm.find('[name="deviceTypeCode"]:checked').val();
+
+                console.log(deviceTypeCode + '값');
+
+                //디바이스타입이 비콘일 경우 값 초기화 및 해상도란 없애기
+                if(deviceTypeCode == 'BEACON'){
+                    $('#deviceModelResolution').css('display', 'none');
+                    registerForm.find('[name="deviceModelResolutionWidth"]').val('0');
+                    registerForm.find('[name="deviceModelResolutionHeight"]').val('0');
+                }
+                else{
+                    $('#deviceModelResolution').css('display', 'block');
+                }
+
+            });
+
+            $('#btnSubmit').click(function (e) {
+                var deviceTypeCode = registerForm.find('[name="deviceTypeCode"]:checked').val();
+
+                if(deviceTypeCode == 'TABLET'){
+                    var deviceModelResolutionWidth = registerForm.find('[name="deviceModelResolutionWidth"]').val();
+                    var deviceModelResolutionHeight = registerForm.find('[name="deviceModelResolutionHeight"]').val();
+
+                    if (deviceModelResolutionWidth == 0 || deviceModelResolutionHeight == 0){
+                        alert('해상도를 입력해주세요.');
+                        return false;
+                    }
+                }
+
+            });
+
+        });
+
+</script>
+</th:block>
+
+

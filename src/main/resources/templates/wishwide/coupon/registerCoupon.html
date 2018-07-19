@@ -55,7 +55,7 @@
                         <!--상품 선택-->
                         <div class="form-group" id="selectProduct" style="display:none;">
                             <label class="col-sm-2 control-label">상품 선택<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-2" id="productTitle">
+                            <div class="col-sm-3" id="productTitle">
                                 <select class="form-control m-b" name="productTitle">
                                     <option value="0">상품 선택</option>
                                 </select>
@@ -66,20 +66,47 @@
                         <!--할인타입-->
                         <div class="form-group" id="couponDiscountTypeCode" style="display:none;">
                             <label class="col-sm-2 control-label">할인타입<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-6">
+                            <div class="col-sm-3">
                                 <div class="row">
-                                    <div class="col-sm-2">
-                                        <label class="radio-inline"><input type="radio" name="couponDiscountTypeCode" value="DCR" checked="checked">할인율</label>
+                                    <div class="col-sm-4">
+                                        <label class="radio-inline"><input type="radio" name="couponDiscountTypeCode" value="DCR">할인율</label>
                                     </div>
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-4">
                                         <label class="radio-inline"><input type="radio" name="couponDiscountTypeCode" value="DCP">할인가</label>
                                     </div>
-                                    <div class="col-sm-3">
-                                        <label class="radio-inline"><input class="form-control" type="text" name="couponDiscountValue" ></label>
+                                </div>
+                                <div class="row">
+                                    <div id="DCPValue" style="display: none;">
+                                        <label class="control-label"><input class="form-control" maxlength="5" type="text" onkeypress="InputOnlyNumber(this);" name="DCPValue"></label>
+                                        <label class="control-label">원</label>
+                                    </div>
+                                    <div id="DCRValue" style="display: none;">
+                                        <label class="control-label"><input class="form-control" maxlength="3" type="text" onkeypress="InputOnlyNumber(this);" name="DCRValue"></label>
+                                        <label class="control-label">%</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="hr-line-dashed"></div>
+                        <input type="hidden" name="couponDiscountValue">
+
+                        <!--도장포인트 혜택값-->
+                        <div class="form-group" id="couponBenefitValue" style="display:none;">
+                            <label class="col-sm-2 control-label">혜택값<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-3">
+                                <div class="row">
+                                    <div id="stampValue">
+                                        <label class="control-label"><input class="form-control" maxlength="2" type="text" onkeypress="InputOnlyNumber(this);" name="stampValue"></label>
+                                        <label class="control-label">개</label>
+                                    </div>
+                                    <div id="pointValue">
+                                        <label class="control-label"><input class="form-control" maxlength="4" type="text" onkeypress="InputOnlyNumber(this);" name="pointValue"></label>
+                                        <label class="control-label">P</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="couponBenefitValue">
                         <div class="hr-line-dashed"></div>
 
                         <!--발송대상-->
@@ -88,7 +115,7 @@
                             <div class="col-sm-7">
                                 <div class="row">
                                     <div class="col-md-2">
-                                        <label class="radio-inline"><input type="radio" name="couponTargetTypeCode" value="BIRTH" checked="checked">생일</label>
+                                        <label class="radio-inline"><input type="radio" name="couponTargetTypeCode" value="BIRTH">생일</label>
                                     </div>
                                     <div class="col-md-2" id="couponTargetSTAMP" style="display: none;">
                                         <label class="radio-inline"><input type="radio" name="couponTargetTypeCode" value="STAMP">도장적립</label>
@@ -145,7 +172,6 @@
                                             <th>적립 혜택</th>
                                             </thead>
                                             <tbody id="selectStoreCustomer">
-                                                <td><input class="store-check-validation" name="customerNo" type="checkbox" value=""></td>
                                             </tbody>
                                             <tfoot>
                                             <tr>
@@ -168,17 +194,24 @@
                             <label class="col-sm-2 control-label">발행방법<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-7">
                                 <div class="row">
-                                    <div class="col-sm-2">
-                                        <label class="radio-inline"><input type="radio" name="couponPublishTypeCode" value="CB" checked="">쿠폰함</label>
+                                    <div class="col-sm-2" >
+                                        <label class="radio-inline"><input type="radio" name="couponPublishTypeCode" value="CB">쿠폰함</label>
                                     </div>
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-2" id="couponARPublish">
                                         <label class="radio-inline"><input type="radio" name="couponPublishTypeCode" value="AR">AR게임</label>
                                     </div>
                                     <div class="col-sm-2" id="couponReservation" style="display: none;">
                                         <label class="radio-inline"><input type="radio" name="couponPublishTypeCode" value="RESERVE">예약발행</label>
                                     </div>
-                                    <div class="col-sm-3" id="couponReservationTime" style="display: none;">
-                                        <label class="radio-inline"><input class="form-control" type="text" name="couponReservationTime"></label>
+                                    <div class="col-sm-6" id="couponReservationTime" style="display: none;">
+                                        <label class="radio-inline">
+                                            <span class="col-md-7 input-group date">
+                                                <input type="text" class="form-control">
+                                                <span class="input-group-addon">
+                                                    <span class="fa fa-calendar"></span>
+                                                </span>
+                                            </span>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -245,6 +278,7 @@
     var registerForm = $('#registerForm');
 
         $(document).ready(function () {
+            var isSelectStoreCustomer = false;
 
             $('.chosen-select').chosen({width: "100%"});
 
@@ -261,9 +295,28 @@
             //매장명에 따른 혜택, 상품가져오기
             registerForm.find('[name="storeId"]').change(function () {
                 var storeId = registerForm.find('[name="storeId"]').val();
-                var couponTypeNo = registerForm.find('[name="couponTypeNo"]:checked').val();
 
                 selectStoreInfo(storeId);
+
+                registerForm.find('[name="couponTargetTypeCode"]:checked').prop('checked', false);
+                registerForm.find('[name="couponPublishTypeCode"]:checked').prop('checked', false);
+                registerForm.find('[name="couponTypeNo"]:checked').prop('checked', false);
+                $('#couponBenefitValue').css('display','none');
+                $('#stampValue').css('display','none');
+                $('#pointValue').css('display','none');
+
+                if (storeId == 'ALL'){
+                    $('#selectProduct').css('display','none');
+                    $('#couponReservation').css('display','none');
+                    $('#couponReservationTime').css('display','none');
+                    $('#stamp').css('display','block');
+                    $('#point').css('display','block');
+                    $('#couponTargetSTAMP').css('display','none');
+                    $('#couponTargetUPGRADE').css('display','none');
+                    $('#couponDiscountTypeCode').css('display','none');
+                }
+
+                var couponTypeNo = registerForm.find('[name="couponTypeNo"]:checked').val();
 
                 if(couponTypeNo == 1){
                     selectProduct(storeId);
@@ -289,16 +342,45 @@
                         $('#selectProduct').css('display','block');
                         $('#couponDiscountTypeCode').css('display','block');
                         $('#couponReservation').css('display','block');
+                        $('#couponBenefitValue').css('display','none');
+                        registerForm.find('[name="couponPublishTypeCode"]').prop('checked', false);
                         selectProduct(storeId);
                     }
                     else{
                         $('#selectProduct').css('display','none');
                         $('#couponReservation').css('display','none');
+                        $('#couponReservationTime').css('display','none');
+                        $('#couponDiscountTypeCode').css('display','none');
+                        $('#couponBenefitValue').css('display','block');
+
+                        if(couponTypeNo == 2){
+                            $('#stampValue').css('display','block');
+                            $('#pointValue').css('display','none');
+                        }
+                        if(couponTypeNo == 3){
+                            $('#pointValue').css('display','block');
+                            $('#stampValue').css('display','none');
+                        }
                     }
                 }
 
-            });//쿠폰유형에 따른 CSS
+            });
 
+            //할인타입에 따른 CSS
+            registerForm.find('[name="couponDiscountTypeCode"]').change(function () {
+                var couponDiscountTypeCode = registerForm.find('[name="couponDiscountTypeCode"]:checked').val();
+
+                if(couponDiscountTypeCode == 'DCR'){
+                    $("#DCRValue").css('display','block');
+                    $("#DCPValue").css('display','none');
+                }
+                else{
+                    $("#DCPValue").css('display','block');
+                    $("#DCRValue").css('display','none');
+                }
+            });
+
+            //쿠폰발행대상에 따른 CSS
             registerForm.find('[name="couponTargetTypeCode"]').change(function (e) {
                 var storeId = registerForm.find('[name="storeId"]').val();
                 var couponTargetTypeCode = registerForm.find('[name="couponTargetTypeCode"]:checked').val();
@@ -324,10 +406,30 @@
                     else{
                         registerForm.find('[name="selectCustomer"]').css('display','none');
 
+                        if (couponTargetTypeCode == 'STAMP'|| couponTargetTypeCode == 'BIRTH'
+                                ||couponTargetTypeCode == 'NEW' ||couponTargetTypeCode == 'UPGRADE'){
+                            $('#couponReservation').css('display','none');
+                            $('#couponReservationTime').css('display','none');
+                        }
+                        else{
+                            registerForm.find('[name="couponPublishTypeCode"]').prop('checked', false);
+                            $('#couponReservation').css('display','block');
+                        }
                     }
                 }
             });
 
+            //예약발행 클릭 시 CSS
+            registerForm.find('[name="couponPublishTypeCode"]').change(function (e) {
+                var couponPublishTypeCode = registerForm.find('[name="couponPublishTypeCode"]:checked').val();
+
+                if(couponPublishTypeCode == 'RESERVE'){
+                    $('#couponReservationTime').css('display','block');
+                }
+                else{
+                    $('#couponReservationTime').css('display','none');
+                }
+            });
 
             //매장 고객리스트 가져오기
             $('a[name="selectCustomer"]').click(function (e) {
@@ -337,384 +439,201 @@
 
                 console.log(storeId);
 
-                $('#selectStoreCustomer').empty();
                 $('#modalStoreCustomer').modal('show');
 
-                $.ajax({
-                    url: "/wishwide/store/selectStoreCustomer/" + storeId,
-                    type: 'get',
-                    contentType: 'application/json',
-                    success: function (data) {
-                        console.log(data);
-                        if (data.length != 0) {
-                            $.each(data, function (index, item) {
-                                var customerGradeTypeCode = '';
-                                var customerBenefitTypeCode = '';
+                if (!isSelectStoreCustomer){
+                    $.ajax({
+                        url: "/wishwide/store/selectStoreCustomer/" + storeId,
+                        type: 'get',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            console.log(data);
+                            if (data.length != 0) {
+                                $.each(data, function (index, item) {
+                                    var customerGradeTypeCode = '';
+                                    var customerBenefitTypeCode = '';
 
-                                //등급
-                                if(item[4] == 'BASIC')
-                                    customerGradeTypeCode = '일반';
-                                else if(item[4] == 'NEW')
-                                    customerGradeTypeCode = '신규';
-                                else if(item[4] == 'VIP')
-                                    customerGradeTypeCode = '단골';
-                                else
-                                    customerGradeTypeCode = '비멤버쉽';
+                                    //등급
+                                    if(item[4] == 'BASIC')
+                                        customerGradeTypeCode = '일반';
+                                    else if(item[4] == 'NEW')
+                                        customerGradeTypeCode = '신규';
+                                    else if(item[4] == 'VIP')
+                                        customerGradeTypeCode = '단골';
+                                    else
+                                        customerGradeTypeCode = '비멤버쉽';
 
-                                //혜택값
-                                if(item[10] == 'S')
-                                    customerBenefitTypeCode = item[11]+'개';
-                                else
-                                    customerBenefitTypeCode = item[11]+'P';
+                                    //혜택값
+                                    if(item[10] == 'S')
+                                        customerBenefitTypeCode = item[11]+'개';
+                                    else
+                                        customerBenefitTypeCode = item[11]+'P';
 
-                                $('#selectStoreCustomer').append(
-                                    '<tr>' +
-                                    '<td><input class="store-check-validation" name="customerNo" type="checkbox" value="' + item[0] + '"></td>' +
-                                    '<td>' + item[1].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
-                                    '<td>' + customerGradeTypeCode + '</td>' +
-                                    '<td>' + item[5] + '</td>' +
-                                    '<td>' + item[6] + '</td>' +
-                                    '<td>' + item[14] + '/' + item[15] + '</td>' +
-                                    '<td>' + item[8] + '/' + item[9] + '</td>' +
-                                    '<td>' + customerBenefitTypeCode + '</td>' +
-                                    '</tr>'
-                                );
-                            });
-                            $('.footable').footable({
-                                paging: {
-                                    enabled: true,
-                                    size: 5
-                                }
-                            });
-                            isSelectStoreCustomer = true;
+                                    $('#selectStoreCustomer').append(
+                                        '<tr>' +
+                                        '<td><input class="store-check-validation" name="membershipCustomerNo" type="checkbox" value="' + item[0] + '"></td>' +
+                                        '<td>' + item[1].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
+                                        '<td>' + customerGradeTypeCode + '</td>' +
+                                        '<td>' + item[5] + '</td>' +
+                                        '<td>' + item[6] + '</td>' +
+                                        '<td>' + item[14] + '/' + item[15] + '</td>' +
+                                        '<td>' + item[8] + '/' + item[9] + '</td>' +
+                                        '<td>' + customerBenefitTypeCode + '</td>' +
+                                        '</tr>'
+                                    );
+                                });
+                                $('.footable').footable({
+                                    paging: {
+                                        enabled: true,
+                                        size: 5
+                                    }
+                                });
+                                isSelectStoreCustomer = true;
+                            }
                         }
-                    }
-                });
+                    });
+                }
             });
 
-
-//            $('#btnSubmit').click(function (e) {
-//                e.preventDefault();
-//
-//                var subProductList = new Array();
-//
-//                /*유효성 검사*/
-//                if($("#sub1").css("display") == "block"){
-//                    var element = $("#sub1");
-//
-//                    var subProductName = element.find('[name="subProductName"]').val();
-//                    var subProductPrice = element.find('[name="subProductPrice"]').val();
-//
-//                    if(subProductName == '' || subProductPrice == ''){
-//                        alert('서브상품 정보를 입력해주세요.');
-//                        return false;
-//                    }
-//                    else{
-//                        var subProductObj = {
-//                            subProductName : subProductName,
-//                            subProductPrice : subProductPrice
-//                        };
-//                        subProductList.push(subProductObj);
-//                    }
-//                }
-//
-//                if($("#sub2").css("display") == "block"){
-//                    var element = $("#sub2");
-//
-//                    var subProductName = element.find('[name="subProductName"]').val();
-//                    var subProductPrice = element.find('[name="subProductPrice"]').val();
-//                    console.log(subProductName + subProductPrice);
-//                    if(subProductName == '' || subProductPrice == ''){
-//                        alert('서브상품 정보를 입력해주세요.');
-//                        return false;
-//                    }
-//                    else{
-//                        var subProductObj = {
-//                            subProductName : subProductName,
-//                            subProductPrice : subProductPrice
-//                        };
-//                        subProductList.push(subProductObj);
-//                    }
-//
-//                }
-//
-//                if($("#sub3").css("display") == "block"){
-//                    var element = $("#sub3");
-//
-//                    var subProductName = element.find('[name="subProductName"]').val();
-//                    var subProductPrice = element.find('[name="subProductPrice"]').val();
-//
-//                    if(subProductName == '' || subProductPrice == ''){
-//                        alert('서브상품 정보를 입력해주세요.');
-//                        return false;
-//                    }
-//                    else{
-//                        var subProductObj = {
-//                            subProductName : subProductName,
-//                            subProductPrice : subProductPrice
-//                        };
-//                        subProductList.push(subProductObj);
-//                    }
-//
-//                }
-//
-//                if($("#sub4").css("display") == "block"){
-//                    var element = $("#sub4");
-//
-//                    var subProductName = element.find('[name="subProductName"]').val();
-//                    var subProductPrice = element.find('[name="subProductPrice"]').val();
-//
-//                    if(subProductName == '' || subProductPrice == ''){
-//                        alert('서브상품 정보를 입력해주세요.');
-//                        return false;
-//                    }
-//                    else{
-//                        var subProductObj = {
-//                            subProductName : subProductName,
-//                            subProductPrice : subProductPrice
-//                        };
-//                        subProductList.push(subProductObj);
-//                    }
-//                }
-//
-//                if($("#sub5").css("display") == "block"){
-//                    var element = $("#sub5");
-//
-//                    var subProductName = element.find('[name="subProductName"]').val();
-//                    var subProductPrice = element.find('[name="subProductPrice"]').val();
-//
-//                    if(subProductName == '' || subProductPrice == ''){
-//                        alert('서브상품 정보를 입력해주세요.');
-//                        return false;
-//                    }
-//                    else{
-//                        var subProductObj = {
-//                            subProductName : subProductName,
-//                            subProductPrice : subProductPrice
-//                        };
-//                        subProductList.push(subProductObj);
-//                    }
-//
-//                }
-//
-//                var productImage = $('input[name="productImage"]').val();
-//
-//                console.log(productImage);
-//
-//                if(productImage == '') {
-//                    alert('이미지를 등록해주세요');
-//                    return false;
-//                }
-//
-//                /*ajax 데이터 set*/
-//                var giftProductRegisterCode = registerForm.find('[name="giftProductRegisterCode"]:checked').val();
-//                var productOwnerId = registerForm.find('[name="productOwnerId"]').val();
-//                var majorCategoryNo = registerForm.find('[name="majorCategoryNo"]').val();
-//                var subCategoryNo = registerForm.find('[name="subCategoryNo"]').val();
-//                var productTitle = registerForm.find('[name="productTitle"]').val();
-//                var productPrice = registerForm.find('[name="productPrice"]').val();
-//                var productDescription = registerForm.find('[name="productDescription"]').text();
-//                var giftProductDiscountCode = registerForm.find('[name="giftProductDiscountCode"]:checked').val();
-//                var giftProductVO = new Object();
-//
-//                //선물등록여부 코드 1일시
-//                if(giftProductRegisterCode == 1){
-//                    giftProductVO.giftProductDiscountCode = giftProductDiscountCode;
-//                    if(giftProductDiscountCode == 1){
-//                        var giftProductDiscountInitQuantity = registerForm.find('[name="giftProductDiscountInitQuantity"]').val();
-//                        var giftProductDiscountTypeCode = registerForm.find('[name="giftProductDiscountTypeCode"]').val();
-//                        var giftProductDiscountValue = registerForm.find('[name="giftProductDiscountValue"]').val();
-//
-//                        if(giftProductDiscountInitQuantity == '' || giftProductDiscountTypeCode == '' || giftProductDiscountValue == ''){
-//                            alert('묶음할인 정보를 입력해주세요.');
-//                            return false;
-//                        }
-//                        else{
-//                            giftProductVO.giftProductDiscountInitQuantity = giftProductDiscountInitQuantity;
-//                            giftProductVO.giftProductDiscountTypeCode = giftProductDiscountTypeCode;
-//                            giftProductVO.giftProductDiscountValue = giftProductDiscountValue;
-//                            giftProductVO.giftProductVisibleCode = 1;
-//                        }
-//                    }
-//                }
-//
-//                var productVO = {
-//                    productOwnerId : productOwnerId,
-//                    majorCategoryNo : majorCategoryNo,
-//                    subCategoryNo : subCategoryNo,
-//                    productTitle : productTitle,
-//                    productPrice : productPrice,
-//                    productDescription : productDescription,
-//                    giftProductRegisterCode : giftProductRegisterCode
-//
-//                };
-//
-//                if(giftProductVO.length == 0){
-//                    giftProductVO.giftProductVisibleCode = 0;
-//                }
-////                if(subProductList.length == 0){
-////                    subProductList.push('result')
-////                }
-//
-//                var form = $('#registerForm')[0];
-//
-//                var formData = new FormData(document.getElementById('registerForm'));
-//                formData.append("productImage", $("#productImage")[0].files[0]);
-//
-//                console.log(formData);
-//
-//                console.log(giftProductVO);
-//                console.log(subProductList);
-//                console.log(productVO);
-//                console.log(JSON.stringify({productVO:productVO, giftProductVO:giftProductVO, subProductList:subProductList}));
-//
-//                var array = {"productVO":JSON.stringify(productVO), "giftProductVO":JSON.stringify(giftProductVO), "subProductList":JSON.stringify(subProductList)};
-//
-//                $.ajax({
-//                    url: "/wishwide/product/postRegisterCoupon",
-//                    type: 'post',
-//                    data: array,
-////                    contentType: 'application/json',
-//                    success: function (data) {
-//                        console.log(data);
-//                        alert('성공!');
-////                        if (data.length != 0) {
-////                            $('#subCategoryName').css('display', 'block');
-////                            registerForm.find('[name="subCategoryNo"] option').remove();
-////
-////                            $.each(data, function (index, item) {
-////                                console.log(item);
-////
-////                                registerForm.find('[name="subCategoryNo"]').append(
-////                                    '<option value="'+item[0]+'" >'+item[2]+'</option>'
-////                                );
-////                            });
-////                        }
-////                        else{
-////                            console.log('데이터없음');
-////
-////                            registerForm.find('[name="subCategoryNo"] option').remove();
-////                            registerForm.find('[name="subCategoryNo"]').append('<option value="0">중분류 선택</option>');
-////                            $('#subCategoryName').css('display', 'none');
-////
-////                            alert('등록된 중분류가 없습니다.');
-////                        }
-//                    }
-//                });
-//
-//
-//
-//            });
             $('#btnSubmit').click(function (e){
 //                e.preventDefault();
+
                 /*유효성 검사*/
-                if($("#sub1").css("display") == "block"){
-                    var element = $("#sub1");
+                var storeId = registerForm.find('[name="storeId"]').val();
+                var productTitle = registerForm.find('[name="productTitle"]').val();
+                var couponDiscountTypeCode = registerForm.find('[name="couponDiscountTypeCode"]:checked').val();
+                var DCPValue = registerForm.find('[name="DCPValue"]').val();
+                var DCRValue = registerForm.find('[name="DCRValue"]').val();
+                var couponTargetTypeCode = registerForm.find('[name="couponTargetTypeCode"]:checked').val();
+                var couponPublishTypeCode = registerForm.find('[name="couponPublishTypeCode"]:checked').val();
+                var stampValue = registerForm.find('[name="stampValue"]').val();
+                var pointValue = registerForm.find('[name="pointValue"]').val();
+                var couponTypeNo = registerForm.find('[name="couponTypeNo"]:checked').val();
+                var couponFinishDate = registerForm.find('[name="finishDate"]').val();
 
-                    var subProductName = element.find('[name="subProductName"]').val();
-                    var subProductPrice = element.find('[name="subProductName"]').val();
+                console.log('발행코드'+couponPublishTypeCode);
 
-                    if(subProductName == '' || subProductPrice == ''){
-                        alert('서브상품 정보를 입력해주세요.');
+                if(storeId == 'ALL') {
+                    alert('가맹점을 선택해주세요.');
+                    return false;
+                }
+                if(couponTypeNo == 1){
+                    registerForm.find('[name="couponBenefitValue"]').val('0');
+
+                    if (productTitle == 0){
+                        alert('상품을 선택해주세요.');
+                        return false;
+                    }
+                    if (couponDiscountTypeCode == undefined){
+                        alert('할인타입을 선택해주세요.');
                         return false;
                     }
                     else{
-                        renameForModelAttribute(element, 0);
+                        if (couponDiscountTypeCode == 'DCR'){
+                            if (DCRValue == ''){
+                                alert('할인률을 입력해주세요');
+                                return false;
+                            }
+                            else if (DCRValue > 100){
+                                alert('할인률은 100%까지 입력가능합니다.');
+                                return false;
+                            }
+                            else{
+                                registerForm.find('[name="couponDiscountValue"]').val(DCRValue);
+                            }
+                        }
+                        if (couponDiscountTypeCode == 'DCP'){
+                            if (DCPValue == ''){
+                                alert('할인가를 입력해주세요');
+                                return false;
+                            }
+                            else if (DCPValue > productTitle){
+                                alert('할인가는 상품가격보다 크게 입력이 불가능합니다.');
+                                return false;
+                            }
+                            else{
+                                registerForm.find('[name="couponDiscountValue"]').val(DCPValue);
+                            }
+                        }
                     }
                 }
                 else{
-                    var element = $("#sub1");
+                    registerForm.find('[name="couponDiscountValue"]').val('0');
 
-                    element.find('[name="subProductName"]').attr('value', 'none');
-                    element.find('[name="subProductPrice"]').attr('value', 0);
-
-                    renameForModelAttribute(element, 0);
-                }
-
-                if($("#sub2").css("display") == "block"){
-                    var element = $("#sub2");
-
-                    var subProductName = element.find('[name="subProductName"]').val();
-                    var subProductPrice = element.find('[name="subProductPrice"]').val();
-                    console.log(subProductName + subProductPrice);
-                    if(subProductName == '' || subProductPrice == ''){
-                        alert('서브상품 정보를 입력해주세요.');
-                        return false;
+                    if (couponTypeNo == 2){
+                        if (stampValue == ''){
+                            alert('도장 개수를 입력해주세요');
+                            return false;
+                        }
+                        else if (stampValue == 0){
+                            alert('도장은 1개 이상부터 입력해주세요');
+                            return false;
+                        }
+                        else{
+                            registerForm.find('[name="couponBenefitValue"]').val(stampValue);
+                        }
                     }
-                    else{
-                        renameForModelAttribute(element, 1);
-                    }
-
-                }
-
-                if($("#sub3").css("display") == "block"){
-                    var element = $("#sub3");
-
-                    var subProductName = element.find('[name="subProductName"]').val();
-                    var subProductPrice = element.find('[name="subProductPrice"]').val();
-
-                    if(subProductName == '' || subProductPrice == ''){
-                        alert('서브상품 정보를 입력해주세요.');
-                        return false;
-                    }
-                    else{
-                        renameForModelAttribute(element, 2);
-                    }
-
-                }
-
-                if($("#sub4").css("display") == "block"){
-                    var element = $("#sub4");
-
-                    var subProductName = element.find('[name="subProductName"]').val();
-                    var subProductPrice = element.find('[name="subProductPrice"]').val();
-
-                    if(subProductName == '' || subProductPrice == ''){
-                        alert('서브상품 정보를 입력해주세요.');
-                        return false;
-                    }
-                    else{
-                        renameForModelAttribute(element, 3);
+                    if (couponTypeNo == 3){
+                        if (pointValue == ''){
+                            alert('포인트를 입력해주세요');
+                            return false;
+                        }
+                        else if (pointValue == 0){
+                            alert('포인트는 1P 이상부터 입력해주세요');
+                            return false;
+                        }
+                        else{
+                            registerForm.find('[name="couponBenefitValue"]').val(stampValue);
+                        }
                     }
                 }
 
-                if($("#sub5").css("display") == "block"){
-                    var element = $("#sub5");
-
-                    var subProductName = element.find('[name="subProductName"]').val();
-                    var subProductPrice = element.find('[name="subProductPrice"]').val();
-
-                    if(subProductName == '' || subProductPrice == ''){
-                        alert('서브상품 정보를 입력해주세요.');
-                        return false;
-                    }
-                    else{
-                        renameForModelAttribute(element, 4);
+                if (couponTargetTypeCode == undefined){
+                    alert('발송대상을 선택해주세요.');
+                    return false;
+                }
+                //발행대상 유효성검사
+                else{
+                    if (couponTargetTypeCode == 'STAMP'|| couponTargetTypeCode == 'BIRTH'
+                        ||couponTargetTypeCode == 'NEW' ||couponTargetTypeCode == 'UPGRADE'){
+                        $.ajax({
+                            url: "/wishwide/coupon/selectCouponRegisterCode/" + storeId+"/"+couponTargetTypeCode,
+                            type: 'get',
+                            contentType: 'application/json',
+                            success: function (data) {
+                                console.log(data);
+                                if (data.length != 0) {
+                                    if (data == 1 || data > 1){
+                                        alert('도장적립, 생일, 신규, 단골등업 대상쿠폰은 한 개만 발행 가능합니다.');
+                                        return false;
+                                    }
+                                }
+                            }
+                        });
                     }
                 }
 
-                var productImage = $('input[name="productImage"]').val();
-
-                console.log(productImage);
-
-                if(productImage == '') {
-                    alert('이미지를 등록해주세요');
+                if (couponPublishTypeCode == undefined){
+                    alert('발행방법을 선택해주세요.');
+                    return false;
+                }
+                if (couponTypeNo == undefined){
+                    alert('쿠폰유형을 선택해주세요.');
+                    return false;
+                }
+                if (couponFinishDate == "") {
+                    alert('쿠폰 만료일을 선택해 주세요.');
                     return false;
                 }
 
-                var giftProductRegisterCode = registerForm.find('[name="giftProductRegisterCode"]:checked').val();
-
-                if(giftProductRegisterCode == 0){
-                    registerForm.find('[name="giftProductDiscountInitQuantity"]').attr('value', '0');
-                    registerForm.find('[name="giftProductDiscountValue"]').attr('value', 0);
-                }
+                if(!checkCouponFinishDate(couponFinishDate)) return false;
 
             });
+
         });
 
 
         function selectProduct(storeId) {
-            //파트너 상품 가져옴
             $.ajax({
                 url: "/wishwide/store/selectStoreProduct/" + storeId,
                 type: 'get',
@@ -728,7 +647,7 @@
                             console.log(item);
 
                             registerForm.find('[name="productTitle"]').append(
-                                '<option value="' + item[6] + '" >' + item[6] + '</option>'
+                                '<option value="' + item[7] + '" >' + item[6] +'('+item[7]+'원)'+'</option>'
                             );
                         });
                     }
@@ -757,22 +676,18 @@
                             $('#couponTargetSTAMP').css('display','block');
                             $('#couponTargetUPGRADE').css('display','block');
                         }
-                        else{
+                        if (data[20] == 'P'){
                             $('#stamp').css('display','none');
                             $('#point').css('display','block');
                             $('#couponTargetSTAMP').css('display','none');
                             $('#couponTargetUPGRADE').css('display','none');
                         }
-//
-//                            registerForm.find('[name="productTitle"] option').remove();
-//
-//                            $.each(data, function (index, item) {
-//                                console.log(item);
-//
-//                                registerForm.find('[name="productTitle"]').append(
-//                                    '<option value="' + item[6] + '" >' + item[6] + '</option>'
-//                                );
-//                            });
+                        if(data[25] == 0){
+                            $('#couponARPublish').css('display','none');
+                        }
+                        if(data[25] == 1){
+                            $('#couponARPublish').css('display','block');
+                        }
                     }
                 }
             });

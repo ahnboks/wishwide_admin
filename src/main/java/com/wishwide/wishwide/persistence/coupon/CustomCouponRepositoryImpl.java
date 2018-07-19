@@ -45,7 +45,8 @@ public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implem
                 coupon.couponPublishTypeCode,   //발행유형코드7
                 coupon.couponReservationTime,   //쿠폰예약발송시간8
                 coupon.couponRegDate,   //발행일시9
-                coupon.productTitle //상품명10
+                coupon.productTitle, //상품명10
+                coupon.couponPublishCode    //쿠폰발행코드11
         );
 
         tupleJPQLQuery

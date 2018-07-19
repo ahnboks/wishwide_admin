@@ -18,8 +18,8 @@ public interface CustomBenefit {
     List<Object[]> getStoreCustomerList(String storeId);
 
     //도장 내역 리스트 불러오기
-    List<Object[]> getStampHistoryList(Long customerNo, String storeId);
+    List<Object[]> getStampHistoryList(Long membershipCustomerNo, String storeId);
 
     //포인트 리스 불러오기
-    List<Object[]> getPointHistoryList(Long customerNo, String storeId);
+    List<Object[]> getPointHistoryList(Long membershipCustomerNo, String storeId);
 }

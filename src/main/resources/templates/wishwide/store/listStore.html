@@ -67,7 +67,7 @@
                     <!--등록 버튼-->
                     <div class="col-lg-12">
                         <div class="pull-right">
-                            <a th:href="@{listStoreContract}"><button class="btn btn-primary">계약 조회</button></a>
+                            <a th:href="@{listStoreContract}" sec:authorize="hasRole('MA')"><button class="btn btn-primary">계약 조회</button></a>
                             <a th:href="@{registerStore}"><button class="btn btn-primary">가맹점 등록</button></a>
                         </div>
                     </div>
@@ -549,7 +549,7 @@
                                     '<td>' + giftProductRegisterCode + '</td>' +
                                     '<td>' + majorCategoryTitle + '/' + subCategoryTitle + '</td>' +
                                     '<td>' + item[6] + '</td>' +
-                                    '<td>' + item[7] + '원</td>' +
+                                    '<td>' + item[7].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원</td>' +
                                     '<td>' + giftProductDiscountPrice + '</td>' +
                                     '<td>' + productSellStatusCode + '</td>' +
                                     '</tr>'
@@ -592,7 +592,7 @@
                                     '<td>' + item[5].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
                                     '<td>' + item[7] + '</td>' +
                                     '<td>' + item[8] + '</td>' +
-                                    '<td>' + item[9] + '원</td>' +
+                                    '<td>' + item[9].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원</td>' +
                                     '<td>' + item[11].replace('T', ' ') + '</td>' +
                                     '</tr>'
                                 );
@@ -692,6 +692,7 @@
                 });
             });
 
+            //서비스상태 변경
             $('a[name="updateServiceOperationCode"]').click(function (e) {
                 e.preventDefault();
 

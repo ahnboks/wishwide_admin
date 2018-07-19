@@ -16,6 +16,9 @@ public interface CustomCustomer {
                                    String customerGradeTypeCode,
                                    Pageable pageable);
 
+    //고객 상세 불러오기
+    Object[] getCustomerDetail(Long customerNo);
+
     //매장 고객 리스트 불러오기
     List<Object[]> getStoreCustomerList(String storeId);
 }

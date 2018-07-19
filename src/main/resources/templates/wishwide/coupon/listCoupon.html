@@ -145,7 +145,12 @@
                                     </td>
                                     <td sec:authorize="hasRole('MA')">[[${vo[2]}]]</td>
                                     <td>[[${vo[4]}]]</td>
-                                    <td>[[${vo[4]}]]</td>
+                                    <td>
+                                        <span th:switch="${vo[11]}">
+                                            <span th:case="IMME">수동발행</span>
+                                            <span th:case="AUTO">자동발행</span>
+                                        </span>
+                                    </td>
                                     <td>[[${vo[5]}]]</td>
                                     <td>
                                         <span th:switch="${vo[6]}">

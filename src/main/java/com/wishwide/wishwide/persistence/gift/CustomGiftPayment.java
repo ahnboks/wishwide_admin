@@ -15,7 +15,10 @@ public interface CustomGiftPayment {
                                              String giftPaymentStatusCode,
                                              Pageable pageable);
 
-    //선물거래내역 리스트 불러오기
+    //매장 선물거래내역 리스트 불러오기
     List<Object[]> getGiftPaymentList(String storeId);
+
+    //고객 선물거래내역 리스트 불러오기
+    List<Object[]> getCustomerGiftPaymentList(Long customerNo);
 
 }

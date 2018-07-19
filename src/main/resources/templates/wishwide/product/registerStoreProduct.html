@@ -139,7 +139,7 @@
 
                         <!--판매가격-->
                         <div class="form-group" id="productPrice">
-                            <label class="col-sm-2 control-label">판매가격(원)</label>
+                            <label class="col-sm-2 control-label">판매가격(원)<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
                                 <input type="text" maxlength="5" class="form-control" value="0" name="productPrice">
                                 <span class="msg-operator-name-input-validation"/>
@@ -151,14 +151,14 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">이미지<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
-                                <div class="fileinput fileinput-new" data-provides="fileinput">
+                                <div class="fileinput fileinput-new" data-provides="fileinput" id="file1">
                                     <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 100px; height: 80px;"></div>
                                     <span class="fileinput-filename"></span>
                                     <div>
                                         <span class="btn btn-default btn-file">
                                             <span class="fileinput-new">파일 선택</span>
                                             <span class="fileinput-exists">파일 변경</span>
-                                            <input type="file" name="productImage" id="productImage"/>
+                                            <input type="file" name="productImage" id="productImage" class="file-validation" onchange="fileUploadValidation(this, 'image', '1')"/>
                                         </span>
                                     </div>
                                 </div>

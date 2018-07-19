@@ -8,6 +8,7 @@ import lombok.extern.java.Log;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hibernate.annotations.LazyToOne;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -219,7 +220,8 @@ public class FileManager {
     }
 
     //디바이스File 테이블에 저장
-    public static DeviceImage saveDBDeviceImage(String deviceImageTypeCode,
+    public static DeviceImage saveDBDeviceImage(Long deviceNo,
+                    String deviceImageTypeCode,
                                                 String storeId,
                                                 HashMap<String, String> fileInfo) {
         String dbFile = fileInfo.get("dbFile"); //DB파일명
@@ -237,8 +239,32 @@ public class FileManager {
         deviceFile.setDeviceImageUrl(cdnAddress + dbFile + "." + fileExtension);
         deviceFile.setStoreId(storeId);
         deviceFile.setDeviceImageTypeCode(deviceImageTypeCode);
+        deviceFile.setDeviceNo(deviceNo);
 
         return deviceFile;
+    }
+
+    //디바이스모델File 테이블에 저장
+    public static DeviceModelImage saveDBDeviceModelImage(Long deviceModelNo,
+            String deviceImageTypeCode,
+                                                HashMap<String, String> fileInfo) {
+        String dbFile = fileInfo.get("dbFile"); //DB파일명
+        String fileExtension = fileInfo.get("fileExtension");   //파일확장자
+        String fileName = fileInfo.get("fileName"); //실제파일명
+        int fileSize = Integer.parseInt(fileInfo.get("fileSize")); //파일크기
+
+        DeviceModelImage deviceModelImage = new DeviceModelImage();
+        deviceModelImage.setDeviceModelImageName(fileName);
+        deviceModelImage.setDeviceModelImageDbName(dbFile + "." + fileExtension);
+        deviceModelImage.setDeviceModelImageSize(fileSize);
+        deviceModelImage.setDeviceModelImageExtension(fileExtension);
+        deviceModelImage.setDeviceModelImageThumbnailName("th_" + dbFile + "." + fileExtension);
+        deviceModelImage.setDeviceModelImageThumbnailUrl(cdnAddress + "th_" + dbFile + "." + fileExtension);
+        deviceModelImage.setDeviceModelImageUrl(cdnAddress + dbFile + "." + fileExtension);
+        deviceModelImage.setDeviceModelImageTypeCode(deviceImageTypeCode);
+        deviceModelImage.setDeviceModelNo(deviceModelNo);
+
+        return deviceModelImage;
     }
 
     //MarkerDataFile 테이블에 저장

@@ -13,6 +13,8 @@ import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -182,7 +184,7 @@ public class CouponController {
     @PostMapping("/postRegisterCoupon")
     public String postRegisterCoupon(@ModelAttribute(value = "couponVO") Coupon couponVO,
                                      @RequestParam(value = "finishDate", required = false) String finishDate,
-                                     @RequestParam(value = "customerNo", required = false) List<String> customerList,
+                                     @RequestParam(value = "membershipCustomerNo", required = false) List<String> customerList,
                                      @ModelAttribute("pageVO") PageVO pageVO,
                                      RedirectAttributes redirectAttributes) {
         log.info("데이터 : " + couponVO);
@@ -203,48 +205,25 @@ public class CouponController {
 
         couponVO.setCouponFinishdate(couponFinishTime);
 
-        //쿠폰 저장 `
+        //쿠폰 저장
         Coupon coupon = customCouponRepository.save(couponVO);
+
+        //쿠폰발행내역 & 로그 저장
+        saveCouponPublishHistoryLog(coupon);
 
         //전체고객 발송 시
         if(couponVO.getCouponTargetTypeCode().equals("WHOLE")){
             customCustomerRepository.findCustomerByStoreId(coupon.getStoreId()).forEach(customer -> {
 
-                CouponBox couponBoxVO = setCouponBox(coupon, customer.getCustomerNo());
+                CouponBox couponBoxVO = setCouponBox(coupon, customer.getMembershipCustomerNo());
 
-                //쿠폰타입이 도장이나 포인트면 바로 사용처리
-                if(coupon.getCouponTypeNo() != 1){
-                    couponBoxVO.setCouponUseCode(1);
-                    couponBoxVO.setCouponUsedate(LocalDateTime.now());
+                //도장 & 포인트 적립
+                saveBenefit(couponBoxVO, coupon, customer);
 
-                    //도장 or 포인트 적립
+                CouponBox couponBox = customCouponBoxRepository.save(couponBoxVO);
 
-                    int benefitValue = customer.getCustomerBenefitValue() + coupon.getCouponBenefitValue();
-                    Store store = customStoreRepository.findById(coupon.getStoreId()).get();
-
-                    if(coupon.getCouponTypeNo() == 2){
-
-                        //매장이 기존에 설정한 도장적립 기준을 넘을 경우 0개로 초기화 후 쿠폰 발행
-                        if(benefitValue == store.getStoreStampGoal()) {
-                            customCustomerRepository.changeCustomerBenefitValue(0, customer.getCustomerNo());
-
-                            Coupon benefitCoupon = customCouponRepository.findByStoreBenefitCoupon(coupon.getStoreId());
-
-                            if(benefitCoupon != null){
-                                CouponBox couponBox = setCouponBox(benefitCoupon, customer.getCustomerNo());
-
-                                customCouponBoxRepository.save(couponBox);
-                            }
-                        }
-                        else {
-                            customCustomerRepository.changeCustomerBenefitValue(benefitValue, customer.getCustomerNo());
-                        }
-                    }
-                    else{
-                        customCustomerRepository.changeCustomerBenefitValue(benefitValue, customer.getCustomerNo());
-                    }
-                }
-                customCouponBoxRepository.save(couponBoxVO);
+                //쿠폰함 내역 & 로그 저장
+                saveCouponBoxHistoryLog(couponBox, customer);
 
                 log.info("쿠폰함 저장 완료");
 
@@ -255,17 +234,15 @@ public class CouponController {
         //단골고객 발송 시
         if(couponVO.getCouponTargetTypeCode().equals("VIP")){
             customCustomerRepository.findVIPCustomerByStoreId(coupon.getStoreId()).forEach(customer -> {
-                CouponBox couponBoxVO = setCouponBox(coupon, customer.getCustomerNo());
+                CouponBox couponBoxVO = setCouponBox(coupon, customer.getMembershipCustomerNo());
 
-                //쿠폰타입이 도장이나 포인트면 바로 사용처리
-                if(coupon.getCouponTypeNo() != 1){
-                    couponBoxVO.setCouponUseCode(1);
-                    couponBoxVO.setCouponUsedate(LocalDateTime.now());
+                //도장 & 포인트 적립
+                saveBenefit(couponBoxVO, coupon, customer);
 
-                    //도장 or 포인트 적립
-                }
-                customCouponBoxRepository.save(couponBoxVO);
+                CouponBox couponBox = customCouponBoxRepository.save(couponBoxVO);
 
+                //쿠폰함 내역 & 로그 저장
+                saveCouponBoxHistoryLog(couponBox, customer);
 
                 log.info("쿠폰함 저장 완료");
 
@@ -276,24 +253,23 @@ public class CouponController {
         //특정고객 발송 시
         if(couponVO.getCouponTargetTypeCode().equals("SELECT")) {
             if (customerList != null) {
-                customerList.forEach(customerNo -> {
-                    log.info("고객번호 : "+customerNo);
-                    Customer customer = customCustomerRepository.findById(Long.parseLong(customerNo)).get();
-                    CouponBox couponBoxVO = setCouponBox(coupon, customer.getCustomerNo());
+                customerList.forEach(membershipCustomerNo -> {
+                    log.info("멤버쉽고객번호 : "+membershipCustomerNo);
+                    MembershipCustomer membershipCustomer = customCustomerRepository.findById(Long.parseLong(membershipCustomerNo)).get();
+                    CouponBox couponBoxVO = setCouponBox(coupon, membershipCustomer.getMembershipCustomerNo());
 
-                    //쿠폰타입이 도장이나 포인트면 바로 사용처리
-                    if(coupon.getCouponTypeNo() != 1){
-                        couponBoxVO.setCouponUseCode(1);
-                        couponBoxVO.setCouponUsedate(LocalDateTime.now());
-                    }
-                    customCouponBoxRepository.save(couponBoxVO);
+                    //도장 & 포인트 적립
+                    saveBenefit(couponBoxVO, coupon, membershipCustomer);
+
+                    CouponBox couponBox = customCouponBoxRepository.save(couponBoxVO);
+
+                    //쿠폰함 내역 & 로그 저장
+                    saveCouponBoxHistoryLog(couponBox, membershipCustomer);
 
                     log.info("쿠폰함 저장 완료");
 
-
-
                     /**알림 전송**/
-                    sendAlarm(coupon, customer);
+                    sendAlarm(coupon, membershipCustomer);
                 });
             }
         }
@@ -303,6 +279,8 @@ public class CouponController {
 
         return "redirect:/wishwide/coupon/listCoupon";
     }
+
+
 
     //상세
     @GetMapping("/detailCoupon/{productNo}")
@@ -323,7 +301,39 @@ public class CouponController {
         return "wishwide/coupon/detailCoupon";
     }
 
-    public CouponBox setCouponBox(Coupon coupon, Long customerNo){
+    private void saveCouponPublishHistoryLog(Coupon coupon) {
+        CouponPublishHistory couponPublishHistory = new CouponPublishHistory();
+        couponPublishHistory.setCouponBenefitValue(coupon.getCouponBenefitValue());
+        couponPublishHistory.setCouponDiscountTypeCode(coupon.getCouponDiscountTypeCode());
+        couponPublishHistory.setCouponDiscountValue(coupon.getCouponDiscountValue());
+        couponPublishHistory.setCouponNo(coupon.getCouponNo());
+        couponPublishHistory.setCouponPublishTypeCode(coupon.getCouponPublishTypeCode());
+        couponPublishHistory.setCouponReservationTime(coupon.getCouponReservationTime());
+        couponPublishHistory.setCouponTargetTypeCode(coupon.getCouponTargetTypeCode());
+        couponPublishHistory.setCouponTitle(coupon.getCouponTitle());
+        couponPublishHistory.setCouponTypeNo(coupon.getCouponTypeNo());
+        couponPublishHistory.setProductTitle(coupon.getProductTitle());
+        couponPublishHistory.setStoreId(coupon.getStoreId());
+
+        couponPublishHistoryRepository.save(couponPublishHistory);
+
+        CouponPublishLog couponPublishLog = new CouponPublishLog();
+        couponPublishLog.setCouponBenefitValue(coupon.getCouponBenefitValue());
+        couponPublishLog.setCouponDiscountTypeCode(coupon.getCouponDiscountTypeCode());
+        couponPublishLog.setCouponDiscountValue(coupon.getCouponDiscountValue());
+        couponPublishLog.setCouponNo(coupon.getCouponNo());
+        couponPublishLog.setCouponPublishTypeCode(coupon.getCouponPublishTypeCode());
+        couponPublishLog.setCouponReservationTime(coupon.getCouponReservationTime());
+        couponPublishLog.setCouponTargetTypeCode(coupon.getCouponTargetTypeCode());
+        couponPublishLog.setCouponTitle(coupon.getCouponTitle());
+        couponPublishLog.setCouponTypeNo(coupon.getCouponTypeNo());
+        couponPublishLog.setProductTitle(coupon.getProductTitle());
+        couponPublishLog.setStoreId(coupon.getStoreId());
+
+        couponPublishLogRepository.save(couponPublishLog);
+    }
+
+    public CouponBox setCouponBox(Coupon coupon, Long membershipCustomerNo){
         CouponBox couponBox = new CouponBox();
         couponBox.setCouponNo(coupon.getCouponNo());
         couponBox.setCouponBegindate(LocalDate.now());
@@ -337,25 +347,198 @@ public class CouponController {
         couponBox.setCouponTargetTypeCode(coupon.getCouponTargetTypeCode());
         couponBox.setCouponTitle(coupon.getCouponTitle());
         couponBox.setCouponTypeNo(coupon.getCouponTypeNo());
-        couponBox.setCustomerNo(customerNo);
+        couponBox.setMembershipCustomerNo(membershipCustomerNo);
         couponBox.setProductTitle(coupon.getProductTitle());
         couponBox.setStoreId(coupon.getStoreId());
 
         return couponBox;
     }
 
-    public void sendAlarm(Coupon coupon, Customer customer){
+    private void saveCouponBoxHistoryLog(CouponBox coupon, MembershipCustomer customer) {
+        CouponBoxHistory couponBoxHistory = new CouponBoxHistory();
+        couponBoxHistory.setCouponNo(coupon.getCouponNo());
+        couponBoxHistory.setCouponBegindate(LocalDate.now());
+        couponBoxHistory.setCouponFinishdate(coupon.getCouponFinishdate());
+        couponBoxHistory.setCouponDiscountTypeCode(coupon.getCouponDiscountTypeCode());
+        couponBoxHistory.setCouponDiscountValue(coupon.getCouponDiscountValue());
+        couponBoxHistory.setCouponImageUrl("http://restapi.fs.ncloud.com/elin-cloud/contents/%EC%BF%A0%ED%8F%B0%EC%9D%B4%EB%AF%B8%EC%A7%80.jpg");
+        couponBoxHistory.setCouponPublishTypeCode(coupon.getCouponPublishTypeCode());
+        couponBoxHistory.setCouponReservationTime(coupon.getCouponReservationTime());
+        couponBoxHistory.setCouponTargetTypeCode(coupon.getCouponTargetTypeCode());
+        couponBoxHistory.setCouponTitle(coupon.getCouponTitle());
+        couponBoxHistory.setCouponTypeNo(coupon.getCouponTypeNo());
+        couponBoxHistory.setMembershipCustomerNo(customer.getMembershipCustomerNo());
+        couponBoxHistory.setProductTitle(coupon.getProductTitle());
+        couponBoxHistory.setStoreId(coupon.getStoreId());
+
+        couponBoxHistoryRepository.save(couponBoxHistory);
+
+        CouponBoxLog couponBoxLog = new CouponBoxLog();
+        couponBoxLog.setCouponNo(coupon.getCouponNo());
+        couponBoxLog.setCouponBegindate(LocalDate.now());
+        couponBoxLog.setCouponFinishdate(coupon.getCouponFinishdate());
+        couponBoxLog.setCouponDiscountTypeCode(coupon.getCouponDiscountTypeCode());
+        couponBoxLog.setCouponDiscountValue(coupon.getCouponDiscountValue());
+        couponBoxLog.setCouponImageUrl("http://restapi.fs.ncloud.com/elin-cloud/contents/%EC%BF%A0%ED%8F%B0%EC%9D%B4%EB%AF%B8%EC%A7%80.jpg");
+        couponBoxLog.setCouponPublishTypeCode(coupon.getCouponPublishTypeCode());
+        couponBoxLog.setCouponReservationTime(coupon.getCouponReservationTime());
+        couponBoxLog.setCouponTargetTypeCode(coupon.getCouponTargetTypeCode());
+        couponBoxLog.setCouponTitle(coupon.getCouponTitle());
+        couponBoxLog.setCouponTypeNo(coupon.getCouponTypeNo());
+        couponBoxLog.setMembershipCustomerNo(customer.getMembershipCustomerNo());
+        couponBoxLog.setProductTitle(coupon.getProductTitle());
+        couponBoxLog.setStoreId(coupon.getStoreId());
+
+        couponBoxLogRepository.save(couponBoxLog);
+    }
+
+    public void sendAlarm(Coupon coupon, MembershipCustomer membershipCustomer){
         //할인쿠폰
         if(coupon.getCouponTypeNo() == 1) {
-            alarmManager.sendCouponAlarmMessage(coupon, customer, "C0");
+            alarmManager.sendCouponAlarmMessage(coupon, membershipCustomer, "C0");
         }
         //도장적립쿠폰
         else if(coupon.getCouponTypeNo() == 2){
-            alarmManager.sendCouponAlarmMessage(coupon, customer, "S4");
+            alarmManager.sendCouponAlarmMessage(coupon, membershipCustomer, "S4");
         }
         //포인트적립쿠폰
         else{
-            alarmManager.sendCouponAlarmMessage(coupon, customer, "P4");
+            alarmManager.sendCouponAlarmMessage(coupon, membershipCustomer, "P4");
         }
     }
+
+    private void saveBenefit(CouponBox couponBoxVO, Coupon coupon, MembershipCustomer customer) {
+        //쿠폰타입이 도장이나 포인트면 바로 사용처리
+        if(coupon.getCouponTypeNo() != 1){
+            couponBoxVO.setCouponUseCode(1);
+            couponBoxVO.setCouponUsedate(LocalDateTime.now());
+
+            //도장 or 포인트 적립
+
+            int benefitValue = customer.getCustomerBenefitValue() + coupon.getCouponBenefitValue();
+            Store store = customStoreRepository.findById(coupon.getStoreId()).get();
+
+            if(coupon.getCouponTypeNo() == 2){
+
+                Stamp stamp = stampRepository.findByCustomerStamp(coupon.getStoreId(), customer.getMembershipCustomerNo());
+
+                stampRepository.findById(stamp.getStampNo()).ifPresent(stamp1 -> {
+                    //매장이 기존에 설정한 도장적립 기준을 넘을 경우 0개로 초기화 후 쿠폰 발행
+                    if(benefitValue == store.getStoreStampGoal()) {
+                        customCustomerRepository.changeCustomerBenefitValue(0, customer.getMembershipCustomerNo());
+
+                        Coupon benefitCoupon = customCouponRepository.findByStoreBenefitCoupon(coupon.getStoreId());
+
+                        if(benefitCoupon != null){
+                            CouponBox couponBox = setCouponBox(benefitCoupon, customer.getMembershipCustomerNo());
+
+                            customCouponBoxRepository.save(couponBox);
+                        }
+
+                        stamp1.setStampNowCnt(0);
+                        stamp1.setStampCouponPublishedCnt(stamp.getStampCouponPublishedCnt()+1);
+                    }
+                    else {
+                        customCustomerRepository.changeCustomerBenefitValue(benefitValue, customer.getMembershipCustomerNo());
+                        stamp1.setStampNowCnt(coupon.getCouponBenefitValue());
+                    }
+
+                    //도장 업데이트
+                    stamp1.setStampCnt(stamp.getStampCnt()+coupon.getCouponBenefitValue());
+                    stamp1.setStampSavingCnt(coupon.getCouponBenefitValue());
+
+                    stampRepository.save(stamp1);
+                });
+
+                //도장 내역 & 로그 쌓기
+                saveStampHistoryLog(stamp);
+            }
+            else{
+                customCustomerRepository.changeCustomerBenefitValue(benefitValue, customer.getMembershipCustomerNo());
+
+                Point point = pointRepository.findByCustomerPoint(coupon.getStoreId(), customer.getMembershipCustomerNo());
+
+                pointRepository.findById(point.getPointNo()).ifPresent(point1 -> {
+                    point1.setPointCnt(point1.getPointCnt()+benefitValue);
+                    point1.setPointNowCnt(point1.getPointNowCnt()+benefitValue);
+                    point1.setPointSavingCnt(benefitValue);
+
+                    pointRepository.save(point1);
+                });
+
+                //포인트 내역 & 로그 쌓기
+                savePointHistoryLog(point);
+            }
+        }
+    }
+
+    private void saveStampHistoryLog(Stamp stamp){
+        StampHistory stampHistory = new StampHistory();
+        stampHistory.setStampNo(stamp.getStampNo());
+        stampHistory.setMembershipCustomerNo(stamp.getMembershipCustomerNo());
+        stampHistory.setStampCnt(stamp.getStampCnt());
+        stampHistory.setStampCouponPublishedCnt(stamp.getStampCouponPublishedCnt());
+        stampHistory.setStampDeductCnt(stamp.getStampDeductCnt());
+        stampHistory.setStampNowCnt(stamp.getStampNowCnt());
+        stampHistory.setStoreId(stamp.getStoreId());
+        stampHistory.setStampEarningWay("C");
+
+        stampHistoryRepository.save(stampHistory);
+
+        StampLog stampLog = new StampLog();
+        stampLog.setStampNo(stamp.getStampNo());
+        stampLog.setMembershipCustomerNo(stamp.getMembershipCustomerNo());
+        stampLog.setStampCnt(stamp.getStampCnt());
+        stampLog.setStampCouponPublishedCnt(stamp.getStampCouponPublishedCnt());
+        stampLog.setStampDeductCnt(stamp.getStampDeductCnt());
+        stampLog.setStampNowCnt(stamp.getStampNowCnt());
+        stampLog.setStoreId(stamp.getStoreId());
+        stampLog.setStampEarningWay("C");
+
+        stampLogRepository.save(stampLog);
+    }
+
+    private void savePointHistoryLog(Point point) {
+        PointHistory pointHistory = new PointHistory();
+
+        pointHistory.setMembershipCustomerNo(point.getMembershipCustomerNo());
+        pointHistory.setPointBegindate(LocalDate.now());
+        pointHistory.setPointCnt(point.getPointCnt());
+        pointHistory.setPointDeductCnt(point.getPointDeductCnt());
+        pointHistory.setPointEarningWay("C");
+        pointHistory.setPointExtinctionCnt(point.getPointExtinctionCnt());
+        LocalDate date = LocalDate.now();
+        pointHistory.setPointFinishdate(date.plusYears(2));
+        pointHistory.setPointNo(point.getPointNo());
+        pointHistory.setPointNowCnt(point.getPointNowCnt());
+        pointHistory.setPointSavingCnt(point.getPointSavingCnt());
+        pointHistory.setStoreId(point.getStoreId());
+
+        pointHistoryRepository.save(pointHistory);
+
+        PointLog pointLog = new PointLog();
+
+        pointLog.setMembershipCustomerNo(point.getMembershipCustomerNo());
+        pointLog.setPointBegindate(LocalDate.now());
+        pointLog.setPointCnt(point.getPointCnt());
+        pointLog.setPointDeductCnt(point.getPointDeductCnt());
+        pointLog.setPointEarningWay("C");
+        pointLog.setPointExtinctionCnt(point.getPointExtinctionCnt());
+        pointLog.setPointFinishdate(date.plusYears(2));
+        pointLog.setPointNo(point.getPointNo());
+        pointLog.setPointNowCnt(point.getPointNowCnt());
+        pointLog.setPointSavingCnt(point.getPointSavingCnt());
+        pointLog.setStoreId(point.getStoreId());
+
+        pointLogRepository.save(pointLog);
+    }
+
+    //쿠폰 등록여부 가져오기
+    @GetMapping("/selectCouponRegisterCode/{storeId}/{couponTargetTypeCode}")
+    public ResponseEntity<Integer> selectStoreCouponBox(@PathVariable("storeId") String storeId,
+                                                               @PathVariable("couponTargetTypeCode") String couponTargetTypeCode) {
+        log.info("코드 : " + storeId+couponTargetTypeCode);
+        return new ResponseEntity<>(customCouponRepository.findByStoreRegisterCoupon(storeId, couponTargetTypeCode), HttpStatus.CREATED);
+    }
+
 }
