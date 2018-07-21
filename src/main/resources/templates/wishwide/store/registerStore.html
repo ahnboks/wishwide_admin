@@ -65,9 +65,6 @@
                                     </div>
                                     <div class="hr-line-dashed"></div>
                                 </div>
-                                <!--위도/경도-->
-                                <input type="hidden" class="form-control" name="storeLatitude" id="storeLatitude"/>
-                                <input type="hidden" class="form-control" name="storeLongitude" id="storeLongitude"/>
                             </div>
                         </div>
                         <div class="col-lg-12">
@@ -246,6 +243,9 @@
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
+                                    <!--위도/경도-->
+                                    <input type="hidden" class="form-control" name="storeLatitude" id="storeLatitude"/>
+                                    <input type="hidden" class="form-control" name="storeLongitude" id="storeLongitude"/>
 
                                     <!--카카오 옐로우 아이디-->
                                     <div class="form-group">
@@ -287,7 +287,6 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label">혜택타입<label class="notnull-mark-color"> *</label></label>
                                         <div class="col-sm-3" >
-                                            <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" value="N" checked="checked">미사용</label>
                                             <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" value="S">도장</label>
                                             <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" value="P">포인트</label>
                                         </div>
@@ -527,14 +526,11 @@
     </div>
     <!-- 콘텐츠 END -->
 </div>
-<!--Google Maps API-->
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB21TZw3eqin-irLBQw7kbRaWxbBebUPhU"></script>
 <th:block >
     <script th:inline="javascript">
+        var registerForm = $('#registerForm');
 
         $(document).ready(function () {
-            var registerForm = $('#registerForm');
-
             $('.clockpicker').clockpicker();
 
             var elem = document.querySelector('.js-switch');
@@ -613,33 +609,59 @@
                 }
             });
 
-           $('#btnSubmit').click(function (e) {
-//               e.preventDefault();
-               var storeAddress = $('#storeAddress').val();
+            //등록 버튼 클릭 시 null 체크 유효성 검사
+            $('#btnSubmit').click(function (e) {
+//                e.preventDefault();
 
-               codeAddress(storeAddress);
+                if (confirm('등록하시겠습니까?') != true) return false;
 
-               var bziFile = $('input[name="bziFile"]').val();
-               var contractFile = $('input[name="contractFile"]').val();
-               var logoFile = $('input[name="logoFile"]').val();
+                var contractBeginDate = $('.contract-begin-date-input-validation');
+                var contractFinishDate = $('.contract-finish-date-input-validation');
+                var storeAddress = $('#storeAddress').val();
+                var bziFile = $('input[name="bziFile"]').val();
+                var contractFile = $('input[name="contractFile"]').val();
+                var logoFile = $('input[name="logoFile"]').val();
+                var storeBenefitTypeCode = registerForm.find('[name="storeBenefitTypeCode"]:checked').val();
 
-               console.log(bziFile+contractFile+logoFile);
+                if (contractBeginDate.length != 0) {
+                    if (!checkContractBeginDate(contractBeginDate.val()))
+                        return false;
 
-               if((bziFile == '')) {
-                   alert('사업자 등록증을 등록해주세요');
-                   return false;
-               }
-               if( contractFile == '') {
-                   alert('계약서를 등록해주세요');
-                   return false;
-               }
-               if(logoFile == '') {
-                   alert('로고이미지를 등록해주세요');
-                   return false;
-               }
-           });
+                    if (contractFinishDate.length != 0) {
+                        if (!checkContractFinishDate(contractBeginDate.val(), contractFinishDate.val()))
+                            return false;
+                    }
+                }
+
+                if((bziFile == '')) {
+                    alert('사업자 등록증을 등록해주세요');
+                    return false;
+                }
+                if( contractFile == '') {
+                    alert('계약서를 등록해주세요');
+                    return false;
+                }
+                if(logoFile == '') {
+                    alert('로고이미지를 등록해주세요');
+                    return false;
+                }
+                if(storeBenefitTypeCode == undefined) {
+                    alert('혜택타입을 선택해주세요');
+                    return false;
+                }
+
+                for (var i = 0; i < registerForm.find('[name="storeBusinessRegistrationNumber"]').length; i++) {
+                    if(registerForm.find('[name="storeBusinessRegistrationNumber"]')[i].value == ''){
+                        alert('사업자 번호를 끝까지 입력해주세요');
+                        return false;
+                    }
+                }
+
+                checkNullValue();
+                checkPlacehoderNullValue();
+
+            });
         });
-
 
     </script>
 </th:block>

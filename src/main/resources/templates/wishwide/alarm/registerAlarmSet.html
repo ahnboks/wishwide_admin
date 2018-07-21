@@ -22,17 +22,24 @@
                     <!--폼 START-->
                     <form method="post" th:action="@{postRegisterAlarmSet}" class="form-horizontal" id="registerForm">
                         <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
-                        <div class="form-group">
+                        <!--가맹점명-->
+                        <div class="form-group" sec:authorize="hasRole('MA')">
                             <label class="col-sm-2 control-label">가맹점명<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-md-2">
-                                <select data-placeholder="가맹점 선택" class="chosen-select" id="storeId" name="storeId" tabindex="2">
+                            <div class="col-sm-2">
+                                <select data-placeholder="가맹점 선택" class="chosen-select" name="storeId" tabindex="2">
                                     <option value="ALL" >전체</option>
-                                    <option th:each="store:${storeNameList}" name="storeId" th:value="${store[0]}"
-                                            th:selected="${pageVO.userId} == ${store[0]}">[[${store[1]}]]</option>
+                                    <option th:each="store:${storeNameList}" th:value="${store[0]}">[[${store[1]}]]</option>
                                 </select>
                             </div>
                         </div>
+
+                        <!--가맹점명-->
+                        <div class="form-group" sec:authorize="hasRole('ST')">
+                            <input type="hidden" th:value="${storeId}" name="storeId">
+                        </div>
                         <div class="hr-line-dashed"></div>
+
+
                         <!--수신고객선택-->
                         <div class="form-group">
                             <label class="col-sm-2 control-label">수신고객 선택<label class="notnull-mark-color"> *</label></label>
@@ -345,7 +352,7 @@
             $('a[name="selectStoreCustomer"]').click(function (e) {
                 e.preventDefault();
 
-                var storeId = registerForm.find('#storeId').val();
+                var storeId = registerForm.find('[name="storeId"]').val();
 
                 console.log(storeId);
 
@@ -422,7 +429,7 @@
             });
 
             $('#btnSubmit').click(function (e) {
-                e.preventDefault();
+//                e.preventDefault();
 
                 if (confirm('발송하시겠습니까?') != true) return false;
 

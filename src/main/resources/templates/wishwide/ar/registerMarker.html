@@ -1,5 +1,5 @@
 <div th:insert="~{layout/head::head}"></div>
-<script src="/js/managerValidation.js"></script>
+<!--<script src="/js/managerValidation.js"></script>-->
 
 <div id="wrapper">
     <!-- 사이드바 START -->
@@ -21,7 +21,7 @@
                     <!--폼 START-->
                     <form method="post" class="form-horizontal" id="registerForm" enctype="multipart/form-data" >
                         <!--가맹점명-->
-                        <div class="form-group">
+                        <div class="form-group" sec:authorize="hasRole('MA')">
                             <label class="col-sm-2 control-label">가맹점명<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
                                 <select data-placeholder="가맹점 선택" class="chosen-select" name="storeId" tabindex="2">
@@ -29,6 +29,11 @@
                                     <option th:each="store:${storeNameList}" th:value="${store[0]}">[[${store[1]}]]</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <!--가맹점명-->
+                        <div class="form-group" sec:authorize="hasRole('ST')">
+                            <input type="hidden" th:value="${storeId}" name="storeId">
                         </div>
                         <div class="hr-line-dashed"></div>
 
@@ -96,39 +101,58 @@
     <script th:inline="javascript">
         $(document).ready(function () {
             var registerForm = $("#registerForm");
+
             $('.chosen-select').chosen({width: "100%"});
-        });
 
-        $('input[name="imageFiles"]').on('change', imageFileSelect);
+            $('input[name="imageFiles"]').on('click', function (e) {
+                var datFileValue = $('input[name="datFile"]').val();
+                var xmlFileValue = $('input[name="xmlFile"]').val();
 
-        function imageFileSelect(e) {
-            var files = e.target.files;
-            var filesArr = Array.prototype.slice.call(files);
+                console.log(datFileValue+xmlFileValue);
 
-            filesArr.forEach(function (t) {
-                if(!t.type.match("image.*")){
-                    alert('확장자는 이미지 확장자만 가능합니다.');
-                    return;
+                if((datFileValue == '') || xmlFileValue == '') {
+                    alert('dat파일과 xml파일 먼저 등록해주세요.');
+                    e.preventDefault();
+                }
+                else {
+                    return true;
                 }
 
             });
-        }
 
-        $('input[name="imageFiles"]').on('click', function (e) {
-            var datFileValue = $('input[name="datFile"]').val();
-            var xmlFileValue = $('input[name="xmlFile"]').val();
+            $('#btnSubmit').click(function (e) {
+//                e.preventDefault();
 
-            console.log(datFileValue+xmlFileValue);
+                if (confirm('등록하시겠습니까?') != true) return false;
 
-            if((datFileValue == '') || xmlFileValue == '') {
-                alert('dat파일과 xml파일 먼저 등록해주세요.');
-                e.preventDefault();
-            }
-            else {
-                return true;
-            }
+                var storeId =  registerForm.find('[name="storeId"]').val();
+                var datFile = registerForm.find('[name="datFile"]').val();
+                var xmlFile = registerForm.find('[name="xmlFile"]').val();
+                var imageFiles = registerForm.find('imageFiles').val();
+
+                if (storeId == ''){
+                    alert('가맹점을 선택해주세요.');
+                    return false;
+                }
+                if (datFile == '') {
+                    alert('dat파일을 등록해주세요');
+                    return false;
+                }
+                if (xmlFile == '') {
+                    alert('xml파일을 등록해주세요');
+                    return false;
+                }
+                if (imageFiles == '') {
+                    alert('QR 이미지파일을 등록해주세요');
+                    return false;
+                }
+
+//                console.log(deviceMacAddress.length);
+            });
 
         });
+
+
 
     </script>
 </th:block>

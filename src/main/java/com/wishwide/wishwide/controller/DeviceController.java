@@ -57,8 +57,8 @@ public class DeviceController {
     //리스트
     @GetMapping("/listDeviceModel")
     public void listDeviceModel(HttpServletRequest request,
-                           @ModelAttribute("pageVO") PageVO pageVO,
-                           Model model) {
+                                @ModelAttribute("pageVO") PageVO pageVO,
+                                Model model) {
         Pageable pageable = pageVO.makePageable(0, "deviceModelNo");
 
         Page<Object[]> result = customDeviceModelRepository.getDeviceModelPage(
@@ -74,7 +74,7 @@ public class DeviceController {
         log.info("총 행 수" + result.getTotalElements());
 
         result.forEach(deviceModel -> {
-            log.info("디바이스모델 정보"+ Arrays.toString(deviceModel));
+            log.info("디바이스모델 정보" + Arrays.toString(deviceModel));
         });
 
         //디바이스모델 리스트
@@ -87,7 +87,7 @@ public class DeviceController {
     //등록
     @GetMapping("/registerDeviceModel")
     public void registerDeviceModel(@ModelAttribute("pageVO") PageVO pageVO,
-                                  Model model) {
+                                    Model model) {
         log.info("디바이스모델 등록 페이지");
     }
 
@@ -118,8 +118,8 @@ public class DeviceController {
     //상세
     @GetMapping("/detailDeviceModel/{deviceModelNo}")
     public String detailDeviceModel(@PathVariable("deviceModelNo") Long deviceModelNo,
-                              @ModelAttribute("pageVO") PageVO pageVO,
-                              Model model){
+                                    @ModelAttribute("pageVO") PageVO pageVO,
+                                    Model model) {
         //디바이스 정보
         model.addAttribute("deviceModelVO", customDeviceModelRepository.getDeviceModelDetail(deviceModelNo));
 
@@ -134,8 +134,8 @@ public class DeviceController {
     public String updateDeviceModel(@ModelAttribute("deviceModelVO") DeviceModel deviceModelVO,
                                     @RequestParam(value = "deviceModelImage", required = false) MultipartFile deviceModelImage,
                                     RedirectAttributes redirectAttributes,
-                                    PageVO pageVO){
-        log.info("수정 데이터 : "+deviceModelVO);
+                                    PageVO pageVO) {
+        log.info("수정 데이터 : " + deviceModelVO);
 
         //매장 정보 조회
         customDeviceModelRepository.findById(deviceModelVO.getDeviceModelNo()).ifPresent(deviceModel -> {
@@ -171,15 +171,15 @@ public class DeviceController {
     //리스트
     @GetMapping("/listDevice")
     public void listDevice(HttpServletRequest request,
-                            @ModelAttribute("pageVO") PageVO pageVO,
-                            Model model) {
+                           @ModelAttribute("pageVO") PageVO pageVO,
+                           Model model) {
         //세션
         HttpSession session = request.getSession();
         //세션 값 세팅
         String userId = session.getAttribute("userId").toString();
         String roleCode = session.getAttribute("userRole").toString();
 
-        log.info("세션 : "+userId+roleCode);
+        log.info("세션 : " + userId + roleCode);
 
         Pageable pageable = pageVO.makePageable(0, "deviceNo");
 
@@ -200,7 +200,7 @@ public class DeviceController {
         log.info("총 행 수" + result.getTotalElements());
 
         result.forEach(device -> {
-            log.info("디바이스 정보"+ Arrays.toString(device));
+            log.info("디바이스 정보" + Arrays.toString(device));
         });
 
         //디바이스 리스트
@@ -216,11 +216,26 @@ public class DeviceController {
     //등록
     @GetMapping("/registerDevice")
     public void getRegisterDevice(@ModelAttribute("pageVO") PageVO pageVO,
-                                 Model model) {
+                                  HttpServletRequest request,
+                                  Model model) {
         log.info("디바이스 등록 페이지");
 
         //가맹점명 셀렉트 박스
         model.addAttribute("storeNameList", customStoreRepository.getStoreList());
+
+        //세션
+        HttpSession session = request.getSession();
+
+        //세션 값 세팅
+        String sessionId = session.getAttribute("userId").toString();
+        String roleCode = session.getAttribute("userRole").toString();
+
+        log.info("세션 : " + sessionId + roleCode);
+
+        if (roleCode.equals("ST")) {
+            //가맹점아이디
+            model.addAttribute("storeId", sessionId);
+        }
 
     }
 
@@ -230,29 +245,29 @@ public class DeviceController {
                                      @RequestParam("deviceMacAddress") List<String> deviceMacAddressList,
                                      RedirectAttributes redirectAttributes,
                                      PageVO pageVO) {
-        log.info("등록 데이터 : "+deviceVO + ", 디바이스 맥주소 : "+deviceMacAddressList);
+        log.info("등록 데이터 : " + deviceVO + ", 디바이스 맥주소 : " + deviceMacAddressList);
 
         //VO에 세션값 세팅
 
         String deviceMacAddress = "";
-        for(String macAddress : deviceMacAddressList){
+        for (String macAddress : deviceMacAddressList) {
             deviceMacAddress += macAddress;
         }
         deviceVO.setDeviceMacAddress(deviceMacAddress);
 
-        customDeviceModelRepository.findById(deviceVO.getDeviceModelNo()).ifPresent(deviceModel ->{
+        customDeviceModelRepository.findById(deviceVO.getDeviceModelNo()).ifPresent(deviceModel -> {
             deviceVO.setDeviceModelTitle(deviceModel.getDeviceModelTitle());
         });
 
         //태블릿일때만 값 세팅
-        if(deviceVO.getDeviceTypeCode().equals("TABLET")){
+        if (deviceVO.getDeviceTypeCode().equals("TABLET")) {
             //가장 마지막에 등록된 디바이스 번호 가져옴
-            Long resentDeviceNo = customDeviceRepository.findTop1ByOrderByDeviceNoDesc().getDeviceNo()+1;
+            Long resentDeviceNo = customDeviceRepository.findTop1ByOrderByDeviceNoDesc().getDeviceNo() + 1;
 
-            log.info("최신 디바이스 번호 : "+resentDeviceNo);
+            log.info("최신 디바이스 번호 : " + resentDeviceNo);
 
-            String deviceId = "WW_DV"+resentDeviceNo;
-            String posId = "WW_POS"+resentDeviceNo;
+            String deviceId = "WW_DV" + resentDeviceNo;
+            String posId = "WW_POS" + resentDeviceNo;
 
             String socketId = RandomStringUtils.randomAlphanumeric(8);
 
@@ -281,8 +296,8 @@ public class DeviceController {
     //상세
     @GetMapping("/detailDevice/{deviceNo}")
     public String detailDevice(@PathVariable("deviceNo") Long deviceNo,
-                              @ModelAttribute("pageVO") PageVO pageVO,
-                              Model model){
+                               @ModelAttribute("pageVO") PageVO pageVO,
+                               Model model) {
         //디바이스 정보
         model.addAttribute("deviceVO", customDeviceRepository.getDeviceDetail(deviceNo));
 
@@ -298,25 +313,25 @@ public class DeviceController {
                                @RequestParam(value = "deviceImage", required = false) MultipartFile deviceImage,
                                @RequestParam("deviceMacAddress") List<String> deviceMacAddressList,
                                RedirectAttributes redirectAttributes,
-                               PageVO pageVO){
-        log.info("수정 데이터 : "+deviceVO + ", 맥주소 : "+deviceMacAddressList);
+                               PageVO pageVO) {
+        log.info("수정 데이터 : " + deviceVO + ", 맥주소 : " + deviceMacAddressList);
 
         //매장 정보 조회
         customDeviceRepository.findById(deviceVO.getDeviceNo()).ifPresent(device -> {
             //디바이스 이미지 파일 등록
             if (deviceImage != null && !(deviceImage.isEmpty())) {
-                deviceImageRepository.save(saveDBDeviceImage(device.getDeviceNo(),"DV", deviceVO.getStoreId(), saveCloudFile(deviceImage)));
+                deviceImageRepository.save(saveDBDeviceImage(device.getDeviceNo(), "DV", deviceVO.getStoreId(), saveCloudFile(deviceImage)));
                 log.info("디바이스 이미지 등록 성공");
             }
 
             String deviceMacAddress = "";
-            for(String macAddress : deviceMacAddressList){
+            for (String macAddress : deviceMacAddressList) {
                 deviceMacAddress += macAddress;
             }
 
             device.setDeviceMacAddress(deviceMacAddress);
 
-            customDeviceModelRepository.findById(deviceVO.getDeviceModelNo()).ifPresent(deviceModel ->{
+            customDeviceModelRepository.findById(deviceVO.getDeviceModelNo()).ifPresent(deviceModel -> {
                 device.setDeviceModelTitle(deviceModel.getDeviceModelTitle());
             });
 
@@ -341,7 +356,6 @@ public class DeviceController {
     }
 
 
-
     //디바이스 사용여부 코드 변경
     @GetMapping("/updateDeviceVisibleCode/{deviceNo}/{deviceVisibleCode}")
     public ResponseEntity<String> updateServiceOperationCode(@PathVariable("deviceNo") Long deviceNo,
@@ -352,7 +366,7 @@ public class DeviceController {
 
         //코드 변경
         customDeviceRepository.findById(deviceNo).ifPresent(device -> {
-            if(deviceVisibleCode == 1)
+            if (deviceVisibleCode == 1)
                 device.setDeviceVisibleCode(0);
             else
                 device.setDeviceVisibleCode(1);
@@ -360,7 +374,7 @@ public class DeviceController {
             customDeviceRepository.save(device);
         });
 
-        if(deviceVisibleCode == 1)
+        if (deviceVisibleCode == 1)
             resultCode = "0";
         else
             resultCode = "1";
@@ -370,7 +384,7 @@ public class DeviceController {
 
     //디바이스 모델명 가져오기
     @GetMapping("/selectDeviceModel/{deviceTypeCode}")
-    public ResponseEntity<List<Object[]>> selectDeviceModel(@PathVariable("deviceTypeCode")String deviceTypeCode) {
+    public ResponseEntity<List<Object[]>> selectDeviceModel(@PathVariable("deviceTypeCode") String deviceTypeCode) {
         log.info("코드 : " + deviceTypeCode);
 
         return new ResponseEntity<>(customDeviceModelRepository.getDeviceModelList(deviceTypeCode), HttpStatus.CREATED);

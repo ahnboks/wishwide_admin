@@ -40,10 +40,18 @@
                                     <td>
                                         <div class="col-sm-6 m-b-xs">
                                             <select class="input-sm form-control input-s-sm inline" id="storeArGameTypeCode">
-                                                <option value="ALL" th:selected="${pageVO.storeArGameTypeCode} == 2">전체</option>
-                                                <option value="TABLET" th:selected="${pageVO.storeArGameTypeCode} == 1">캐릭터잡기</option>
-                                                <option value="BEACON" th:selected="${pageVO.storeArGameTypeCode} == 2">글자맞추기</option>
+                                                <option value="3" th:selected="${pageVO.storeArGameTypeCode} == 3">전체</option>
+                                                <option value="1" th:selected="${pageVO.storeArGameTypeCode} == 1">캐릭터잡기</option>
+                                                <option value="2" th:selected="${pageVO.storeArGameTypeCode} == 2">글자맞추기</option>
                                             </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="col-sm-12 m-b-xs input-group">
+                                            <span class="input-group-btn">
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                                id="searchButton">검색</button>
+                                            </span>
                                         </div>
                                     </td>
                                 </tr>
@@ -51,7 +59,7 @@
                         </div>
                     </div>
                     <!--등록 버튼-->
-                    <div class="col-lg-12">
+                    <div class="col-lg-12" sec:authorize="hasRole('MA')">
                         <div class="pull-right">
                             <a th:href="@{registerMarker}"><button class="btn btn-primary">마커 추가</button></a>
                         </div>

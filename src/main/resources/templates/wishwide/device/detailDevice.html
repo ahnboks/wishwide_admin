@@ -1,5 +1,5 @@
 <div th:insert="~{layout/head::head}"></div>
-<script src="/js/managerValidation.js"></script>
+<!--<script src="/js/managerValidation.js"></script>-->
 
 <div id="wrapper">
 
@@ -171,29 +171,42 @@
 
 
             $('#btnUpdate').click(function (e) {
-                var checkStore = $('.store-check-validation');
+                //                e.preventDefault();
+
+                if (confirm('수정하시겠습니까?') != true) return false;
+
+                var storeId =  detailForm.find('[name="storeId"]').val();
+                var deviceTitle =  detailForm.find('[name="deviceTitle"]').val();
+                var deviceModelNo =  detailForm.find('[name="deviceModelNo"]').val();
                 var deviceMacAddress =  detailForm.find('[name="deviceMacAddress"]').val();
-                var isStoreCheckedCnt = 0;
-                console.log(checkStore);
-                console.log(deviceMacAddress);
+                var deviceTypeCode =  detailForm.find('[name="deviceTypeCode"]:checked').val();
 
-                if(checkStore.length != 0){
-                    for (var i = 0; i < checkStore.length; i++) {
-                        if (checkStore.eq(i).prop('checked')) {
-                            isStoreCheckedCnt++;
-                        }
-                    }
-
-                    if(isStoreCheckedCnt == 0){
-                        alert('가맹점을 선택해주세요.');
-                        return false;
-                    }
-
+                if (storeId == ''){
+                    alert('가맹점을 선택해주세요.');
+                    return false;
                 }
-
+                if (deviceTitle == ''){
+                    alert('디바이스명을 입력해주세요.');
+                    return false;
+                }
+                if(deviceModelNo == 'ALL') {
+                    alert('디바이스 모델을 선택해주세요.');
+                    return false;
+                }
                 if (deviceMacAddress == ''){
                     alert('MAC주소를 입력해주세요.');
                     return false;
+                }
+                if (deviceTypeCode == undefined){
+                    alert('디바이스 타입을 선택해주세요.');
+                    return false;
+                }
+
+                for (var i = 0; i < detailForm.find('[name="deviceMacAddress"]').length; i++) {
+                    if(detailForm.find('[name="deviceMacAddress"]')[i].value == ''){
+                        alert('MAC 주소를 끝까지 입력해주세요');
+                        return false;
+                    }
                 }
             });
 

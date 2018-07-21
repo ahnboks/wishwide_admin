@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -175,13 +176,36 @@ public class CouponController {
     //등록
     @GetMapping("/registerCoupon")
     public void getRegisterCoupon(@ModelAttribute("pageVO") PageVO pageVO,
-                                        Model model) {
+                                  HttpServletRequest request,
+                                  Model model) {
         log.info("등록 페이지");
+
+        //세션
+        HttpSession session = request.getSession();
+
+        //세션 값 세팅
+        String sessionId = session.getAttribute("userId").toString();
+        String roleCode = session.getAttribute("userRole").toString();
+        String benefitTypeCode = session.getAttribute("benefitTypeCode").toString();
+
+        log.info("세션 : "+sessionId+roleCode);
+
+        if(roleCode.equals("ST")){
+            //가맹점아이디
+            model.addAttribute("storeId", sessionId);
+        }
+
+        //혜택타입
+        model.addAttribute("benefitTypeCode", benefitTypeCode);
+
+        //세션 권한
+        model.addAttribute("roleCode", roleCode);
 
         //가맹점명 셀렉트 박스
         model.addAttribute("storeNameList", customStoreRepository.getStoreList());
     }
 
+    @Transactional
     @PostMapping("/postRegisterCoupon")
     public String postRegisterCoupon(@ModelAttribute(value = "couponVO") Coupon couponVO,
                                      @RequestParam(value = "finishDate", required = false) String finishDate,
@@ -218,8 +242,10 @@ public class CouponController {
 
                 CouponBox couponBoxVO = setCouponBox(coupon, customer.getMembershipCustomerNo());
 
-                //도장 & 포인트 적립
-                saveBenefit(couponBoxVO, coupon, customer);
+                if(coupon.getCouponTypeNo() != 1){
+                    //도장 & 포인트 적립
+                    saveBenefit(couponBoxVO, coupon, customer);
+                }
 
                 CouponBox couponBox = customCouponBoxRepository.save(couponBoxVO);
 
@@ -237,8 +263,10 @@ public class CouponController {
             customCustomerRepository.findVIPCustomerByStoreId(coupon.getStoreId()).forEach(customer -> {
                 CouponBox couponBoxVO = setCouponBox(coupon, customer.getMembershipCustomerNo());
 
-                //도장 & 포인트 적립
-                saveBenefit(couponBoxVO, coupon, customer);
+                if(coupon.getCouponTypeNo() != 1){
+                    //도장 & 포인트 적립
+                    saveBenefit(couponBoxVO, coupon, customer);
+                }
 
                 CouponBox couponBox = customCouponBoxRepository.save(couponBoxVO);
 
@@ -259,8 +287,10 @@ public class CouponController {
                     MembershipCustomer membershipCustomer = customCustomerRepository.findById(Long.parseLong(membershipCustomerNo)).get();
                     CouponBox couponBoxVO = setCouponBox(coupon, membershipCustomer.getMembershipCustomerNo());
 
-                    //도장 & 포인트 적립
-                    saveBenefit(couponBoxVO, coupon, membershipCustomer);
+                    if(coupon.getCouponTypeNo() != 1){
+                        //도장 & 포인트 적립
+                        saveBenefit(couponBoxVO, coupon, membershipCustomer);
+                    }
 
                     CouponBox couponBox = customCouponBoxRepository.save(couponBoxVO);
 
@@ -427,11 +457,11 @@ public class CouponController {
         }
         //도장적립쿠폰
         else if(coupon.getCouponTypeNo() == 2){
-            alarmManager.sendCouponAlarmMessage(coupon, membershipCustomer, "S4");
+            alarmManager.sendBenefitAlarmMessage(coupon, membershipCustomer, "S4");
         }
         //포인트적립쿠폰
         else{
-            alarmManager.sendCouponAlarmMessage(coupon, membershipCustomer, "P4");
+            alarmManager.sendBenefitAlarmMessage(coupon, membershipCustomer, "P4");
         }
     }
 
@@ -448,55 +478,58 @@ public class CouponController {
             Store store = customStoreRepository.findById(coupon.getStoreId()).get();
 
             if(coupon.getCouponTypeNo() == 2){
-
                 Stamp stamp = stampRepository.findByCustomerStamp(coupon.getStoreId(), customer.getMembershipCustomerNo());
 
-                stampRepository.findById(stamp.getStampNo()).ifPresent(stamp1 -> {
-                    //매장이 기존에 설정한 도장적립 기준을 넘을 경우 0개로 초기화 후 쿠폰 발행
-                    if(benefitValue == store.getStoreStampGoal()) {
-                        customCustomerRepository.changeCustomerBenefitValue(0, customer.getMembershipCustomerNo());
+                if(stamp != null){
+                    stampRepository.findById(stamp.getStampNo()).ifPresent(stamp1 -> {
+                        //매장이 기존에 설정한 도장적립 기준을 넘을 경우 0개로 초기화 후 쿠폰 발행
+                        if(benefitValue == store.getStoreStampGoal()) {
+                            customCustomerRepository.changeCustomerBenefitValue(0, customer.getMembershipCustomerNo());
 
-                        Coupon benefitCoupon = customCouponRepository.findByStoreBenefitCoupon(coupon.getStoreId());
+                            Coupon benefitCoupon = customCouponRepository.findByStoreBenefitCoupon(coupon.getStoreId());
 
-                        if(benefitCoupon != null){
-                            CouponBox couponBox = setCouponBox(benefitCoupon, customer.getMembershipCustomerNo());
+                            if(benefitCoupon != null){
+                                CouponBox couponBox = setCouponBox(benefitCoupon, customer.getMembershipCustomerNo());
 
-                            customCouponBoxRepository.save(couponBox);
+                                customCouponBoxRepository.save(couponBox);
+                            }
+
+                            stamp1.setStampNowCnt(0);
+                            stamp1.setStampCouponPublishedCnt(stamp.getStampCouponPublishedCnt()+1);
+                        }
+                        else {
+                            customCustomerRepository.changeCustomerBenefitValue(benefitValue, customer.getMembershipCustomerNo());
+                            stamp1.setStampNowCnt(coupon.getCouponBenefitValue());
                         }
 
-                        stamp1.setStampNowCnt(0);
-                        stamp1.setStampCouponPublishedCnt(stamp.getStampCouponPublishedCnt()+1);
-                    }
-                    else {
-                        customCustomerRepository.changeCustomerBenefitValue(benefitValue, customer.getMembershipCustomerNo());
-                        stamp1.setStampNowCnt(coupon.getCouponBenefitValue());
-                    }
+                        //도장 업데이트
+                        stamp1.setStampCnt(stamp.getStampCnt()+coupon.getCouponBenefitValue());
+                        stamp1.setStampSavingCnt(coupon.getCouponBenefitValue());
 
-                    //도장 업데이트
-                    stamp1.setStampCnt(stamp.getStampCnt()+coupon.getCouponBenefitValue());
-                    stamp1.setStampSavingCnt(coupon.getCouponBenefitValue());
+                        stampRepository.save(stamp1);
+                    });
 
-                    stampRepository.save(stamp1);
-                });
-
-                //도장 내역 & 로그 쌓기
-                saveStampHistoryLog(stamp);
+                    //도장 내역 & 로그 쌓기
+                    saveStampHistoryLog(stamp);
+                }
             }
             else{
                 customCustomerRepository.changeCustomerBenefitValue(benefitValue, customer.getMembershipCustomerNo());
 
                 Point point = pointRepository.findByCustomerPoint(coupon.getStoreId(), customer.getMembershipCustomerNo());
 
-                pointRepository.findById(point.getPointNo()).ifPresent(point1 -> {
-                    point1.setPointCnt(point1.getPointCnt()+benefitValue);
-                    point1.setPointNowCnt(point1.getPointNowCnt()+benefitValue);
-                    point1.setPointSavingCnt(benefitValue);
+                if(point != null){
+                    pointRepository.findById(point.getPointNo()).ifPresent(point1 -> {
+                        point1.setPointCnt(point1.getPointCnt()+benefitValue);
+                        point1.setPointNowCnt(point1.getPointNowCnt()+benefitValue);
+                        point1.setPointSavingCnt(benefitValue);
 
-                    pointRepository.save(point1);
-                });
+                        pointRepository.save(point1);
+                    });
 
-                //포인트 내역 & 로그 쌓기
-                savePointHistoryLog(point);
+                    //포인트 내역 & 로그 쌓기
+                    savePointHistoryLog(point);
+                }
             }
         }
     }

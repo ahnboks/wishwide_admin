@@ -287,9 +287,8 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label">혜택타입<label class="notnull-mark-color"> *</label></label>
                                         <div class="col-sm-3" >
-                                            <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" th:checked="${storeVO[20]} == N" value="N">미사용</label>
-                                            <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" th:checked="${storeVO[20]} == S" value="S">도장</label>
-                                            <label class="radio-inline"><input type="radio" name="storeBenefitTypeCode" th:checked="${storeVO[20]} == P" value="P">포인트</label>
+                                            <label class="radio-inline" th:if="${storeVO[20]} == 'S'"><input type="radio" name="storeBenefitTypeCode" th:checked="${storeVO[20]} == 'S'" value="S">도장</label>
+                                            <label class="radio-inline" th:if="${storeVO[20]} == 'P'"><input type="radio" name="storeBenefitTypeCode" th:checked="${storeVO[20]} == 'P'" value="P">포인트</label>
                                         </div>
                                     </div>
                                     <!--도장 혜택 정보-->
@@ -516,7 +515,7 @@
 
                         <!--수정, 목록 버튼-->
                        <div class="form-group text-center">
-                                <button class="btn btn-primary" type="submit" id="btnUpdate" sec:authorize="hasRole('MA')">수정</button>
+                                <button class="btn btn-primary" type="submit" id="btnUpdate">수정</button>
                                 <a th:href="@{/wishwide/store/listStore(page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}">
                                     <button class="btn btn-white" type="button" id="btnList">목록</button>
                                 </a>
@@ -610,14 +609,14 @@
 
             detailForm.find('[name="storeServiceUseCode"]').attr('value', storeServiceUseCode);
 
-            displayBenefit();
+//            displayBenefit();
             displayArGameType();
             displayArGameWord();
 
-            //혜택타입 코드에 따른 CSS
-            detailForm.find('[name="storeBenefitTypeCode"]').change(function (e) {
-                displayBenefit();
-            });
+//            //혜택타입 코드에 따른 CSS
+//            detailForm.find('[name="storeBenefitTypeCode"]').change(function (e) {
+//                displayBenefit();
+//            });
 
             //AR게임 사용 여부에 따른 CSS
             detailForm.find('[name="storeArGameUseCode"]').change(function (e) {
@@ -628,7 +627,6 @@
             detailForm.find('[name="storeArGameTypeCode"]').change(function () {
                 displayArGameWord();
             });
-
 
             //비밀번호 변경
             $('#btnUpdatePassword').click(function () {
@@ -686,14 +684,13 @@
                 });
             });
 
-
             var onlyAlphaRegularExpressions = /^[A-Za-z]*$/ ;  //영어만
+
             //영어 유효성 체크
             $('.only-alpha-validation').blur(function () {
                 var value = $('.only-alpha-validation').val();
 
                 if (!(onlyAlphaRegularExpressions.test(value))) {
-                    console.log('ㅇㅇㅇㅇ')
                     $('.only-alpha-validation').val('');
                 }
             });
@@ -711,8 +708,70 @@
                 }
             });
 
-        });
+            //버튼 클릭 시 null 체크 유효성 검사
+            $('#btnUpdate').click(function (e) {
+//                e.preventDefault();
 
+                if (confirm('수정하시겠습니까?') != true) return false;
+
+                var contractBeginDate = $('.contract-begin-date-input-validation');
+                var contractFinishDate = $('.contract-finish-date-input-validation');
+                var bziFile = $('input[name="bziFile"]').val();
+                var contractFile = $('input[name="contractFile"]').val();
+                var logoFile = $('input[name="logoFile"]').val();
+                var storeBenefitTypeCode = detailForm.find('[name="storeBenefitTypeCode"]:checked').val();
+
+                if (contractBeginDate.length != 0) {
+                    if (!checkContractBeginDate(contractBeginDate.val()))
+                        return false;
+
+                    if (contractFinishDate.length != 0) {
+                        if (!checkContractFinishDate(contractBeginDate.val(), contractFinishDate.val()))
+                            return false;
+                    }
+                }
+
+                if(bziFile == '') {
+                    var element = $('#file1');
+
+                    if(element.find('.fileinput-filename').text() == ''){
+                        alert('사업자 등록증을 등록해주세요');
+                        return false;
+                    }
+                }
+                if(contractFile == '') {
+                    var element = $('#file3');
+
+                    if(element.find('.fileinput-filename').text() == ''){
+                        alert('계약서를 등록해주세요');
+                        return false;
+                    }
+                }
+                if(logoFile == '') {
+                    var element = $('#file2');
+
+                    if(element.find('.fileinput-filename').text() == ''){
+                        alert('로고이미지를 등록해주세요');
+                        return false;
+                    }
+                }
+                if(storeBenefitTypeCode == undefined) {
+                    alert('혜택타입을 선택해주세요');
+                    return false;
+                }
+
+                for (var i = 0; i < detailForm.find('[name="storeBusinessRegistrationNumber"]').length; i++) {
+                    if(detailForm.find('[name="storeBusinessRegistrationNumber"]')[i].value == ''){
+                        alert('사업자 번호를 끝까지 입력해주세요');
+                        return false;
+                    }
+                }
+
+                checkNullValue();
+                checkPlacehoderNullValue();
+
+            });
+        });
 
         function removeBzi(e, type) {
             if(isBziAlert == true) {
@@ -776,24 +835,6 @@
                 }
             }
         }
-        
-        function displayBenefit() {
-            var storeBenefitTypeCode = detailForm.find('[name="storeBenefitTypeCode"]:checked').val();
-            console.log(storeBenefitTypeCode + '값');
-
-            if(storeBenefitTypeCode == 'S'){
-                $('#pointBenefitInfo').css('display','none');
-                $('#stampBenefitInfo').css('display','block');
-            }
-            else if(storeBenefitTypeCode == 'P'){
-                $('#stampBenefitInfo').css('display','none');
-                $('#pointBenefitInfo').css('display','block');
-            }
-            else{
-                $('#stampBenefitInfo').css('display','none');
-                $('#pointBenefitInfo').css('display','none');
-            }
-        }
 
         function displayArGameType() {
             var storeArGameUseCode = detailForm.find('[name="storeArGameUseCode"]:checked').val();
@@ -820,5 +861,24 @@
                 $('#storeArGameWord').css('display','none');
             }
         }
+
+
+        //        function displayBenefit() {
+        //            var storeBenefitTypeCode = detailForm.find('[name="storeBenefitTypeCode"]:checked').val();
+        //            console.log(storeBenefitTypeCode + '값');
+        //
+        //            if(storeBenefitTypeCode == 'S'){
+        //                $('#pointBenefitInfo').css('display','none');
+        //                $('#stampBenefitInfo').css('display','block');
+        //            }
+        //            else if(storeBenefitTypeCode == 'P'){
+        //                $('#stampBenefitInfo').css('display','none');
+        //                $('#pointBenefitInfo').css('display','block');
+        //            }
+        //            else{
+        //                $('#stampBenefitInfo').css('display','none');
+        //                $('#pointBenefitInfo').css('display','none');
+        //            }
+        //        }
     </script>
 </th:block>

@@ -46,7 +46,7 @@ public class CustomMarkerRepositoryImpl extends QuerydslRepositorySupport implem
             tupleJPQLQuery.where(store.storeId.eq(searchUserId));
         }
         //검색조건 : 게임타입
-        if (storeArGameTypeCode != 2) {
+        if (storeArGameTypeCode != 3) {
             tupleJPQLQuery.where(store.storeArGameTypeCode.eq(storeArGameTypeCode));
         }
 

@@ -1,5 +1,5 @@
 <div th:insert="~{layout/head::head}"></div>
-<script src="/js/managerValidation.js"></script>
+<!--<script src="/js/managerValidation.js"></script>-->
 
 <div id="wrapper">
 
@@ -22,7 +22,7 @@
                     <!--폼 START-->
                     <form method="post" th:action="@{postRegisterDevice}" class="form-horizontal" id="registerForm" enctype="multipart/form-data">
                         <!--가맹점명-->
-                        <div class="form-group">
+                        <div class="form-group" sec:authorize="hasRole('MA')">
                             <label class="col-sm-2 control-label">가맹점명<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
                                 <select data-placeholder="가맹점 선택" class="chosen-select" name="storeId" tabindex="2">
@@ -30,6 +30,11 @@
                                     <option th:each="store:${storeNameList}" th:value="${store[0]}">[[${store[1]}]]</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <!--가맹점명-->
+                        <div class="form-group" sec:authorize="hasRole('ST')">
+                            <input type="hidden" th:value="${storeId}" name="storeId">
                         </div>
                         <div class="hr-line-dashed"></div>
 
@@ -48,7 +53,7 @@
                             <label class="col-sm-2 control-label">모델 선택<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2" >
                                 <select name="deviceModelNo" class="form-control" tabindex="2">
-                                    <option>모델 선택</option>
+                                    <option value="ALL">모델 선택</option>
                                 </select>
                             </div>
                         </div>
@@ -59,7 +64,6 @@
                             <label class="col-sm-2 control-label">디바이스명<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
                                 <input type="text" maxlength="20" class="form-control title-input-validation" name="deviceTitle">
-                                <span class="msg-title-input-validation"/>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -211,29 +215,46 @@
                 }
             });
 
-            $('#btnSubmit').click(function () {
-                var checkStore = $('.store-check-validation');
+            $('#btnSubmit').click(function (e) {
+//                e.preventDefault();
+
+                if (confirm('등록하시겠습니까?') != true) return false;
+
+                var storeId =  registerForm.find('[name="storeId"]').val();
+                var deviceTitle =  registerForm.find('[name="deviceTitle"]').val();
+                var deviceModelNo =  registerForm.find('[name="deviceModelNo"]').val();
                 var deviceMacAddress =  registerForm.find('[name="deviceMacAddress"]').val();
-                var isStoreCheckedCnt = 0;
-                console.log(checkStore);
+                var deviceTypeCode =  registerForm.find('[name="deviceTypeCode"]:checked').val();
 
-                if(checkStore.length != 0){
-                    for (var i = 0; i < checkStore.length; i++) {
-                        if (checkStore.eq(i).prop('checked')) {
-                            isStoreCheckedCnt++;
-                        }
-                    }
-
-                    if(isStoreCheckedCnt == 0){
-                        alert('가맹점을 선택해주세요.');
-                        return false;
-                    }
-
+                if (storeId == ''){
+                    alert('가맹점을 선택해주세요.');
+                    return false;
+                }
+                if (deviceTitle == ''){
+                    alert('디바이스명을 입력해주세요.');
+                    return false;
+                }
+                if(deviceModelNo == 'ALL') {
+                    alert('디바이스 모델을 선택해주세요.');
+                    return false;
                 }
                 if (deviceMacAddress == ''){
                     alert('MAC주소를 입력해주세요.');
                     return false;
                 }
+                if (deviceTypeCode == undefined){
+                    alert('디바이스 타입을 선택해주세요.');
+                    return false;
+                }
+
+                for (var i = 0; i < registerForm.find('[name="deviceMacAddress"]').length; i++) {
+                   if(registerForm.find('[name="deviceMacAddress"]')[i].value == ''){
+                       alert('MAC 주소를 끝까지 입력해주세요');
+                       return false;
+                   }
+                }
+
+//                console.log(deviceMacAddress.length);
             });
 
         });

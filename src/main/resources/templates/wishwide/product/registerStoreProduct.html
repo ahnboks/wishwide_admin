@@ -1,5 +1,5 @@
 <div th:insert="~{layout/head::head}"></div>
-<script src="/js/managerValidation.js"></script>
+<!--<script src="/js/managerValidation.js"></script>-->
 
 <div id="wrapper">
 
@@ -35,19 +35,23 @@
                         <div class="hr-line-dashed"></div>
 
                         <!--가맹점명-->
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">가맹점명<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-2">
+                        <div class="form-group" sec:authorize="hasRole('MA')" >
+                            <label class="col-sm-2 control-label">가맹점명</label>
+                            <div class="col-sm-3">
                                 <select data-placeholder="가맹점 선택" class="chosen-select" name="productOwnerId" tabindex="2">
                                     <option value="ALL">전체</option>
                                     <option th:each="store:${storeNameList}" th:value="${store[0]}">[[${store[1]}]]</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="hr-line-dashed"></div>
+
+                        <!--가맹점명-->
+                        <div class="form-group" sec:authorize="hasRole('ST')">
+                            <input type="hidden" th:value="${storeId}" name="productOwnerId">
+                        </div>
 
                         <!--상품카테고리-->
-                        <div class="form-group">
+                        <div class="form-group" sec:authorize="hasRole('MA')">
                             <label class="col-sm-2 control-label">상품 카테고리<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2" id="majorCategoryNo">
                                 <select class="form-control m-b" name="majorCategoryNo">
@@ -59,6 +63,22 @@
                                 </select>
                             </div>
                         </div>
+
+                        <!--상품카테고리-->
+                        <div class="form-group" sec:authorize="hasRole('ST')">
+                            <label class="col-sm-2 control-label">상품 카테고리</label>
+                                <div class="col-sm-2">
+                                    <select class="form-control m-b" name="majorCategoryNo">
+                                        <option value="ALL">전체</option>
+                                        <option th:each="category:${categoryList}" th:value="${category[0]}">[[${category[2]}]]</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2" id="subCategory" style="display: none">
+                                    <select class="form-control m-b" name="subCategoryNo">
+                                    </select>
+                                </div>
+                        </div>
+
                         <div class="hr-line-dashed"></div>
 
                         <!--할인여부-->
@@ -354,6 +374,7 @@
                                     registerForm.find('[name="subCategoryNo"] option').remove();
                                     registerForm.find('[name="subCategoryNo"]').append('<option value="0">중분류 선택</option>');
                                     $('#subCategoryName').css('display', 'none');
+                                    $('#subCategory').css('display', 'none');
                                 }
                             });
                         }
@@ -365,6 +386,7 @@
                         registerForm.find('[name="subCategoryNo"] option').remove();
                         registerForm.find('[name="subCategoryNo"]').append('<option value="0">중분류 선택</option>');
                         $('#subCategoryName').css('display', 'none');
+                        $('#subCategory').css('display', 'none');
 
                         alert('등록된 카테고리가 없습니다.');
                     }
@@ -585,8 +607,10 @@
         $('#btnSubmit').click(function (e) {
 //                e.preventDefault();
 
+            if (confirm('등록하시겠습니까?') != true) return false;
+
             var giftProductRegisterCode = registerForm.find('[name="giftProductRegisterCode"]:checked').val();
-            var storeId = registerForm.find('[name="storeId"]').val();
+            var productOwnerId = registerForm.find('[name="productOwnerId"]').val();
             var productTitle = registerForm.find('[name="productTitle"]').val();
             var majorCategoryNo = registerForm.find('[name="majorCategoryNo"]').val();
             var productDiscountValue = registerForm.find('[name="productDiscountValue"]').val();
@@ -680,7 +704,8 @@
                 registerForm.find('[name="giftBundleDiscountInitQuantity"]').val('0');
                 console.log(registerForm.find('[name="giftBundleDiscountInitQuantity"]').val());
             }
-            if (storeId == 'ALL') {
+
+            if (productOwnerId == 'ALL') {
                 alert('가맹점을 선택해주세요.');
                 return false;
             }
@@ -741,6 +766,7 @@
                 }
                 else {
                     registerForm.find('[name="giftBundleDiscountValue"]').val('0');
+                    registerForm.find('[name="giftBundleDiscountInitQuantity"]').val('0');
                 }
             }
 
@@ -768,6 +794,7 @@
                 console.log(data);
                 if (data.length != 0) {
                     $('#subCategoryName').css('display', 'block');
+                    $('#subCategory').css('display', 'block');
                     registerForm.find('[name="subCategoryNo"] option').remove();
 
                     $.each(data, function (index, item) {
@@ -784,6 +811,7 @@
                     registerForm.find('[name="subCategoryNo"] option').remove();
                     registerForm.find('[name="subCategoryNo"]').append('<option value="0">중분류 선택</option>');
                     $('#subCategoryName').css('display', 'none');
+                    $('#subCategory').css('display', 'none');
 
                     alert('등록된 중분류가 없습니다.');
                 }

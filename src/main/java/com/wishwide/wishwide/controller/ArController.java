@@ -97,11 +97,26 @@ public class ArController {
     //마커등록(GET)
     @GetMapping("/registerMarker")
     public void getRegisterMarker(Model model,
+                                  HttpServletRequest request,
                                   @ModelAttribute("pageVO") PageVO pageVO) {
         log.info("마커등록");
 
         //가맹점명 셀렉트 박스
         model.addAttribute("storeNameList", customStoreRepository.getStoreList());
+
+        //세션
+        HttpSession session = request.getSession();
+
+        //세션 값 세팅
+        String sessionId = session.getAttribute("userId").toString();
+        String roleCode = session.getAttribute("userRole").toString();
+
+        log.info("세션 : " + sessionId + roleCode);
+
+        if (roleCode.equals("ST")) {
+            //가맹점아이디
+            model.addAttribute("storeId", sessionId);
+        }
     }
 
     //마커등록(POST)

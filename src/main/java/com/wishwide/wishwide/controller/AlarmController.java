@@ -1,6 +1,7 @@
 package com.wishwide.wishwide.controller;
 
 
+import com.wishwide.wishwide.alarm.AlarmManager;
 import com.wishwide.wishwide.domain.*;
 import com.wishwide.wishwide.persistence.alarm.*;
 import com.wishwide.wishwide.persistence.customer.CustomCustomerRepository;
@@ -52,6 +53,9 @@ public class AlarmController {
     @Autowired
     AlarmSendLogRepository alarmSendLogRepository;
 
+    @Autowired
+    private AlarmManager alarmManager;
+
     /*알림 발송 설정*/
 
     //리스트
@@ -100,11 +104,27 @@ public class AlarmController {
     //알림수동발송 페이지
     @GetMapping("/registerAlarmSet")
     public void getRegisterAlarmSet(@ModelAttribute("pageVO") PageVO pageVO,
+                                    HttpServletRequest request,
                                     Model model) {
         log.info("알림 수동 발송 페이지");
 
         //가맹점명 셀렉트 박스
         model.addAttribute("storeNameList", customStoreRepository.getStoreList());
+
+        //세션
+        HttpSession session = request.getSession();
+
+        //세션 값 세팅
+        String sessionId = session.getAttribute("userId").toString();
+        String roleCode = session.getAttribute("userRole").toString();
+
+        log.info("세션 : "+sessionId+roleCode);
+
+        if(roleCode.equals("ST")){
+            //가맹점아이디
+            model.addAttribute("storeId", sessionId);
+        }
+
     }
 
     //알림수동발송
@@ -392,7 +412,10 @@ public class AlarmController {
             alarm.setAlarmSendPointCode(alarmTemplate.getAlarmSendPointCode());
             alarm.setAlarmVisibleCode(0);
 
-            customAlarmSetRepository.save(alarm);
+            Long alarmNo = customAlarmSetRepository.save(alarm).getAlarmNo();
+
+            //알림메시지 알림변수값 저장
+            alarmManager.setAlarmMessageVariable(alarm.getAlarmMessage(), alarmNo, storeList[0].toString());
 
             log.info("알림발송설정 등록 성공");
        });

@@ -121,11 +121,30 @@ public class ProductController {
     //등록
     @GetMapping("/registerStoreProduct")
     public void getRegisterStoreProduct(@ModelAttribute("pageVO") PageVO pageVO,
+                                        HttpServletRequest request,
                                         Model model) {
         log.info("상품 등록 페이지");
 
         //가맹점명 셀렉트 박스
         model.addAttribute("storeNameList", customStoreRepository.getStoreList());
+
+
+        //세션
+        HttpSession session = request.getSession();
+
+        //세션 값 세팅
+        String sessionId = session.getAttribute("userId").toString();
+        String roleCode = session.getAttribute("userRole").toString();
+
+        log.info("세션 : "+sessionId+roleCode);
+
+        if(roleCode.equals("ST")){
+            //가맹점아이디
+            model.addAttribute("storeId", sessionId);
+
+            //상품 카테고리
+            model.addAttribute("categoryList", customProductCategoryRepository.getMajorCategoryList(sessionId));
+        }
     }
 
     @PostMapping("/postRegisterStoreProduct")
@@ -148,14 +167,16 @@ public class ProductController {
 
         majorCategoryTitle = majorCategoryRepository.findByMajorCategoryNo(productVO.getMajorCategoryNo()).getMajorCategoryTitle();
 
-        if(productVO.getSubCategoryNo() != null){
+        if((!(productVO.getSubCategoryNo() == 0)) && (!(productVO.getSubCategoryNo() == null))){
             subCategoryTitle = subCategoryRepository.findBySubCategoryNo(productVO.getSubCategoryNo()).getSubCategoryTitle();
         }
 
         //VO 세팅
         productVO.setProductOwnerRole("ST");
         productVO.setMajorCategoryTitle(majorCategoryTitle);
-        productVO.setSubCategoryTitle(subCategoryTitle);
+
+        if(!subCategoryTitle.equals(""))
+            productVO.setSubCategoryTitle(subCategoryTitle);
 
         //상품 이미지 파일 값 저장
         ProductImage pm = saveDBProductImage(productVO.getProductOwnerId(), saveCloudFile(productImage));
@@ -461,11 +482,26 @@ public class ProductController {
     //등록
     @GetMapping("/registerPartnerProduct")
     public void getRegisterPartnerProduct(@ModelAttribute("pageVO") PageVO pageVO,
-                                        Model model) {
+                                          HttpServletRequest request,
+                                          Model model) {
         log.info("상품 등록 페이지");
 
         //파트너명 셀렉트 박스
         model.addAttribute("partnerNameList", customPartnerRepository.getPartnerNameList());
+
+        //세션
+        HttpSession session = request.getSession();
+
+        //세션 값 세팅
+        String sessionId = session.getAttribute("userId").toString();
+        String roleCode = session.getAttribute("userRole").toString();
+
+        log.info("세션 : "+sessionId+roleCode);
+
+        if(roleCode.equals("PT")){
+            //파트너아이디
+            model.addAttribute("partnerId", sessionId);
+        }
     }
 
     @PostMapping("/postRegisterPartnerProduct")

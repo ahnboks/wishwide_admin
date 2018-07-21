@@ -221,6 +221,8 @@ public class AlarmManager {
 
         log.info("매장 알림 정보 : "+alarm);
 
+        alarmMessage = "";
+
         if(alarm != null){
             alarmMessage = alarm.getAlarmMessage();
 
@@ -275,16 +277,19 @@ public class AlarmManager {
 
         Alarm alarm = getStoreAlarmSetCode(coupon.getStoreId(), alarmCode);
 
-        log.info("매장 알림 정보 : "+alarm);
+        log.info("매장 알림 정보 : " + alarm);
+        alarmMessage = "";
 
-        if(alarm != null){
+        if (alarm != null) {
             alarmMessage = alarm.getAlarmMessage();
 
             //도장 적립 시
-           if(coupon.getCouponTypeNo() == 2){
+            if (coupon.getCouponTypeNo() == 2) {
                 //알림메시지 set
                 alarmMessageVariableRepository.findAlarmMessageVariableByAlarmNo(alarm.getAlarmNo())
                         .forEach(alarmMessageVariable -> {
+                            String benefitValue = String.valueOf(customCustomerRepository.findById(membershipCustomer.getMembershipCustomerNo()).get().getCustomerBenefitValue());
+
                             if (alarmMessageVariable.getAlarmVariableCode().equals("SN")) {
                                 alarmMessage = alarmMessage.replace("#{매장명}",
                                         customStoreRepository.findById(alarmMessageVariable.getStoreId()).get().getStoreName());
@@ -295,10 +300,10 @@ public class AlarmManager {
                             }
                             if (alarmMessageVariable.getAlarmVariableCode().equals("AS")) {
                                 alarmMessage = alarmMessage.replace("#{총도장수}",
-                                        String.valueOf(customCustomerRepository.findById(membershipCustomer.getMembershipCustomerNo()).get().getCustomerBenefitValue()) + "개");
+                                        (benefitValue + "개"));
                             }
                             if (alarmMessageVariable.getAlarmVariableCode().equals("RN")) {
-                                if(membershipCustomer.getCustomerName() != null)
+                                if (membershipCustomer.getCustomerName() != null)
                                     alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerName());
                                 else
                                     alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerPhone());
@@ -306,7 +311,7 @@ public class AlarmManager {
                         });
             }
             //포인트 적립 시
-            else if(coupon.getCouponTypeNo() == 3){
+            else if (coupon.getCouponTypeNo() == 3) {
                 //알림메시지 set
                 alarmMessageVariableRepository.findAlarmMessageVariableByAlarmNo(alarm.getAlarmNo())
                         .forEach(alarmMessageVariable -> {
@@ -323,7 +328,7 @@ public class AlarmManager {
                                         String.valueOf(customCustomerRepository.findById(membershipCustomer.getMembershipCustomerNo()).get().getCustomerBenefitValue()) + "P");
                             }
                             if (alarmMessageVariable.getAlarmVariableCode().equals("RN")) {
-                                if(membershipCustomer.getCustomerName() != null)
+                                if (membershipCustomer.getCustomerName() != null)
                                     alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerName());
                                 else
                                     alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerPhone());
@@ -343,8 +348,7 @@ public class AlarmManager {
             saveMsgQueue(alarmMessage, membershipCustomer.getCustomerPhone(), alarm.getAlarmReservationTime());
 
             log.info("혜택적립 알림 발송 완료");
-        }
-        else{
+        } else {
             log.info("혜택적립 알림 발송 미설정");
         }
 
@@ -527,6 +531,24 @@ public class AlarmManager {
             AlarmMessageVariable alarmMessageVariable = new AlarmMessageVariable();
             alarmMessageVariable.setAlarmVariableCode("PS");
             alarmMessageVariable.setAlarmVariableName("#{포인트 사용기준 포인트}");
+            alarmMessageVariable.setStoreId(storeId);
+            alarmMessageVariable.setAlarmNo(alarmNo);
+
+            alarmMessageVariableList.add(alarmMessageVariable);
+        }
+        if (alarmMessage.contains("#{총도장수}")) {
+            AlarmMessageVariable alarmMessageVariable = new AlarmMessageVariable();
+            alarmMessageVariable.setAlarmVariableCode("AS");
+            alarmMessageVariable.setAlarmVariableName("#{총도장수}");
+            alarmMessageVariable.setStoreId(storeId);
+            alarmMessageVariable.setAlarmNo(alarmNo);
+
+            alarmMessageVariableList.add(alarmMessageVariable);
+        }
+        if (alarmMessage.contains("#{총포인트}")) {
+            AlarmMessageVariable alarmMessageVariable = new AlarmMessageVariable();
+            alarmMessageVariable.setAlarmVariableCode("AP");
+            alarmMessageVariable.setAlarmVariableName("#{총포인트}");
             alarmMessageVariable.setStoreId(storeId);
             alarmMessageVariable.setAlarmNo(alarmNo);
 

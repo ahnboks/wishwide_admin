@@ -1,5 +1,6 @@
 package com.wishwide.wishwide.controller;
 
+import com.wishwide.wishwide.alarm.AlarmManager;
 import com.wishwide.wishwide.domain.*;
 import com.wishwide.wishwide.persistence.*;
 import com.wishwide.wishwide.persistence.alarm.CustomAlarmSetRepository;
@@ -12,6 +13,7 @@ import com.wishwide.wishwide.persistence.device.CustomDeviceRepository;
 import com.wishwide.wishwide.persistence.gift.CustomGiftPaymentRepository;
 import com.wishwide.wishwide.persistence.product.CustomProductRepository;
 import com.wishwide.wishwide.persistence.product.GiftProductRepository;
+import com.wishwide.wishwide.persistence.productCategory.CustomProductCategoryRepository;
 import com.wishwide.wishwide.persistence.store.CustomStoreRepository;
 import com.wishwide.wishwide.persistence.store.StoreFileRepository;
 import com.wishwide.wishwide.persistence.store.StoreImageRepository;
@@ -96,6 +98,12 @@ public class StoreController {
     @Autowired
     CustomAlarmTemplateRepository alarmTemplateRepository;
 
+    @Autowired
+    CustomProductCategoryRepository customProductCategoryRepository;
+
+    @Autowired
+    private AlarmManager alarmManager;
+
     //리스트
     @GetMapping("/listStore")
     public void listStore(HttpServletRequest request,
@@ -142,8 +150,10 @@ public class StoreController {
     //등록
     @GetMapping("/registerStore")
     public void getRegisterStore(@ModelAttribute("pageVO") PageVO pageVO,
-                                   Model model) {
+                                 Model model,
+                                 HttpServletRequest request) {
         log.info("매장 등록 페이지");
+
     }
 
     @PostMapping("/postRegisterStore")
@@ -216,8 +226,10 @@ public class StoreController {
         //VO에 세션값 세팅
         storeVO.setStoreUpdateId(session.getAttribute("userId").toString());
         storeVO.setStoreRegId(session.getAttribute("userId").toString());
+        if(!storeVO.getStoreContractStatusCode().equals("CY"))
+            storeVO.setStoreServiceOperationCode("TERMINATE");
 
-        //게임 타입에 따라 게임명 입력
+        //게임 타입에 따라 게임명 입력7
         if (storeVO.getStoreArGameTypeCode() == 1)
             storeVO.setStoreArGameTypeName("캐릭터잡기");
         else
@@ -240,8 +252,8 @@ public class StoreController {
             alarm.setAlarmMessage(alarmTemplate.getAlarmMessage());
             alarm.setAlarmPurposeName(alarmTemplate.getAlarmPurposeName());
             alarm.setAlarmSendPointName(alarmTemplate.getAlarmSendPointName());
-            alarm.setAlarmSendTypeCode(alarmTemplate.getAlarmTypeCode());
-            alarm.setAlarmSendWayCode("AUTO");
+            alarm.setAlarmSendTypeCode("AUTO");
+            alarm.setAlarmSendWayCode("MESSAGE");
             alarm.setAlarmTargetTypeCode(alarmTemplate.getAlarmTargetTypeCode());
             alarm.setAlarmTemplateNo(alarmTemplate.getAlarmTemplateNo());
             alarm.setAlarmTypeCode(alarmTemplate.getAlarmTypeCode());
@@ -250,9 +262,10 @@ public class StoreController {
             alarm.setAlarmSendPointCode(alarmTemplate.getAlarmSendPointCode());
             alarm.setAlarmVisibleCode(0);
 
-            customAlarmSetRepository.save(alarm);
+            Long alarmNo = customAlarmSetRepository.save(alarm).getAlarmNo();
 
-            log.info("알림발송설정 등록 성공");
+            //알림메시지 알림변수값 저장
+            alarmManager.setAlarmMessageVariable(alarm.getAlarmMessage(), alarmNo, storeVO.getStoreId());
         });
 
         redirectAttributes.addFlashAttribute("message", "successRegister");
@@ -346,6 +359,8 @@ public class StoreController {
                 store.setStorePresidentName(storeVO.getStorePresidentName());
                 store.setStoreUpdateId(session.getAttribute("userId").toString());
                 store.setStoreServiceUseCode(storeVO.getStoreServiceUseCode());
+                store.setStoreLatitude(storeVO.getStoreLatitude());
+                store.setStoreLongitude(storeVO.getStoreLongitude());
 
                 //게임 타입에 따라 게임명 입력
                 if(storeVO.getStoreArGameTypeCode() == 1)

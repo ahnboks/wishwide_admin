@@ -22,7 +22,7 @@
                     <!--폼 START-->
                     <form method="post" th:action="@{postRegisterCoupon}" class="form-horizontal" id="registerForm" enctype="multipart/form-data">
                         <!--가맹점명-->
-                        <div class="form-group">
+                        <div class="form-group" sec:authorize="hasRole('MA')">
                             <label class="col-sm-2 control-label">가맹점명<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
                                 <select data-placeholder="가맹점 선택" class="chosen-select" name="storeId" tabindex="2">
@@ -30,6 +30,11 @@
                                     <option th:each="store:${storeNameList}" th:value="${store[0]}">[[${store[1]}]]</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <!--가맹점명-->
+                        <div class="form-group" sec:authorize="hasRole('ST')">
+                            <input type="hidden" th:value="${storeId}" name="storeId">
                         </div>
                         <div class="hr-line-dashed"></div>
 
@@ -41,10 +46,10 @@
                                     <div class="col-sm-2">
                                         <label class="radio-inline"><input type="radio" name="couponTypeNo" value="1">할인</label>
                                     </div>
-                                    <div class="col-sm-2" id="stamp">
+                                    <div class="col-sm-2" id="stamp" th:if="${benefitTypeCode} != 'N'">
                                         <label class="radio-inline"><input type="radio" name="couponTypeNo" value="2">도장</label>
                                     </div>
-                                    <div class="col-sm-2" id="point">
+                                    <div class="col-sm-2" id="point" th:if="${benefitTypeCode} != 'N'">
                                         <label class="radio-inline"><input type="radio" name="couponTypeNo" value="3">포인트</label>
                                     </div>
                                 </div>
@@ -279,6 +284,8 @@
 
         $(document).ready(function () {
             var isSelectStoreCustomer = false;
+            var roleCode = /*[[${roleCode}]]*/'';
+            var benefitTypeCode = /*[[${benefitTypeCode}]]*/'';
 
             $('.chosen-select').chosen({width: "100%"});
 
@@ -291,6 +298,18 @@
                 calendarWeeks: true,
                 autoclose: true
             });
+
+            //권한에 따른 CSS 처리
+            if (roleCode == 'ST'){
+                if(benefitTypeCode == 'S'){
+                    $('#stamp').css('display','block');
+                    $('#point').css('display','none');
+                }
+                if(benefitTypeCode == 'P'){
+                    $('#stamp').css('display','none');
+                    $('#point').css('display','block');
+                }
+            }
 
             //매장명에 따른 혜택, 상품가져오기
             registerForm.find('[name="storeId"]').change(function () {
@@ -717,9 +736,48 @@
         });
     }
 
-    function renameForModelAttribute(element, index) {
-        $(element).find("input[name=subProductName]").attr("name", "subProductList[" + index + "].subProductName");
-        $(element).find("input[name=subProductPrice]").attr("name", "subProductList[" + index + "].subProductPrice");
+    function InputOnlyNumber(obj)
+    {
+        console.log(obj);
+        $(obj).keyup(function(){
+            $(this).val($(this).val().replace(/[^0-9]/g,''));
+        });
+        $(obj).keydown(function(){
+            $(this).val($(this).val().replace(/[^0-9]/g,''));
+        });
+    }
+
+    function checkCouponFinishDate(value) {
+        var couponFinishDateValue = new Date(value);
+
+        var finishYear = couponFinishDateValue.getFullYear();
+        var finishMonth = couponFinishDateValue.getMonth()+1;
+        var finishDay = couponFinishDateValue.getDate();
+
+        // console.log(obj);
+
+        var today = new Date();
+
+        var todayMonth = today.getUTCMonth() + 1; //months from 1-12
+        var todayDay = today.getUTCDate();
+        var todayYear = today.getUTCFullYear();
+
+        console.log(couponFinishDateValue);
+
+        today = todayMonth+'/' + todayDay +'/'+todayYear;
+        couponFinishDateValue = finishMonth+'/' + finishDay +'/'+finishYear;
+
+        //배열에 담겨있는 연,월,일을 사용해서 Date 객체 생성
+        var start_date = new Date(today);
+        var end_date = new Date(couponFinishDateValue);
+
+        //날짜를 숫자형태의 날짜 정보로 변환하여 비교한다.
+        if (start_date.getTime() > end_date.getTime() || start_date.getTime() == end_date.getTime()) {
+            alert("쿠폰 만료일은 현재날짜 이후로 지정 가능합니다.");
+            return false;
+        }
+
+        return true;
     }
 
 </script>

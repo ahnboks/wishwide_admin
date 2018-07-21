@@ -44,7 +44,7 @@ public class PageVO {
     private String alarmTargetTypeCode = "ALL";
 
     //마커 리스트
-    private int storeArGameTypeCode = 2;
+    private int storeArGameTypeCode = 3;
 
    private int visibleCode = 2;
     private int visibleCode2 = 2;   //같은 리스트의 활성화 여부를 위한 활성화 여부 검사

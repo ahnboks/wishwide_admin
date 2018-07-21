@@ -645,6 +645,40 @@
             });
         }
 
+        function checkCouponFinishDate(value) {
+            var couponFinishDateValue = new Date(value);
+
+            var finishYear = couponFinishDateValue.getFullYear();
+            var finishMonth = couponFinishDateValue.getMonth()+1;
+            var finishDay = couponFinishDateValue.getDate();
+
+            // console.log(obj);
+
+            var today = new Date();
+
+            var todayMonth = today.getUTCMonth() + 1; //months from 1-12
+            var todayDay = today.getUTCDate();
+            var todayYear = today.getUTCFullYear();
+
+            console.log(couponFinishDateValue);
+
+            today = todayMonth+'/' + todayDay +'/'+todayYear;
+            couponFinishDateValue = finishMonth+'/' + finishDay +'/'+finishYear;
+
+            //배열에 담겨있는 연,월,일을 사용해서 Date 객체 생성
+            var start_date = new Date(today);
+            var end_date = new Date(couponFinishDateValue);
+
+            //날짜를 숫자형태의 날짜 정보로 변환하여 비교한다.
+            if (start_date.getTime() > end_date.getTime() || start_date.getTime() == end_date.getTime()) {
+                alert("쿠폰 만료일은 현재날짜 이후로 지정 가능합니다.");
+                return false;
+            }
+
+            return true;
+        }
+
+
     </script>
 </th:block>
 

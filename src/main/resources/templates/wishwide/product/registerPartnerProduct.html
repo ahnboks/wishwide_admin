@@ -25,7 +25,7 @@
                         <input type="hidden" name="giftProductRegisterCode" value="0">
 
                         <!--파트너명-->
-                        <div class="form-group">
+                        <div class="form-group" sec:authorize="hasRole('MA')" >
                             <label class="col-sm-2 control-label">파트너명<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
                                 <select data-placeholder="파트너 선택" class="chosen-select" name="productOwnerId" tabindex="2">
@@ -33,6 +33,11 @@
                                     <option th:each="partner:${partnerNameList}" th:value="${partner[0]}">[[${partner[1]}]]</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <!--파트너명-->
+                        <div class="form-group" sec:authorize="hasRole('PT')">
+                            <input type="hidden" th:value="${partnerId}" name="productOwnerId">
                         </div>
                         <div class="hr-line-dashed"></div>
 
