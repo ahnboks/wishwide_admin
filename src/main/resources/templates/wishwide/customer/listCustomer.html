@@ -228,7 +228,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title">선물거래정보</h4>
+                <h4 class="modal-title">선물구매정보</h4>
             </div>
             <div class="modal-body">
                 <table class="footable table table-bordered table-hover">
@@ -263,7 +263,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title">선물거래정보</h4>
+                <h4 class="modal-title">선물함 정보</h4>
             </div>
             <div class="modal-body">
                 <table class="footable table table-bordered table-hover">
@@ -297,7 +297,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title">쿠폰사용 정보</h4>
+                <h4 class="modal-title">쿠폰 정보</h4>
             </div>
             <div class="modal-body">
                 <table class="footable table table-bordered table-hover">
@@ -346,13 +346,14 @@
                     <th>사용포인트</th>
                     <th>소멸포인트</th>
                     <th>잔여포인트</th>
+                    <th>누적포인트</th>
                     <th>적립경로</th>
                     </thead>
                     <tbody id="selectPointHistory">
                     </tbody>
                     <tfoot>
                     <tr>
-                        <td colspan="8">
+                        <td colspan="9">
                             <ul class="pagination text-center"></ul>
                         </td>
                     </tr>
@@ -384,12 +385,13 @@
                     <th>누적도장수</th>
                     <th>현재도장수</th>
                     <th>쿠폰발급수</th>
+                    <th>적립경로</th>
                     </thead>
                     <tbody id="selectStampHistory">
                     </tbody>
                     <tfoot>
                     <tr>
-                        <td colspan="8">
+                        <td colspan="9">
                             <ul class="pagination text-center"></ul>
                         </td>
                     </tr>
@@ -679,12 +681,19 @@
                         if (data.length != 0) {
                             $.each(data, function (index, item) {
                                 var customerName = '';
+                                var stampEarningWay = '';
 
                                 /*이름*/
                                 if(!(item[3] === null))
                                     customerName = item[3];
                                 else
                                     customerName = '-';
+
+                                /*적립경로*/
+                                if(item[8] == 'S')
+                                    stampEarningWay = '매장적립';
+                                else
+                                    stampEarningWay = '쿠폰적립';
 
                                 $('#selectStampHistory').append(
                                     '<tr>' +
@@ -696,6 +705,7 @@
                                     '<td>' + item[6] + '</td>' +
                                     '<td>' + item[7] + '</td>' +
                                     '<td>' + item[8] + '</td>' +
+                                    '<td>' + stampEarningWay + '</td>' +
                                     '</tr>'
                                 );
                             });
@@ -723,7 +733,6 @@
                 if (customerNo == 'master'){
                     customerNo = parentNode.children().eq(1).children().eq(0).attr('value');
                     storeId = parentNode.children().eq(1).children().eq(1).attr('value');
-
                 }
 
                 console.log(customerNo + ', '+storeId);
@@ -749,7 +758,7 @@
                                     customerName = '-';
 
                                 /*적립경로*/
-                                if(item[8] == 'STORE')
+                                if(item[8] == 'S')
                                     pointEarningWay = '매장적립';
                                 else
                                     pointEarningWay = '쿠폰적립';
@@ -764,6 +773,7 @@
                                     '<td>' + item[5] + '</td>' +
                                     '<td>' + item[6] + '</td>' +
                                     '<td>' + item[7] + '</td>' +
+                                    '<td>' + item[10] + '</td>' +
                                     '<td>' + pointEarningWay + '</td>' +
                                     '</tr>'
                                 );

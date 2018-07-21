@@ -570,6 +570,7 @@
         var detailForm = $('#detailForm');
 
         var storeId =  detailForm.find('[name="storeId"]').val();
+        var storeServiceUseCode =  /*[[${storeVO[46]}]]*/'';
 
         var isBziAlert = false;
         var bziFileNo = /*[[${storeVO[30]}]]*/'';
@@ -606,6 +607,8 @@
                 isContactAlert = true;
                 processFile(contactFileName, contactFileExtension, '', 3);
             }
+
+            detailForm.find('[name="storeServiceUseCode"]').attr('value', storeServiceUseCode);
 
             displayBenefit();
             displayArGameType();

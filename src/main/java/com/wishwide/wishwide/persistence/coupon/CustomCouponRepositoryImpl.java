@@ -30,7 +30,6 @@ public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implem
         QStore store = QStore.store;
         QCouponType couponType = QCouponType.couponType;
 
-
         JPQLQuery<Coupon> query = from(coupon);
 
         //매장명 ^v, 쿠폰유형, 쿠폰명 ^v, 대상자 ^v, 발행방법 ^v, 예약발송시간 ^v, 발행일시 ^v
@@ -58,6 +57,23 @@ public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implem
         //권한:매장이 로그인했을 경우 한개의 리스트만 가져오기
         if(roleCode.equals("ST"))
             tupleJPQLQuery.where(coupon.storeId.eq(sessionId));
+
+        //검색조건 : 가맹점명
+        if(!searchUserId.equals("ALL")){
+            tupleJPQLQuery.where(store.storeId.eq(searchUserId));
+        }
+        //검색조건 : 쿠폰유형코드
+        if(!couponTypeCode.equals("ALL")){
+            tupleJPQLQuery.where(coupon.couponTypeNo.eq(Long.parseLong(couponTypeCode)));
+        }
+        //검색조건 : 쿠폰발급대상코드
+        if(!couponTargetTypeCode.equals("ALL")){
+            tupleJPQLQuery.where(coupon.couponTargetTypeCode.eq(couponTargetTypeCode));
+        }
+        //검색조건 : 쿠폰발급경로코드
+        if(!couponPublishTypeCode.equals("ALL")){
+            tupleJPQLQuery.where(coupon.couponPublishTypeCode.eq(couponPublishTypeCode));
+        }
 
         //검색조건 : 가맹점명, 쿠폰명
         if(type != null) {
@@ -102,6 +118,50 @@ public class CustomCouponRepositoryImpl extends QuerydslRepositorySupport implem
     }
 
 
+    @Override
+    public Object[] getCouponDetail(Long couponNo) {
+        QCoupon coupon = QCoupon.coupon;
+        QStore store = QStore.store;
+        QCouponType couponType = QCouponType.couponType;
+
+        JPQLQuery<Coupon> query = from(coupon);
+
+        //매장명 ^v, 쿠폰유형, 쿠폰명 ^v, 대상자 ^v, 발행방법 ^v, 예약발송시간 ^v, 발행일시 ^v
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
+                coupon.couponNo,    //쿠폰번호0
+                store.storeId,  //매장아이디1
+                store.storeName,    //매장명2
+                coupon.couponTypeNo,    //쿠폰유형번호3
+                couponType.couponTypeNo ,  //쿠폰유형코드4
+                couponType.couponTypeName ,  //쿠폰유형5
+                coupon.couponTitle, //쿠폰명6
+                coupon.couponTargetTypeCode,    //대상자코드7
+                coupon.couponPublishTypeCode,   //발행유형코드8
+                coupon.couponReservationTime,   //쿠폰예약발송시간9
+                coupon.couponRegDate,   //발행일시10
+                coupon.productTitle, //상품명11
+                coupon.couponPublishCode,    //쿠폰발행코드12
+                coupon.couponBenefitValue,  //쿠폰혜택값13
+                coupon.couponDiscountTypeCode,  //쿠폰할인타입코드14
+                coupon.couponDiscountValue, //쿠폰할인값15
+                coupon.couponReservationTime,   //쿠폰예약시간16
+                coupon.couponFinishdate, //쿠폰만료일17
+                store.storeBenefitTypeCode  //매장혜택타입코드18
+        );
+
+        tupleJPQLQuery
+                .join(store).on(coupon.storeId.eq(store.storeId))
+                .join(couponType).on(coupon.couponTypeNo.eq(couponType.couponTypeNo));
+
+        //조건식
+        tupleJPQLQuery.where(coupon.couponNo.eq(couponNo));
+
+        //한 레코드만 반환
+        Tuple tuple = tupleJPQLQuery.fetchOne();
+
+        return tuple.toArray();
+
+    }
 
 //    @Override
 //    public List<Object[]> getCouponList(String wideManagerId) {

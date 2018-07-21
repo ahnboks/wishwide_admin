@@ -1,11 +1,9 @@
 package com.wishwide.wishwide.controller;
 
-import com.wishwide.wishwide.domain.LoginInfo;
-import com.wishwide.wishwide.domain.Store;
-import com.wishwide.wishwide.domain.WwBrand;
-import com.wishwide.wishwide.domain.WwRole;
+import com.wishwide.wishwide.domain.*;
 import com.wishwide.wishwide.persistence.*;
 import com.wishwide.wishwide.persistence.alarm.CustomAlarmSetRepository;
+import com.wishwide.wishwide.persistence.alarm.CustomAlarmTemplateRepository;
 import com.wishwide.wishwide.persistence.ar.MarkerRepository;
 import com.wishwide.wishwide.persistence.coupon.CustomCouponBoxRepository;
 import com.wishwide.wishwide.persistence.coupon.CustomCouponRepository;
@@ -95,6 +93,8 @@ public class StoreController {
     @Autowired
     CustomCouponBoxRepository customCouponBoxRepository;
 
+    @Autowired
+    CustomAlarmTemplateRepository alarmTemplateRepository;
 
     //리스트
     @GetMapping("/listStore")
@@ -234,6 +234,27 @@ public class StoreController {
         //매장 정보 저장
         customStoreRepository.save(storeVO);
 
+        //알림 발송 설정 등록
+        alarmTemplateRepository.getAlarmTemplateList().forEach(alarmTemplate ->{
+            Alarm alarm = new Alarm();
+            alarm.setAlarmMessage(alarmTemplate.getAlarmMessage());
+            alarm.setAlarmPurposeName(alarmTemplate.getAlarmPurposeName());
+            alarm.setAlarmSendPointName(alarmTemplate.getAlarmSendPointName());
+            alarm.setAlarmSendTypeCode(alarmTemplate.getAlarmTypeCode());
+            alarm.setAlarmSendWayCode("AUTO");
+            alarm.setAlarmTargetTypeCode(alarmTemplate.getAlarmTargetTypeCode());
+            alarm.setAlarmTemplateNo(alarmTemplate.getAlarmTemplateNo());
+            alarm.setAlarmTypeCode(alarmTemplate.getAlarmTypeCode());
+            alarm.setStoreId(storeVO.getStoreId());
+            alarm.setAlarmPurposeCode(alarmTemplate.getAlarmPurposeCode());
+            alarm.setAlarmSendPointCode(alarmTemplate.getAlarmSendPointCode());
+            alarm.setAlarmVisibleCode(0);
+
+            customAlarmSetRepository.save(alarm);
+
+            log.info("알림발송설정 등록 성공");
+        });
+
         redirectAttributes.addFlashAttribute("message", "successRegister");
         pageRedirectProperty(redirectAttributes, pageVO);
 
@@ -324,6 +345,7 @@ public class StoreController {
                 store.setStoreOperatorPhone(storeVO.getStoreOperatorPhone());
                 store.setStorePresidentName(storeVO.getStorePresidentName());
                 store.setStoreUpdateId(session.getAttribute("userId").toString());
+                store.setStoreServiceUseCode(storeVO.getStoreServiceUseCode());
 
                 //게임 타입에 따라 게임명 입력
                 if(storeVO.getStoreArGameTypeCode() == 1)

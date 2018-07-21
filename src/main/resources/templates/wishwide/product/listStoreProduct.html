@@ -97,7 +97,7 @@
                         <div class="col-lg-12">
                             <table class="table table-bordered table-hover">
                                 <thead>
-                                <th>선물 설정</th>
+                                <th>선물 등록</th>
                                 <th>상세</th>
                                 <th sec:authorize="hasRole('MA')">가맹점명</th>
                                 <th>상품 이미지</th>
@@ -140,7 +140,7 @@
                                     <td>
                                         <span th:if="${vo[5]} != null">[[${vo[4]}]]/[[${vo[5]}]]</span>
                                         <span th:if="${vo[5]} == null">[[${vo[4]}]]</span>
-                                        <span th:if="${vo[4]} == null">-</span>
+                                        <span th:if="${vo[4]} == null">기본</span>
                                     </td>
                                     <td>[[${vo[6]}]]</td>
                                     <td>
@@ -151,7 +151,7 @@
                                     </td>
                                     <td>
                                         <a class="btn btn-default" name="updateProductSellStatusCode" href="#">
-                                            <span class="sell" th:if="${vo[9]} == 1" th:value="${vo[9]}">판매</span>
+                                            <span class="sell text-success" th:if="${vo[9]} == 1" th:value="${vo[9]}">판매</span>
                                             <span class="not-sell"  th:if="${vo[9]} == 0" th:value="${vo[9]}" >미판매</span>
                                         </a>
                                     </td>
@@ -233,6 +233,8 @@
             $('a[name="updateProductSellStatusCode"]').click(function (e) {
                 e.preventDefault();
 
+                if (confirm('판매 상태가 변경됩니다. 변경하시겠습니까?') != true) return false;
+
                 console.log($(this));
 
                 var node = $(this);
@@ -251,7 +253,7 @@
                         if (data == '1') {
                             console.log(node);
                             node.empty();
-                            node.html('<span class="sell" value="1" >판매</span>');
+                            node.html('<span class="sell text-success" value="1" >판매</span>');
                             alert('상품 판매 상태로 변경되었습니다.');
                         }
                         else {

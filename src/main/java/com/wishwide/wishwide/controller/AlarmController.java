@@ -342,41 +342,62 @@ public class AlarmController {
     }
 
     @PostMapping("/postRegisterAlarmTemplate")
-    public String postRegisterAlarmTemplate(@ModelAttribute("alarmTemplateVO") AlarmTemplate alarmTemplate,
+    public String postRegisterAlarmTemplate(@ModelAttribute("alarmTemplateVO") AlarmTemplate alarmTemplateVO,
                                             @ModelAttribute("pageVO") PageVO pageVO,
                                             RedirectAttributes redirectAttributes) {
-        log.info("등록 데이터 : " + alarmTemplate);
+        log.info("등록 데이터 : " + alarmTemplateVO);
 
         //VO에 세션값 세팅
         String alarmPurposeName = "";
         String alarmPurposeCode = "";
-        alarmPurposeCode += alarmTemplate.getAlarmTypeCode();
-        alarmPurposeCode += alarmTemplate.getAlarmPurposeCode();
+        alarmPurposeCode += alarmTemplateVO.getAlarmTypeCode();
+        alarmPurposeCode += alarmTemplateVO.getAlarmPurposeCode();
 
-        alarmPurposeName += setAlarmPurposeName(alarmTemplate.getAlarmTypeCode(), alarmTemplate.getAlarmPurposeCode());
+        alarmPurposeName += setAlarmPurposeName(alarmTemplateVO.getAlarmTypeCode(), alarmTemplateVO.getAlarmPurposeCode());
 
         //알림목적이 '유효기간 만료'가 아닐 경우 발송시점은 전부 즉시로 설정
-        if (!alarmTemplate.getAlarmPurposeCode().equals("3")) {
-            alarmTemplate.setAlarmSendPointCode("IMME");
-            alarmTemplate.setAlarmSendPointName("즉시");
+        if (!alarmTemplateVO.getAlarmPurposeCode().equals("3")) {
+            alarmTemplateVO.setAlarmSendPointCode("IMME");
+            alarmTemplateVO.setAlarmSendPointName("즉시");
         }
         else{
-            alarmTemplate.setAlarmSendPointName(alarmTemplate.getAlarmSendPointCode() + "일전");
+            alarmTemplateVO.setAlarmSendPointName(alarmTemplateVO.getAlarmSendPointCode() + "일전");
         }
 
-        if(alarmTemplate.getAlarmPurposeCode().equals("6")) {
-            alarmTemplate.setAlarmPurposeCode("ETC");
-            alarmTemplate.setAlarmPurposeName("신규가입");
+        if(alarmTemplateVO.getAlarmPurposeCode().equals("6")) {
+            alarmTemplateVO.setAlarmPurposeCode("ETC");
+            alarmTemplateVO.setAlarmPurposeName("신규가입");
         }
         else{
-            alarmTemplate.setAlarmPurposeCode(alarmPurposeCode);
-            alarmTemplate.setAlarmPurposeName(alarmPurposeName);
+            alarmTemplateVO.setAlarmPurposeCode(alarmPurposeCode);
+            alarmTemplateVO.setAlarmPurposeName(alarmPurposeName);
         }
 
         //알림 템플릿 정보 저장
-        customAlarmTemplateRepository.save(alarmTemplate);
+        AlarmTemplate alarmTemplate = customAlarmTemplateRepository.save(alarmTemplateVO);
 
-        redirectAttributes.addFlashAttribute("message", "successRegister");
+        //매장 알림발송설정으로 자동저장
+        customStoreRepository.getStoreList().forEach(storeList -> {
+            Alarm alarm = new Alarm();
+            alarm.setAlarmMessage(alarmTemplate.getAlarmMessage());
+            alarm.setAlarmPurposeName(alarmTemplate.getAlarmPurposeName());
+            alarm.setAlarmSendPointName(alarmTemplate.getAlarmSendPointName());
+            alarm.setAlarmSendTypeCode("IMME");
+            alarm.setAlarmSendWayCode("MESSAGE");
+            alarm.setAlarmTargetTypeCode(alarmTemplate.getAlarmTargetTypeCode());
+            alarm.setAlarmTemplateNo(alarmTemplate.getAlarmTemplateNo());
+            alarm.setAlarmTypeCode(alarmTemplate.getAlarmTypeCode());
+            alarm.setStoreId(storeList[0].toString());
+            alarm.setAlarmPurposeCode(alarmTemplate.getAlarmPurposeCode());
+            alarm.setAlarmSendPointCode(alarmTemplate.getAlarmSendPointCode());
+            alarm.setAlarmVisibleCode(0);
+
+            customAlarmSetRepository.save(alarm);
+
+            log.info("알림발송설정 등록 성공");
+       });
+
+       redirectAttributes.addFlashAttribute("message", "successRegister");
         pageRedirectProperty(redirectAttributes, pageVO);
 
         log.info("알림 템플릿 등록 성공");
@@ -525,6 +546,7 @@ public class AlarmController {
     }
 
     private String originalAlarmMessage = "";
+
     //알림메시지 원래 알림메시지 템플릿으로 되돌리기
     @GetMapping("/updateOriginalAlarmMessage/{alarmNo}")
     public ResponseEntity<String> updateOriginalAlarmMessage(@PathVariable("alarmNo") Long alarmNo) {

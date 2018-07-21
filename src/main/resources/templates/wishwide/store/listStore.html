@@ -108,7 +108,7 @@
                                     </td>
                                     <td>
                                        <span th:if="${vo[11]} != 0">
-                                           <a href="#" name="selectStoreCustomer">[[${vo[11]}]]</a>
+                                           <a href="#"  name="selectStoreCustomer">[[${vo[11]}]]</a>
                                        </span>
                                         <span th:if="${vo[11]} == 0">-</span>
                                     </td>
@@ -134,13 +134,13 @@
                                         <span th:if="${vo[13]} != 0">
                                             <a href="#" name="selectStoreCouponBox">[[${vo[13]}]]</a>
                                         </span>
-                                        <span th:if="${vo[13]}== 0">-</span>
+                                        <span th:if="${vo[13]}== 0" >-</span>
                                     </td>
                                     <td>
                                         <a class="btn btn-default" name="updateServiceOperationCode" th:href="${vo[15]}">
                                             <span class="PREACTIVE" th:if="${vo[14]} == 'PREACTIVE'" th:value="${vo[14]}">운영전</span>
-                                            <span class="ACTIVE"  th:if="${vo[14]} == 'ACTIVE'" th:value="${vo[14]}" >운영중</span>
-                                            <span class="TERMINATE"  th:if="${vo[14]} == 'TERMINATE'" th:value="${vo[14]}" >해지</span>
+                                            <span class="ACTIVE text-success"  th:if="${vo[14]} == 'ACTIVE'" th:value="${vo[14]}" >운영중</span>
+                                            <span class="TERMINATE text-danger"  th:if="${vo[14]} == 'TERMINATE'" th:value="${vo[14]}" >해지</span>
                                         </a>
                                     </td>
                                 </tr>
@@ -208,6 +208,13 @@
                     </thead>
                     <tbody id="selectStoreCustomer">
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="8">
+                            <ul class="pagination text-center"></ul>
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
             <div class="modal-footer">
@@ -235,6 +242,13 @@
                     </thead>
                     <tbody id="selectStoreDevice">
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="8">
+                            <ul class="pagination text-center"></ul>
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
             <div class="modal-footer">
@@ -258,11 +272,18 @@
                     <th>카테고리</th>
                     <th>상품명</th>
                     <th>판매가격</th>
-                    <th>할인가격</th>
+                    <th>할인값</th>
                     <th>판매상태</th>
                     </thead>
                     <tbody id="selectStoreProduct">
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="8">
+                            <ul class="pagination text-center"></ul>
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
             <div class="modal-footer">
@@ -283,7 +304,9 @@
                 <table class="footable table table-bordered table-hover">
                     <thead>
                     <th>구매자전화번호</th>
+                    <th>구매자명</th>
                     <th>수신자전화번호</th>
+                    <th>수신자명</th>
                     <th>상품명</th>
                     <th>수량</th>
                     <th>결제금액</th>
@@ -291,6 +314,13 @@
                     </thead>
                     <tbody id="selectStoreGiftPayment">
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="8">
+                            <ul class="pagination text-center"></ul>
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
             <div class="modal-footer">
@@ -321,6 +351,13 @@
                     </thead>
                     <tbody id="selectStoreCouponBox">
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="8">
+                            <ul class="pagination text-center"></ul>
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
             <div class="modal-footer">
@@ -405,12 +442,12 @@
                                     '</tr>'
                                 );
                             });
-//                                $('.footable').footable({
-//                                    paging: {
-//                                        enabled: true,
-//                                        size: 5
-//                                    }
-//                                });
+                            $('.footable').footable({
+                                paging: {
+                                    enabled: true,
+                                    size: 5
+                                }
+                            });
                             isSelectStoreCustomer = true;
                         }
                     }
@@ -476,12 +513,12 @@
                                     '</tr>'
                                 );
                             });
-//                                $('.footable').footable({
-//                                    paging: {
-//                                        enabled: true,
-//                                        size: 5
-//                                    }
-//                                });
+                                $('.footable').footable({
+                                    paging: {
+                                        enabled: true,
+                                        size: 5
+                                    }
+                                });
                         }
                     }
                 });
@@ -508,10 +545,9 @@
                         if (data.length != 0) {
                             $.each(data, function (index, item) {
                                 var giftProductRegisterCode = '';
-                                var majorCategoryTitle = '';
-                                var subCategoryTitle = '';
+                                var productCategory = '';
                                 var productSellStatusCode = '';
-                                var giftProductDiscountPrice = '';
+                                var productDiscountPrice = '';
 
                                 /*선택*/
                                 if(item[1] == 1)
@@ -521,15 +557,13 @@
 
                                 /*대분류명*/
                                 if(!(item[4] === null))
-                                    majorCategoryTitle = item[4];
+                                    productCategory += item[4];
                                 else
-                                    majorCategoryTitle = '-';
+                                    productCategory = '기본';
 
                                 /*중분류명*/
                                 if(!(item[5] === null))
-                                    subCategoryTitle = item[5];
-                                else
-                                    subCategoryTitle = '-';
+                                    productCategory += '/'+item[5];
 
                                 /*판매여부*/
                                 if(item[9] != 0)
@@ -538,29 +572,35 @@
                                     productSellStatusCode = '미판매';
 
                                 /*할인가격*/
-                                if(!(item[8] === null))
-                                    giftProductDiscountPrice = item[8]+'원';
-                                else
-                                    giftProductDiscountPrice = '-';
+                                if(item[19] != 0) {
+                                    if(item[18] == 'DCR') {
+                                        productDiscountPrice = item[20]+'%';
+                                    }
+                                    else{
+                                        productDiscountPrice = item[20]+'원';
+                                    }
+                                }
+                                else {
+                                    productDiscountPrice = '-';
+                                }
 
-
-                                    $('#selectStoreProduct').append(
+                                $('#selectStoreProduct').append(
                                     '<tr>' +
                                     '<td>' + giftProductRegisterCode + '</td>' +
-                                    '<td>' + majorCategoryTitle + '/' + subCategoryTitle + '</td>' +
+                                    '<td>' + productCategory + '</td>' +
                                     '<td>' + item[6] + '</td>' +
                                     '<td>' + item[7].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원</td>' +
-                                    '<td>' + giftProductDiscountPrice + '</td>' +
+                                    '<td>' + productDiscountPrice + '</td>' +
                                     '<td>' + productSellStatusCode + '</td>' +
                                     '</tr>'
                                 );
                             });
-//                                $('.footable').footable({
-//                                    paging: {
-//                                        enabled: true,
-//                                        size: 5
-//                                    }
-//                                });
+                                $('.footable').footable({
+                                    paging: {
+                                        enabled: true,
+                                        size: 5
+                                    }
+                                });
                         }
                     }
                 });
@@ -589,7 +629,9 @@
                                 $('#selectStoreGiftPayment').append(
                                     '<tr>' +
                                     '<td>' + item[3].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
+                                    '<td>' + item[4] + '</td>' +
                                     '<td>' + item[5].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
+                                    '<td>' + item[6] + '</td>' +
                                     '<td>' + item[7] + '</td>' +
                                     '<td>' + item[8] + '</td>' +
                                     '<td>' + item[9].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원</td>' +
@@ -597,12 +639,12 @@
                                     '</tr>'
                                 );
                             });
-//                                $('.footable').footable({
-//                                    paging: {
-//                                        enabled: true,
-//                                        size: 5
-//                                    }
-//                                });
+                                $('.footable').footable({
+                                    paging: {
+                                        enabled: true,
+                                        size: 5
+                                    }
+                                });
                         }
                     }
                 });
@@ -681,12 +723,12 @@
                                     '</tr>'
                                 );
                             });
-//                                $('.footable').footable({
-//                                    paging: {
-//                                        enabled: true,
-//                                        size: 5
-//                                    }
-//                                });
+                                $('.footable').footable({
+                                    paging: {
+                                        enabled: true,
+                                        size: 5
+                                    }
+                                });
                         }
                     }
                 });
@@ -697,68 +739,65 @@
                 e.preventDefault();
 
                 if(confirm('서비스 상태가 변경됩니다. 변경하시겠습니까?') != true) return false;
-                else{
-                    console.log($(this));
+                console.log($(this));
 
-                    var node = $(this);
-                    var storeServiceOperationCode = $(this).children().eq(0).attr('value');
-                    var parentNode = $(this).parent().parent();
-                    var storeId = parentNode.children().eq(0).children().eq(0).attr('value');
-                    var storeServiceUseCode = node.attr('href');
+                var node = $(this);
+                var storeServiceOperationCode = $(this).children().eq(0).attr('value');
+                var parentNode = $(this).parent().parent();
+                var storeId = parentNode.children().eq(0).children().eq(0).attr('value');
+                var storeServiceUseCode = node.attr('href');
 
-                    console.log(storeId + storeServiceOperationCode);
+                console.log(storeId + storeServiceOperationCode);
 
-                    //서비스 운영코드 변경 시 체크리스트
-                    /*매장소개, 개점시간, 폐점시간, 주소, 혜택정보*/
+                //서비스 운영코드 변경 시 체크리스트
+                /*매장소개, 개점시간, 폐점시간, 주소, 혜택정보*/
 
-                    if(storeServiceUseCode == 0){
-                        alert('상세페이지에서 서비스정보를 사용상태로 변경 후 정보를 입력해주세요.');
-                        return false;
-                    }
+                if (storeServiceUseCode == 0) {
+                    alert('상세페이지에서 서비스정보를 사용상태로 변경 후 정보를 입력해주세요.');
+                    return false;
+                }
 
-                    if(storeServiceOperationCode == 'TERMINATE'){
-                        alert('서비스 계약이 종료되었습니다. 계약상태를 확인해주세요.')
-                    }
-                    else {
-                        $.ajax({
-                            url: "/wishwide/store/updateServiceOperationCode/" + storeId + "/" + storeServiceOperationCode,
-                            type: 'get',
-                            contentType: 'application/json',
-                            success: function (data) {
-                                console.log("변경 성공" + data);
-                                if (data == 'ACTIVE') {
-                                    console.log(node);
-                                    node.empty();
-                                    node.html('<span class="ACTIVE" value="ACTIVE" >운영중</span>');
-                                    alert('서비스 운영중 상태로 변경되었습니다.');
-                                }
-                                else if (data == 'PREACTIVE') {
-                                    console.log(node);
-                                    node.empty();
-                                    node.html('<span class="PREACTIVE" value="PREACTIVE">운영전</span>');
-                                    alert('서비스 운영전 상태로 변경되었습니다.')
-                                }
-                                else if (data == 'not-introduction') {
-                                    console.log(node);
-                                    alert('매장 소개를 입력해주세요.')
-                                }
-                                else if (data == 'not-storeHour') {
-                                    console.log(node);
-                                    alert('매장 개점시간, 폐점시간을 입력해주세요.')
-                                }
-                                else if (data == 'not-storeAddress') {
-                                    console.log(node);
-                                    alert('매장 주소를 입력해주세요.')
-                                }
-                                else if (data == 'not-benefitCode') {
-                                    console.log(node);
-                                    alert('매장 혜택타입을 지정해주세요.')
-                                }
-
-
+                if (storeServiceOperationCode == 'TERMINATE') {
+                    alert('서비스 계약이 종료되었습니다. 계약상태를 확인해주세요.')
+                }
+                else {
+                    $.ajax({
+                        url: "/wishwide/store/updateServiceOperationCode/" + storeId + "/" + storeServiceOperationCode,
+                        type: 'get',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            console.log("변경 성공" + data);
+                            if (data == 'ACTIVE') {
+                                console.log(node);
+                                node.empty();
+                                node.html('<span class="ACTIVE text-success" value="ACTIVE" >운영중</span>');
+                                alert('서비스 운영중 상태로 변경되었습니다.');
                             }
-                        });
-                    }
+                            else if (data == 'PREACTIVE') {
+                                console.log(node);
+                                node.empty();
+                                node.html('<span class="PREACTIVE" value="PREACTIVE">운영전</span>');
+                                alert('서비스 운영전 상태로 변경되었습니다.')
+                            }
+                            else if (data == 'not-introduction') {
+                                console.log(node);
+                                alert('매장 소개를 입력해주세요.')
+                            }
+                            else if (data == 'not-storeHour') {
+                                console.log(node);
+                                alert('매장 개점시간, 폐점시간을 입력해주세요.')
+                            }
+                            else if (data == 'not-storeAddress') {
+                                console.log(node);
+                                alert('매장 주소를 입력해주세요.')
+                            }
+                            else if (data == 'not-benefitCode') {
+                                console.log(node);
+                                alert('매장 혜택타입을 지정해주세요.')
+                            }
+
+                        }
+                    });
                 }
             });
         });

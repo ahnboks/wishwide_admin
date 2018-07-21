@@ -260,7 +260,11 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 product.productDescription,  //상품설명16
                 product.majorCategoryNo,    //17
                 product.subCategoryNo,   //18
-                product.productSubProductCode  //19
+                product.productSubProductCode,  //19
+                product.productDiscountTypeCode,    //20
+                product.productDiscountCode,     //21
+                product.productDiscountValue    //22
+
         );
 
         //조인문
@@ -297,13 +301,16 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 product.productRegdate, //등록일8
                 productImage.productImageNo,    //상품이미지번호9
                 productImage.productImageName,  //상품이미지명10
-                productImage.productImageDbName,    //상품이미지db명11
+                productImage.productImageDbName,    //상품이미지 db명11
                 productImage.productImageExtension, //상품이미지확장자12
                 productImage.productImageThumbnailUrl,  //상품이미지썸네일주소13
                 productImage.productImageUrl,    //상품이미지주소14
                 product.productDescription, //15
                 product.giftProductRegisterCode,    //16
-                product.productSubProductCode   //17
+                product.productSubProductCode,   //17
+                product.productDiscountTypeCode,    //18
+                product.productDiscountCode,     //19
+                product.productDiscountValue    //20
         );
 
         //조인문
@@ -346,7 +353,11 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 productImage.productImageDbName,    //상품이미지db명13
                 productImage.productImageExtension, //상품이미지확장자14
                 productImage.productImageThumbnailUrl,  //상품이미지썸네일주소15
-                productImage.productImageUrl    //상품이미지주소16
+                productImage.productImageUrl,    //상품이미지주소16
+                product.productSubProductCode,  //17
+                product.productDiscountTypeCode,    //18
+                product.productDiscountCode,     //19
+                product.productDiscountValue    //20
         );
 
         //조인문
@@ -355,8 +366,7 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 .leftJoin(productImage).on(product.productNo.eq(productImage.productNo));
 
         //조건식
-
-        tupleJPQLQuery.where(product.productOwnerId.eq(storeId));
+        tupleJPQLQuery.where(product.productOwnerId.eq(storeId).and(product.productOwnerRole.eq("ST")));
 
         //정렬;
         tupleJPQLQuery.orderBy(product.productRegdate.desc());
@@ -435,7 +445,8 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 subProduct.subProductNo,    //서브상품번호0
                 product.productNo,  //상품번호1
                 subProduct.subProductName,  //서브상품명2
-                subProduct.subProductPrice  //서브상품가격3
+                subProduct.subProductPrice,  //서브상품가격3
+                subProduct.subProductDiscountValue  //서브상품할인값4
         );
 
         //조인문

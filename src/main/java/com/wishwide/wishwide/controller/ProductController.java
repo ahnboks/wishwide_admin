@@ -146,8 +146,16 @@ public class ProductController {
         String majorCategoryTitle = "";
         String subCategoryTitle = "";
 
+        majorCategoryTitle = majorCategoryRepository.findByMajorCategoryNo(productVO.getMajorCategoryNo()).getMajorCategoryTitle();
+
+        if(productVO.getSubCategoryNo() != null){
+            subCategoryTitle = subCategoryRepository.findBySubCategoryNo(productVO.getSubCategoryNo()).getSubCategoryTitle();
+        }
+
         //VO 세팅
         productVO.setProductOwnerRole("ST");
+        productVO.setMajorCategoryTitle(majorCategoryTitle);
+        productVO.setSubCategoryTitle(subCategoryTitle);
 
         //상품 이미지 파일 값 저장
         ProductImage pm = saveDBProductImage(productVO.getProductOwnerId(), saveCloudFile(productImage));
@@ -158,7 +166,6 @@ public class ProductController {
         subProductList.getSubProductList().forEach(subProduct -> {
             if(!subProduct.getSubProductName().equals("none")) {
                 productVO.setProductSubProductCode(1);
-                productVO.setProductPrice(0);
 
                 //상품 저장
                 productNo = customProductRepository.save(productVO).getProductNo();
@@ -169,12 +176,12 @@ public class ProductController {
                 sub.setProductNo(productNo);
                 sub.setSubProductName(subProduct.getSubProductName());
                 sub.setSubProductPrice(subProduct.getSubProductPrice());
+                sub.setSubProductDiscountValue(subProduct.getSubProductDiscountValue());
 
                 subProductRepository.save(sub);
             }
             else{
                 productVO.setProductSubProductCode(0);
-                productVO.setProductPrice(productVO.getProductPrice());
 
                 //상품 저장
                 productNo =  customProductRepository.save(productVO).getProductNo();
@@ -186,7 +193,6 @@ public class ProductController {
 
         //상품 이미지 등록
         productImageRepository.save(pm);
-
 
         //선물등록여부코드 1일시 선물등록
         if(productVO.getGiftProductRegisterCode() == 1) {
@@ -203,6 +209,7 @@ public class ProductController {
                     giftProduct.setProductDescription(productVO.getProductDescription());
                     giftProduct.setMajorCategoryNo(productVO.getMajorCategoryNo());
                     giftProduct.setMajorCategoryTitle(productVO.getMajorCategoryTitle());
+                    giftProduct.setGiftProductDiscountValue(subProduct.getSubProductDiscountValue());
                     giftProduct.setProductNo(productNo);
 
                     if(giftProductVO.getGiftBundleDiscountCode() == 1){
@@ -226,6 +233,7 @@ public class ProductController {
                 giftProduct.setProductDescription(productVO.getProductDescription());
                 giftProduct.setMajorCategoryNo(productVO.getMajorCategoryNo());
                 giftProduct.setMajorCategoryTitle(productVO.getMajorCategoryTitle());
+                giftProduct.setGiftProductDiscountValue(productVO.getProductDiscountValue());
                 giftProduct.setProductNo(productNo);
 
                 //묶음할인코드가 1일경우에만 등록
@@ -291,6 +299,7 @@ public class ProductController {
             product.setProductTitle(productVO.getProductTitle());
             product.setGiftProductRegisterCode(productVO.getGiftProductRegisterCode());
             product.setProductDescription(productVO.getProductDescription());
+            product.setProductPrice(productVO.getProductPrice());
 
             if (productImage != null && !(productImage.isEmpty())) {
                 //상품 이미지 파일 값 저장
@@ -313,18 +322,17 @@ public class ProductController {
             subProductList.getSubProductList().forEach(subProduct -> {
                 if(!subProduct.getSubProductName().equals("none")) {
                     product.setProductSubProductCode(1);
-                    product.setProductPrice(0);
 
                     SubProduct sub = new SubProduct();
                     sub.setProductNo(product.getProductNo());
                     sub.setSubProductName(subProduct.getSubProductName());
                     sub.setSubProductPrice(subProduct.getSubProductPrice());
+                    sub.setSubProductDiscountValue(subProduct.getSubProductDiscountValue());
 
                     subProductRepository.save(sub);
                 }
                 else{
                     product.setProductSubProductCode(0);
-                    product.setProductPrice(productVO.getProductPrice());
                 }
             });
 
@@ -349,8 +357,7 @@ public class ProductController {
                         giftProduct.setMajorCategoryNo(productVO.getMajorCategoryNo());
                         giftProduct.setMajorCategoryTitle(productVO.getMajorCategoryTitle());
                         giftProduct.setProductNo(product.getProductNo());
-                        giftProduct.setGiftProductDiscountValue(giftProductVO.getGiftProductDiscountValue());
-                        giftProduct.setGiftBundleDiscountCode(giftProductVO.getGiftBundleDiscountCode());
+                        giftProduct.setGiftProductDiscountValue(subProduct.getSubProductDiscountValue());
 
                         if(giftProductVO.getGiftBundleDiscountCode() == 1){
                             giftProduct.setGiftBundleDiscountCode(giftProductVO.getGiftBundleDiscountCode());
@@ -374,8 +381,7 @@ public class ProductController {
                     giftProduct.setMajorCategoryNo(productVO.getMajorCategoryNo());
                     giftProduct.setMajorCategoryTitle(productVO.getMajorCategoryTitle());
                     giftProduct.setProductNo(product.getProductNo());
-                    giftProduct.setGiftProductDiscountValue(giftProductVO.getGiftProductDiscountValue());
-                    giftProduct.setGiftBundleDiscountCode(giftProductVO.getGiftBundleDiscountCode());
+                    giftProduct.setGiftProductDiscountValue(productVO.getProductDiscountValue());
 
                     //묶음할인코드가 1일경우에만 등록
                     if(giftProductVO.getGiftBundleDiscountCode() == 1){
@@ -486,7 +492,6 @@ public class ProductController {
         subProductList.getSubProductList().forEach(subProduct -> {
             if(!subProduct.getSubProductName().equals("none")) {
                 productVO.setProductSubProductCode(1);
-                productVO.setProductPrice(0);
 
                 //상품 저장
                 productNo = customProductRepository.save(productVO).getProductNo();
@@ -497,12 +502,12 @@ public class ProductController {
                 sub.setProductNo(productNo);
                 sub.setSubProductName(subProduct.getSubProductName());
                 sub.setSubProductPrice(subProduct.getSubProductPrice());
+                sub.setSubProductDiscountValue(subProduct.getSubProductDiscountValue());
 
                 subProductRepository.save(sub);
             }
             else{
                 productVO.setProductSubProductCode(0);
-                productVO.setProductPrice(productVO.getProductPrice());
 
                 //상품 저장
                 productNo =  customProductRepository.save(productVO).getProductNo();
@@ -564,6 +569,7 @@ public class ProductController {
             product.setProductTitle(productVO.getProductTitle());
             product.setGiftProductRegisterCode(productVO.getGiftProductRegisterCode());
             product.setProductDescription(productVO.getProductDescription());
+            product.setProductPrice(productVO.getProductPrice());
 
             if (productImage != null && !(productImage.isEmpty())) {
                 //상품 이미지 파일 값 저장
@@ -586,18 +592,17 @@ public class ProductController {
             subProductList.getSubProductList().forEach(subProduct -> {
                 if(!subProduct.getSubProductName().equals("none")) {
                     product.setProductSubProductCode(1);
-                    product.setProductPrice(0);
 
                     SubProduct sub = new SubProduct();
                     sub.setProductNo(product.getProductNo());
                     sub.setSubProductName(subProduct.getSubProductName());
                     sub.setSubProductPrice(subProduct.getSubProductPrice());
+                    sub.setSubProductDiscountValue(subProduct.getSubProductDiscountValue());
 
                     subProductRepository.save(sub);
                 }
                 else{
                     product.setProductSubProductCode(0);
-                    product.setProductPrice(productVO.getProductPrice());
                 }
             });
 
@@ -615,6 +620,7 @@ public class ProductController {
     }
 
     //상품 판매 코드 변경
+    @Transactional
     @GetMapping("/updateProductSellStatusCode/{productNo}/{productSellStatusCode}")
     public ResponseEntity<String> updateServiceOperationCode(@PathVariable("productNo") Long productNo,
                                                              @PathVariable("productSellStatusCode") int productSellStatusCode) {
@@ -627,10 +633,17 @@ public class ProductController {
             if (productSellStatusCode == 1) {
                 product.setProductSellStatusCode(0);
 
-                //선물 연쇄 비활성화
-                giftProductRepository.changeGiftProductVisibleCode(0, productNo);
+                if(product.getGiftProductRegisterCode() == 1) {
+                    //선물 연쇄 비활성화
+                    giftProductRepository.changeGiftProductVisibleCode(0, productNo);
+                }
             } else {
                 product.setProductSellStatusCode(1);
+
+                if(product.getGiftProductRegisterCode() == 1) {
+                    //선물 연쇄 활성화
+                    giftProductRepository.changeGiftProductVisibleCode(1, productNo);
+                }
             }
 
             customProductRepository.save(product);

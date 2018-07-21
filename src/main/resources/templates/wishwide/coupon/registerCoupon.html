@@ -1,5 +1,5 @@
 <div th:insert="~{layout/head::head}"></div>
-<script src="/js/managerValidation.js"></script>
+<!--<script src="/js/managerValidation.js"></script>-->
 
 <div id="wrapper">
 
@@ -162,7 +162,7 @@
                                     <div class="modal-body">
                                         <table class="footable table table-bordered table-hover">
                                             <thead>
-                                            <th data-sort-ignore="true">선택</th>
+                                            <th data-sort-ignore="true">선택<input type="checkbox" value="0" name="allChecked" onclick="allCheckedValue();"></th>
                                             <th>전화번호</th>
                                             <th>등급</th>
                                             <th>방문횟수</th>
@@ -498,9 +498,12 @@
             $('#btnSubmit').click(function (e){
 //                e.preventDefault();
 
+                if (confirm('등록하시겠습니까?') != true) return false;
+
                 /*유효성 검사*/
                 var storeId = registerForm.find('[name="storeId"]').val();
                 var productTitle = registerForm.find('[name="productTitle"]').val();
+                var productPrice = registerForm.find('[name="productTitle"] option:selected').text();
                 var couponDiscountTypeCode = registerForm.find('[name="couponDiscountTypeCode"]:checked').val();
                 var DCPValue = registerForm.find('[name="DCPValue"]').val();
                 var DCRValue = registerForm.find('[name="DCRValue"]').val();
@@ -511,7 +514,7 @@
                 var couponTypeNo = registerForm.find('[name="couponTypeNo"]:checked').val();
                 var couponFinishDate = registerForm.find('[name="finishDate"]').val();
 
-                console.log('발행코드'+couponPublishTypeCode);
+                var productPriceValue = productPrice.substring(productPrice.indexOf("(")+1, productPrice.lastIndexOf("원"));
 
                 if(storeId == 'ALL') {
                     alert('가맹점을 선택해주세요.');
@@ -520,7 +523,7 @@
                 if(couponTypeNo == 1){
                     registerForm.find('[name="couponBenefitValue"]').val('0');
 
-                    if (productTitle == 0){
+                    if (productTitle == ''){
                         alert('상품을 선택해주세요.');
                         return false;
                     }
@@ -534,7 +537,7 @@
                                 alert('할인률을 입력해주세요');
                                 return false;
                             }
-                            else if (DCRValue > 100){
+                            else if (parseInt(DCRValue) > 100){
                                 alert('할인률은 100%까지 입력가능합니다.');
                                 return false;
                             }
@@ -547,7 +550,7 @@
                                 alert('할인가를 입력해주세요');
                                 return false;
                             }
-                            else if (DCPValue > productTitle){
+                            else if (parseInt(DCPValue) > parseInt(productPriceValue)){
                                 alert('할인가는 상품가격보다 크게 입력이 불가능합니다.');
                                 return false;
                             }
@@ -556,6 +559,9 @@
                             }
                         }
                     }
+
+                    registerForm.find('[name="productTitle"]').val(DCPValue);
+
                 }
                 else{
                     registerForm.find('[name="couponDiscountValue"]').val('0');
@@ -632,66 +638,84 @@
 
         });
 
+    function allCheckedValue() {
+        var allChecked = registerForm.find('[name="allChecked"]').val();
 
-        function selectProduct(storeId) {
-            $.ajax({
-                url: "/wishwide/store/selectStoreProduct/" + storeId,
-                type: 'get',
-                contentType: 'application/json',
-                success: function (data) {
-                    console.log(data);
-                    if (data.length != 0) {
-                        registerForm.find('[name="productTitle"] option').remove();
+        if(allChecked == 0){
+            for (var i = 0; i < registerForm.find('[name="membershipCustomerNo"]').length; i++) {
+                registerForm.find('[name="membershipCustomerNo"]')[i].checked = true;
+            }
 
-                        $.each(data, function (index, item) {
-                            console.log(item);
+            registerForm.find('[name="allChecked"]').val(1);
+        }
+        else{
+            for (var i = 0; i < registerForm.find('[name="membershipCustomerNo"]').length; i++) {
+                registerForm.find('[name="membershipCustomerNo"]')[i].checked = false;
+            }
 
-                            registerForm.find('[name="productTitle"]').append(
-                                '<option value="' + item[7] + '" >' + item[6] +'('+item[7]+'원)'+'</option>'
-                            );
-                        });
+            registerForm.find('[name="allChecked"]').val(0);
+        }
+    }
+
+    function selectProduct(storeId) {
+        $.ajax({
+            url: "/wishwide/store/selectStoreProduct/" + storeId,
+            type: 'get',
+            contentType: 'application/json',
+            success: function (data) {
+                console.log(data);
+                if (data.length != 0) {
+                    registerForm.find('[name="productTitle"] option').remove();
+
+                    $.each(data, function (index, item) {
+                        console.log(item);
+
+                        registerForm.find('[name="productTitle"]').append(
+                            '<option value="' + item[6] + '" >' + item[6] + '(' + item[7] + '원)' + '</option>'
+                        );
+                    });
+                }
+                else {
+                    console.log('데이터없음');
+                    registerForm.find('[name="productTitle"] option').remove();
+                    registerForm.find('[name="productTitle"]').append('<option value="0">상품 선택</option>');
+
+                    alert('등록된 상품이 없습니다.');
+                }
+            }
+        });
+    }
+
+    function selectStoreInfo(storeId) {
+        $.ajax({
+            url: "/wishwide/store/selectOneStore/" + storeId,
+            type: 'get',
+            contentType: 'application/json',
+            success: function (data) {
+                console.log(data);
+                if (data.length != 0) {
+                    if (data[20] == 'S') {
+                        $('#point').css('display', 'none');
+                        $('#stamp').css('display', 'block');
+                        $('#couponTargetSTAMP').css('display', 'block');
+                        $('#couponTargetUPGRADE').css('display', 'block');
                     }
-                    else{
-                        console.log('데이터없음');
-                        registerForm.find('[name="productTitle"] option').remove();
-                        registerForm.find('[name="productTitle"]').append('<option value="0">상품 선택</option>');
-
-                        alert('등록된 상품이 없습니다.');
+                    if (data[20] == 'P') {
+                        $('#stamp').css('display', 'none');
+                        $('#point').css('display', 'block');
+                        $('#couponTargetSTAMP').css('display', 'none');
+                        $('#couponTargetUPGRADE').css('display', 'none');
+                    }
+                    if (data[25] == 0) {
+                        $('#couponARPublish').css('display', 'none');
+                    }
+                    if (data[25] == 1) {
+                        $('#couponARPublish').css('display', 'block');
                     }
                 }
-            });
-        }
-        
-        function selectStoreInfo(storeId) {
-            $.ajax({
-                url: "/wishwide/store/selectOneStore/" + storeId,
-                type: 'get',
-                contentType: 'application/json',
-                success: function (data) {
-                    console.log(data);
-                    if (data.length != 0) {
-                        if(data[20] == 'S'){
-                            $('#point').css('display','none');
-                            $('#stamp').css('display','block');
-                            $('#couponTargetSTAMP').css('display','block');
-                            $('#couponTargetUPGRADE').css('display','block');
-                        }
-                        if (data[20] == 'P'){
-                            $('#stamp').css('display','none');
-                            $('#point').css('display','block');
-                            $('#couponTargetSTAMP').css('display','none');
-                            $('#couponTargetUPGRADE').css('display','none');
-                        }
-                        if(data[25] == 0){
-                            $('#couponARPublish').css('display','none');
-                        }
-                        if(data[25] == 1){
-                            $('#couponARPublish').css('display','block');
-                        }
-                    }
-                }
-            });
-        }
+            }
+        });
+    }
 
     function renameForModelAttribute(element, index) {
         $(element).find("input[name=subProductName]").attr("name", "subProductList[" + index + "].subProductName");

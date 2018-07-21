@@ -26,9 +26,8 @@
                         <!--알림유형-->
                         <div class="form-group">
                             <label class="col-sm-2 control-label">알림유형<label class="notnull-mark-color"> *</label></label>
-
                             <div class="col-md-2">
-                                <select class="form-control m-b" name="alarmTypeCode">
+                                <select class="form-control m-b" name="alarmTypeCode" id="alarmTypeCode">
                                     <option value="G">선물</option>
                                     <option value="C">쿠폰</option>
                                     <option value="S">도장</option>
@@ -50,9 +49,6 @@
                                             <option value="1">사용</option>
                                             <option value="2">구매</option>
                                             <option value="3">유효기간 만료</option>
-                                            <option value="4">적립</option>
-                                            <option value="5">차감</option>
-                                            <option value="6">신규가입</option>
                                         </select>
                                     </div>
                                     <div id="alarmSendPointCode" style="display:none;">
@@ -78,7 +74,6 @@
 
                             <div class="col-md-2">
                                 <select class="form-control m-b" name="alarmTargetTypeCode">
-                                    <option value="BC">구매자</option>
                                     <option value="RC">수신자</option>
                                 </select>
                             </div>
@@ -86,7 +81,7 @@
                         <div class="hr-line-dashed"></div>
                         <!--알림 메시지-->
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">알림 메시지</label>
+                            <label class="col-sm-2 control-label">알림 메시지<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
                                 <textarea class="form-control input-textarea" name="alarmMessage" rows="10"></textarea>
                                 <span class="textarea-limit-validation"></span>
@@ -166,12 +161,61 @@
                 }
             });
 
-            //게임타입 코드에 따른 CSS
+            //알림 유형에 따른 CSS
+            registerForm.find('[name="alarmTypeCode"]').change(function () {
+                var alarmTypeCode = registerForm.find('[name="alarmTypeCode"] option:selected').val();
+
+                console.log(alarmTypeCode + '값');
+
+                registerForm.find('[name="alarmPurposeCode"] option').remove();
+                $('#alarmSendPointCode').css('display','none');
+
+                if(alarmTypeCode == 'G'){
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="0">도착</option>');
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="1">사용</option>');
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="2">구매</option>');
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="3">유효기간 만료</option>');
+                }
+                if(alarmTypeCode == 'C'){
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="0">도착</option>');
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="1">사용</option>');
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="3">유효기간 만료</option>');
+                }
+                if(alarmTypeCode == 'S'){
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="4">적립</option>');
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="5">차감</option>');
+                }
+                if(alarmTypeCode == 'P'){
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="4">적립</option>');
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="5">차감</option>');
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="3">유효기간 만료</option>');
+                }
+                if(alarmTypeCode == 'ETC'){
+                    registerForm.find('[name="alarmPurposeCode"]').append('<option value="6">신규가입</option>');
+                }
+            });
+
+            //알림목적 코드에 따른 CSS
             registerForm.find('[name="alarmPurposeCode"]').change(function () {
                 var alarmPurposeCode = registerForm.find('[name="alarmPurposeCode"] option:selected').val();
 
                 console.log(alarmPurposeCode + '값');
 
+                //구매일 경우 구매자 추가
+                if(alarmPurposeCode == '2'){
+                    registerForm.find('[name="alarmTargetTypeCode"]').prepend('<option value="BC">구매자</option>');
+                }
+                else{
+                    var optionValue = registerForm.find('[name="alarmTargetTypeCode"] option:first').val();
+
+                    console.log(optionValue);
+
+                    if (optionValue == 'BC'){
+                        registerForm.find('[name="alarmTargetTypeCode"] option:first').remove();
+                    }
+                }
+
+                //유효기간에 따른 CSS
                 if(alarmPurposeCode == '3'){
                     $('#alarmSendPointCode').css('display','block');
                 }
@@ -203,8 +247,18 @@
                     }
                 });
             });
+
             $('#btnSubmit').click(function (e) {
+//                e.preventDefault();
+
                 if (confirm('등록하시겠습니까?') != true) return false;
+
+                var alarmMessage = registerForm.find('[name="alarmMessage"]').val();
+
+                if (!alarmMessage){
+                    alert('알림 메시지를 입력해주세요.');
+                    return false;
+                }
             });
 
         });

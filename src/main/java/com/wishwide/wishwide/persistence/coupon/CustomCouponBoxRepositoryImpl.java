@@ -217,8 +217,58 @@ public class CustomCouponBoxRepositoryImpl extends QuerydslRepositorySupport imp
                 .join(store).on(couponBox.storeId.eq(store.storeId));
 
         //조건식
-        //사용된 쿠폰목록만 가져옴
         tupleJPQLQuery.where(customer.membershipCustomerNo.eq(customerNo));
+
+        //정렬
+        tupleJPQLQuery.orderBy(couponBox.couponBoxRegdate.desc());
+
+        //패치
+        List<Tuple> tuples = tupleJPQLQuery.fetch();
+
+        List<Object[]> resultList = new ArrayList<>();
+
+        tuples.forEach(tuple -> {
+            resultList.add(tuple.toArray());
+        });
+
+        return resultList;
+    }
+
+    @Override
+    public List<Object[]> getCouponHistoryList(Long couponNo) {
+        QCouponBox couponBox = QCouponBox.couponBox;
+        QStore store = QStore.store;
+        QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
+        QCouponType couponType = QCouponType.couponType;
+
+        JPQLQuery<CouponBox> query = from(couponBox);
+
+        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
+                couponBox.couponBoxNo, //쿠폰함 번호0
+                store.storeId,  //매장아이디1
+                store.storeName,    //가맹점명2
+                customer.membershipCustomerNo,    //멤버쉽고객번호3
+                customer.customerPhone, //고객전화번호4
+                customer.customerName,  //고객명5
+                couponType.couponTypeName,  //쿠폰유형명6
+                couponBox.couponTitle,  //쿠폰명7
+                couponBox.couponTargetTypeCode, //쿠폰발급대상코드8
+                couponBox.couponPublishTypeCode,    //쿠폰발급경로코드9
+                couponBox.couponUseCode,    //쿠폰사용여부10
+                couponBox.couponUsedate,    //쿠폰사용일11
+                couponBox.couponBegindate,  //유효시작일12
+                couponBox.couponFinishdate, //유효만료일13
+                couponBox.couponBoxRegdate  //쿠폰수신일14
+        );
+
+        //조인문
+        tupleJPQLQuery
+                .join(customer).on(couponBox.membershipCustomerNo.eq(customer.membershipCustomerNo))
+                .join(couponType).on(couponBox.couponTypeNo.eq(couponType.couponTypeNo))
+                .join(store).on(couponBox.storeId.eq(store.storeId));
+
+        //조건식
+        tupleJPQLQuery.where(couponBox.couponNo.eq(couponNo));
 
         //정렬
         tupleJPQLQuery.orderBy(couponBox.couponBoxRegdate.desc());

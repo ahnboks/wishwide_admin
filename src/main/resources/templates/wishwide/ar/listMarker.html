@@ -130,41 +130,6 @@
 
             $('.chosen-select').chosen({width: "100%"});
 
-            $('a[name="updateMarkerVisibleCode"]').click(function (e) {
-                e.preventDefault();
-
-                console.log($(this));
-
-                var node = $(this);
-                var updateMarkerVisibleCode = $(this).children().eq(0).attr('value');
-                var parentNode = $(this).parent().parent();
-                var markerNo = parentNode.children().eq(0).children().eq(0).attr('value');
-
-                console.log('디바이스 번호 : '+markerNo +' 활성화코드 : ' +updateMarkerVisibleCode);
-
-                $.ajax({
-                    url: "/wishwide/marker/updateMarkerVisibleCode/" + markerNo + "/" + updateMarkerVisibleCode,
-                    type: 'get',
-                    contentType: 'application/json',
-                    success: function (data) {
-                        console.log("변경 성공" + data);
-                        if (data == '1') {
-                            console.log(node);
-                            node.empty();
-                            node.html('<span class="use" value="1" >사용</span>');
-                            alert('디바이스 사용 상태로 변경되었습니다.');
-                        }
-                        else {
-                            console.log(node);
-                            node.empty();
-                            node.html('<span class="not-use" value="0" >미사용</span>');
-                            alert('디바이스 미사용 상태로 변경되었습니다.')
-                        }
-                    }
-                });
-
-
-            });
         });
 
     </script>

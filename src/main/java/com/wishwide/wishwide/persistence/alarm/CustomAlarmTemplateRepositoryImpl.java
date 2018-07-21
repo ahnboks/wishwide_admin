@@ -135,4 +135,5 @@ public class CustomAlarmTemplateRepositoryImpl extends QuerydslRepositorySupport
 
         return tuple.toArray();
     }
+
 }

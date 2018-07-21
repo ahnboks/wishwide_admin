@@ -168,7 +168,8 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
                 stampHistory.stampCnt,  //누적도장6
                 stampHistory.stampNowCnt,   //현재도장7
                 stampHistory.stampCouponPublishedCnt,   //쿠폰발급횟수8
-                stampHistory.stampHistoryRegdate    //일시9
+                stampHistory.stampHistoryRegdate,    //일시9
+                stampHistory.stampEarningWay    //도장적립경로10
         );
 
         //조인문
@@ -209,7 +210,8 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
                 pointHistory.pointExtinctionCnt,    //소멸포인트6
                 pointHistory.pointNowCnt,   //현재포인트7
                 pointHistory.pointEarningWay,   //적립경로8
-                pointHistory.pointHistoryRegdate    //일시9
+                pointHistory.pointHistoryRegdate,    //일시9
+                pointHistory.pointCnt   //누적포인트10
         );
 
         //조인문

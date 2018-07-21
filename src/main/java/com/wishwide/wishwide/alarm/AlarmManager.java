@@ -72,20 +72,28 @@ public class AlarmManager {
     }
 
     //SAVE 알림발송내역 & 알림발송로그(VO)
-    public void saveAlarmHistoryAndLog(MembershipCustomer membershipCustomer, AlarmSendHistory alarmSendHistoryVO){
+    public void saveAlarmHistoryAndLog(MembershipCustomer membershipCustomer, Alarm alarmVO){
         //내역 저장
         AlarmSendHistory alarmSendHistory = new AlarmSendHistory();
         alarmSendHistory.setMembershipCustomerNo(membershipCustomer.getMembershipCustomerNo());
         alarmSendHistory.setCustomerPhone(membershipCustomer.getCustomerPhone());
         alarmSendHistory.setCustomerGradeTypeCode(membershipCustomer.getCustomerGradeTypeCode());
         alarmSendHistory.setCustomerName(membershipCustomer.getCustomerName());
-        alarmSendHistory.setAlarmMessage(alarmSendHistoryVO.getAlarmMessage());
-        alarmSendHistory.setStoreId(alarmSendHistoryVO.getStoreId());
-        alarmSendHistory.setAlarmSendTypeCode(alarmSendHistoryVO.getAlarmSendTypeCode());
-        alarmSendHistory.setAlarmSendWayCode(alarmSendHistoryVO.getAlarmSendWayCode());
+        alarmSendHistory.setAlarmMessage(alarmVO.getAlarmMessage());
+        alarmSendHistory.setStoreId(alarmVO.getStoreId());
+        alarmSendHistory.setAlarmSendTypeCode(alarmVO.getAlarmSendTypeCode());
+        alarmSendHistory.setAlarmSendPointCode(alarmVO.getAlarmSendPointCode());
+        alarmSendHistory.setAlarmPurposeCode(alarmVO.getAlarmPurposeCode());
+        alarmSendHistory.setAlarmTypeCode(alarmVO.getAlarmTypeCode());
+        alarmSendHistory.setAlarmTemplateNo(alarmVO.getAlarmTemplateNo());
+        alarmSendHistory.setAlarmTargetTypeCode(alarmVO.getAlarmTargetTypeCode());
+        alarmSendHistory.setAlarmSendWayCode(alarmVO.getAlarmSendWayCode());
+        alarmSendHistory.setAlarmSendPointName(alarmVO.getAlarmSendPointName());
+        alarmSendHistory.setAlarmPurposeName(alarmVO.getAlarmPurposeName());
+        alarmSendHistory.setAlarmMessageUpdateCode(alarmVO.getAlarmMessageUpdateCode());
 
-        if(alarmSendHistoryVO.getAlarmReservationTime() != null) {
-            alarmSendHistory.setAlarmReservationTime(alarmSendHistoryVO.getAlarmReservationTime());
+        if(alarmVO.getAlarmReservationTime() != null) {
+            alarmSendHistory.setAlarmReservationTime(alarmVO.getAlarmReservationTime());
         }
 
         customAlarmSendHistoryRepository.save(alarmSendHistory);
@@ -96,13 +104,21 @@ public class AlarmManager {
         alarmSendLog.setCustomerPhone(membershipCustomer.getCustomerPhone());
         alarmSendLog.setCustomerGradeTypeCode(membershipCustomer.getCustomerGradeTypeCode());
         alarmSendLog.setCustomerName(membershipCustomer.getCustomerName());
-        alarmSendLog.setAlarmMessage(alarmSendHistoryVO.getAlarmMessage());
-        alarmSendLog.setStoreId(alarmSendHistoryVO.getStoreId());
-        alarmSendLog.setAlarmSendTypeCode(alarmSendHistoryVO.getAlarmSendTypeCode());
-        alarmSendLog.setAlarmSendWayCode(alarmSendHistoryVO.getAlarmSendWayCode());
+        alarmSendLog.setAlarmMessage(alarmVO.getAlarmMessage());
+        alarmSendLog.setStoreId(alarmVO.getStoreId());
+        alarmSendLog.setAlarmSendTypeCode(alarmVO.getAlarmSendTypeCode());
+        alarmSendLog.setAlarmSendPointCode(alarmVO.getAlarmSendPointCode());
+        alarmSendLog.setAlarmPurposeCode(alarmVO.getAlarmPurposeCode());
+        alarmSendLog.setAlarmTypeCode(alarmVO.getAlarmTypeCode());
+        alarmSendLog.setAlarmTemplateNo(alarmVO.getAlarmTemplateNo());
+        alarmSendLog.setAlarmTargetTypeCode(alarmVO.getAlarmTargetTypeCode());
+        alarmSendLog.setAlarmSendWayCode(alarmVO.getAlarmSendWayCode());
+        alarmSendLog.setAlarmSendPointName(alarmVO.getAlarmSendPointName());
+        alarmSendLog.setAlarmPurposeName(alarmVO.getAlarmPurposeName());
+        alarmSendLog.setAlarmMessageUpdateCode(alarmVO.getAlarmMessageUpdateCode());
 
-        if(alarmSendHistoryVO.getAlarmReservationTime() != null) {
-            alarmSendLog.setAlarmReservationTime(alarmSendHistoryVO.getAlarmReservationTime());
+        if(alarmVO.getAlarmReservationTime() != null) {
+            alarmSendLog.setAlarmReservationTime(alarmVO.getAlarmReservationTime());
         }
 
         log.info("내역 & 로그 저장 완료");
@@ -231,15 +247,12 @@ public class AlarmManager {
                         }
                     });
 
+            alarm.setAlarmMessage(alarmMessage);
+
             log.info("변환된 알림메시지 : " + alarmMessage);
 
             //알림발송내역 & 알림발송로그 저장
-            AlarmSendHistory alarmSendHistory = new AlarmSendHistory();
-            alarmSendHistory.setAlarmSendWayCode(alarm.getAlarmSendWayCode());
-            alarmSendHistory.setAlarmSendTypeCode(alarm.getAlarmSendTypeCode());
-            alarmSendHistory.setAlarmMessage(alarmMessage);
-            alarmSendHistory.setStoreId(alarm.getStoreId());
-            saveAlarmHistoryAndLog(membershipCustomer, alarmSendHistory);
+            saveAlarmHistoryAndLog(membershipCustomer, alarm);
 
             //msg_queue 저장
             saveMsgQueue(alarmMessage, membershipCustomer.getCustomerPhone(), alarm.getAlarmReservationTime());
@@ -322,12 +335,9 @@ public class AlarmManager {
 
             //알림발송내역 & 알림발송로그 저장
             AlarmSendHistory alarmSendHistory = new AlarmSendHistory();
-            alarmSendHistory.setAlarmSendWayCode(alarm.getAlarmSendWayCode());
-            alarmSendHistory.setAlarmSendTypeCode(alarm.getAlarmSendTypeCode());
             alarmSendHistory.setAlarmMessage(alarmMessage);
-            alarmSendHistory.setStoreId(alarm.getStoreId());
 
-            saveAlarmHistoryAndLog(membershipCustomer, alarmSendHistory);
+            saveAlarmHistoryAndLog(membershipCustomer, alarm);
 
             //msg_queue 저장
             saveMsgQueue(alarmMessage, membershipCustomer.getCustomerPhone(), alarm.getAlarmReservationTime());

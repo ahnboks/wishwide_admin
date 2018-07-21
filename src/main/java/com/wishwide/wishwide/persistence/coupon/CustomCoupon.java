@@ -15,4 +15,6 @@ public interface CustomCoupon {
                                            String couponPublishTypeCode,
                                            Pageable pageable);
 
+    //쿠폰 상세
+    public Object[] getCouponDetail(Long couponNo);
 }

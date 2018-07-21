@@ -111,7 +111,7 @@
                                     <div class="modal-body">
                                         <table class="footable table table-bordered table-hover">
                                             <thead>
-                                            <th data-sort-ignore="true">선택</th>
+                                            <th data-sort-ignore="true">선택<input type="checkbox" value="0" name="allChecked" onclick="allCheckedValue();"></th>
                                             <th>가맹점명</th>
                                             <th>가입자수</th>
                                             <th>디바이스</th>
@@ -165,10 +165,9 @@
 <th:block >
 <script th:inline="javascript">
         var isSelectStore = false;
+        var registerForm = $('#registerForm');
 
         $(document).ready(function () {
-            var registerForm = $('#registerForm');
-
             var partnerId =  registerForm.find('[name="partnerId"]').val();
 
             //가맹점 리스트 가져오기
@@ -246,6 +245,25 @@
 
         });
 
+        //전체선택
+        function allCheckedValue() {
+            var allChecked = registerForm.find('[name="allChecked"]').val();
+
+            if(allChecked == 0){
+                for (var i = 0; i < registerForm.find('[name="storeId"]').length; i++) {
+                    registerForm.find('[name="storeId"]')[i].checked = true;
+                }
+
+                registerForm.find('[name="allChecked"]').val(1);
+            }
+            else{
+                for (var i = 0; i < registerForm.find('[name="storeId"]').length; i++) {
+                    registerForm.find('[name="storeId"]')[i].checked = false;
+                }
+
+                registerForm.find('[name="allChecked"]').val(0);
+            }
+        }
 </script>
 </th:block>
 

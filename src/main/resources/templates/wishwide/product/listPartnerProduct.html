@@ -130,7 +130,7 @@
                                     </td>
                                     <td>
                                         <a class="btn btn-default" name="updateProductSellStatusCode" href="#">
-                                            <span class="sell" th:if="${vo[7]} == 1" th:value="${vo[7]}">판매</span>
+                                            <span class="sell text-success" th:if="${vo[7]} == 1" th:value="${vo[7]}">판매</span>
                                             <span class="not-sell"  th:if="${vo[7]} == 0" th:value="${vo[7]}" >미판매</span>
                                         </a>
                                     </td>
@@ -212,6 +212,8 @@
             $('a[name="updateProductSellStatusCode"]').click(function (e) {
                 e.preventDefault();
 
+                if (confirm('판매 상태가 변경됩니다. 변경하시겠습니까?') != true) return false;
+
                 console.log($(this));
 
                 var node = $(this);
@@ -230,7 +232,7 @@
                         if (data == '1') {
                             console.log(node);
                             node.empty();
-                            node.html('<span class="sell" value="1" >판매</span>');
+                            node.html('<span class="sell text-success" value="1" >판매</span>');
                             alert('상품 판매 상태로 변경되었습니다.');
                         }
                         else {

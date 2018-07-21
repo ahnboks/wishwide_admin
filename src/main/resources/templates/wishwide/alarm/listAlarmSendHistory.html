@@ -139,7 +139,10 @@
                                             <span th:case="ETC">기타</span>
                                         </span>
                                     </td>
-                                    <td>[[${vo[8]}]]</td>
+                                    <td>
+                                        <span th:if="${vo[8]} != null">[[${vo[8]}]]</span>
+                                        <span th:if="${vo[8]} == null">기타</span>
+                                    </td>
                                     <td>[[${vo[10]}]]</td>
                                     <td>
                                         <span th:switch="${vo[11]}">

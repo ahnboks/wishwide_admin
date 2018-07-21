@@ -138,7 +138,7 @@
                                     </td>
                                     <td>
                                         <a class="btn btn-default" name="updateDeviceVisibleCode" href="#">
-                                            <span class="use" th:if="${vo[8]} == 1" th:value="${vo[8]}">사용</span>
+                                            <span class="use text-success" th:if="${vo[8]} == 1" th:value="${vo[8]}">사용</span>
                                             <span class="not-use"  th:if="${vo[8]} == 0" th:value="${vo[8]}" >미사용</span>
                                         </a>
                                     </td>
@@ -219,6 +219,8 @@
             $('a[name="updateDeviceVisibleCode"]').click(function (e) {
                 e.preventDefault();
 
+                if (confirm('디바이스 상태가 변경됩니다. 변경하시겠습니까?') != true) return false;
+
                 console.log($(this));
 
                 var node = $(this);
@@ -237,7 +239,7 @@
                         if (data == '1') {
                             console.log(node);
                             node.empty();
-                            node.html('<span class="use" value="1" >사용</span>');
+                            node.html('<span class="use text-success" value="1" >사용</span>');
                             alert('디바이스 사용 상태로 변경되었습니다.');
                         }
                         else {

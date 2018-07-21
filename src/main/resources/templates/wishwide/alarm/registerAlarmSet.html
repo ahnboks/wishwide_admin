@@ -55,7 +55,7 @@
                                     <div class="modal-body">
                                         <table class="footable table table-bordered table-hover">
                                             <thead>
-                                            <th data-sort-ignore="true">선택</th>
+                                            <th data-sort-ignore="true">선택<input type="checkbox" value="0" name="allChecked" onclick="allCheckedValue();"></th>
                                             <th>전화번호</th>
                                             <th>등급</th>
                                             <th>방문횟수</th>
@@ -218,7 +218,7 @@
             <div class="modal-body">
                 <label class="control-label">전송할 전화번호<label class="notnull-mark-color"> *</label></label>
                 <div>
-                    <input type="text" maxlength="11" class="form-control phone-number-input-validation" id="dstaddr" placeholder="ex) 01012345678">
+                    <input type="text" onkeypress="InputOnlyNumber(this);" maxlength="11" class="form-control" id="dstaddr" placeholder="ex) 01012345678">
                     <p>*테스트 문자의 경우 알림변수 중<br> #{매장명}과 #{수신자전화번호}만<br> 사용가능합니다.*</p>
                 </div>
             </div>
@@ -232,9 +232,9 @@
     <script th:inline="javascript">
         var TEXTAREA_LIMIT_NUM = 300;
         var isSelectStoreCustomer = false;
+        var registerForm = $('#registerForm');
 
         $(document).ready(function () {
-            var registerForm = $('#registerForm');
 
             $('.chosen-select').chosen({width: "100%"});
 
@@ -254,9 +254,8 @@
             }
 
             //설명 유효성 체크
-            $('textarea').keyup(function () {
+            $('textarea').keyup(function (e) {
                 var textareaValue = $(this).val();
-                console.log("ssss");
                 updateTextareaMsg(textareaValue);
 
                 if (textareaValue.length > TEXTAREA_LIMIT_NUM) {
@@ -264,6 +263,15 @@
                     $(this).val(textareaValue.substr(0, TEXTAREA_LIMIT_NUM));
                     $('.textarea-limit-validation').text(TEXTAREA_LIMIT_NUM + '/' + TEXTAREA_LIMIT_NUM);
                 }
+            });
+
+            //매장에 따른 CSS
+            registerForm.find('[name="storeId"]').change(function () {
+                var storeId = registerForm.find('[name="storeId"]').val();
+
+                console.log(storeId + '값');
+
+                isSelectStoreCustomer = false;
             });
 
             //발송유형 코드에 따른 CSS
@@ -291,6 +299,12 @@
                 e.preventDefault();
 
                 var dstaddr = $('#dstaddr').val();
+
+                if (!(phoneNumberRegularExpressions.test(dstaddr))) {
+                    alert('유효하지 않은 전화번호 양식입니다.');
+                    return false;
+                }
+
                 var storeId = registerForm.find('#storeId').val();
                 var alarmMessage = registerForm.find('[name="alarmMessage"]').val();
 
@@ -343,176 +357,163 @@
 
                 $('#modalStoreCustomer').modal('show');
 
-                $.ajax({
-                    url: "/wishwide/alarm/selectStoreCustomer/" + storeId,
-                    type: 'get',
-                    contentType: 'application/json',
-                    success: function (data) {
-                        console.log(data);
-                        if (data.length != 0) {
-                            $('#selectStoreCustomer').empty();
+                if(!isSelectStoreCustomer){
+                    $('#selectStoreCustomer').empty();
 
-                            $.each(data, function (index, item) {
-                                var customerGradeTypeCode = '';
-                                var customerBenefitTypeCode = '';
+                    $.ajax({
+                        url: "/wishwide/alarm/selectStoreCustomer/" + storeId,
+                        type: 'get',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            console.log(data);
+                            if (data.length != 0) {
+                                $('#selectStoreCustomer').empty();
 
-                                //등급
-                                if (item[4] == 'BASIC')
-                                    customerGradeTypeCode = '일반';
-                                else if (item[4] == 'NEW')
-                                    customerGradeTypeCode = '신규';
-                                else if (item[4] == 'VIP')
-                                    customerGradeTypeCode = '단골';
-                                else
-                                    customerGradeTypeCode = '비멤버쉽';
+                                $.each(data, function (index, item) {
+                                    var customerGradeTypeCode = '';
+                                    var customerBenefitTypeCode = '';
 
-                                //혜택값
-                                if (item[10] == 'S')
-                                    customerBenefitTypeCode = item[11] + '개';
-                                else
-                                    customerBenefitTypeCode = item[11] + 'P';
+                                    //등급
+                                    if (item[4] == 'BASIC')
+                                        customerGradeTypeCode = '일반';
+                                    else if (item[4] == 'NEW')
+                                        customerGradeTypeCode = '신규';
+                                    else if (item[4] == 'VIP')
+                                        customerGradeTypeCode = '단골';
+                                    else
+                                        customerGradeTypeCode = '비멤버쉽';
 
-                                $('#selectStoreCustomer').append(
-                                    '<tr>' +
-                                    '<td><input type="checkbox" class="membershipCustomer-check-validation" name="membershipCustomerNo" value="' + item[0] + '"></td>' +
-                                    '<td>' + item[1].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/, "$1-$2-$3") + '</td>' +
-                                    '<td>' + customerGradeTypeCode + '</td>' +
-                                    '<td>' + item[5] + '</td>' +
-                                    '<td>' + item[6] + '</td>' +
-                                    '<td>' + item[14] + '/' + item[15] + '</td>' +
-                                    '<td>' + item[8] + '/' + item[9] + '</td>' +
-                                    '<td>' + customerBenefitTypeCode + '</td>' +
-                                    '</tr>'
-                                );
-                            });
-                            $('.footable').footable({
-                                paging: {
-                                    enabled: true,
-                                    size: 5,
-                                    current: data.length
-                                }
-                            });
+                                    //혜택값
+                                    if (item[10] == 'S')
+                                        customerBenefitTypeCode = item[11] + '개';
+                                    else
+                                        customerBenefitTypeCode = item[11] + 'P';
 
+                                    $('#selectStoreCustomer').append(
+                                        '<tr>' +
+                                        '<td><input type="checkbox" class="membershipCustomer-check-validation" name="membershipCustomerNo" value="' + item[0] + '"></td>' +
+                                        '<td>' + item[1].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/, "$1-$2-$3") + '</td>' +
+                                        '<td>' + customerGradeTypeCode + '</td>' +
+                                        '<td>' + item[5] + '</td>' +
+                                        '<td>' + item[6] + '</td>' +
+                                        '<td>' + item[14] + '/' + item[15] + '</td>' +
+                                        '<td>' + item[8] + '/' + item[9] + '</td>' +
+                                        '<td>' + customerBenefitTypeCode + '</td>' +
+                                        '</tr>'
+                                    );
+                                });
+                                $('.footable').footable({
+                                    paging: {
+                                        enabled: true,
+                                        size: 5,
+                                        current: data.length
+                                    }
+                                });
+                            }
+                            else {
+                                $('#selectStoreCustomer').empty();
+                                $('#selectStoreCustomer').append('<tr><td colspan="8">등록된 고객이 없습니다.</td></tr>');
+                            }
+
+                            isSelectStoreCustomer = true;
                         }
-                        else {
-                            $('#selectStoreCustomer').empty();
-                            $('#selectStoreCustomer').append('<tr><td colspan="8">등록된 고객이 없습니다.</td></tr>');
-                        }
-                    }
-                });
-            });
-
-            //메시지템플릿 가져오기
-            $('a[name="selectAlarmTemplatePreview"]').click(function (e) {
-                e.preventDefault();
-
-                console.log($(this));
-
-                $('#modalAlarmTemplate').modal('show');
-                $('#selectAlarmTemplatePreview').empty();
-
-                $.ajax({
-                    url: "/wishwide/alarm/selectAlarmTemplatePreview",
-                    type: 'get',
-                    contentType: 'application/json',
-                    success: function (data) {
-                        console.log(data);
-                        if (data.length != 0) {
-                            $.each(data, function (index, item) {
-                                console.log(data.length % 3);
-                                if((data.length % 3) == 1) {
-                                    $('#selectAlarmTemplatePreview').append('<div class="row">');
-                                }
-                                $('#selectAlarmTemplatePreview').append(
-                                    '<div class="col-md-4">'+
-                                    '<div class="ibox">'+
-                                    '<div class="ibox-content product-box">'+
-                                    '<div class="full-width" style="padding: 10px; height: 300px;">'+
-                                    item[1]+
-                                    '</div>'+
-                                    '</div>'+
-                                    '</div>');
-                                if((data.length % 3) == 0){
-                                    $('#selectAlarmTemplatePreview').append('</div>');
-                                }
-
-
-//                                }
-//                                else if((data.length % 3) == 1){
-//                                }
-                            });
-                        }
-                    }
-                });
-            });
-
-            //알림변수 값 가져오기
-            $('a[name="selectAlarmVariable"]').click(function (e) {
-                e.preventDefault();
-
-                console.log($(this));
-
-                $('#modalAlarmVariable').modal('show');
-//                $('#alarmVariable').empty();
-//
-//                $.ajax({
-//                    url: "/wishwide/alarm/selectAlarmVariable",
-//                    type: 'get',
-//                    contentType: 'application/json',
-//                    success: function (data) {
-//                        console.log(data);
-//                        if (data.length != 0) {
-//                            $.each(data, function (index, item) {
-//                                $('#alarmVariable').append('<tr>' +
-//                                    '<td>' + item[2] + '</td>' +
-//                                    '</tr>');
-//                            });
-//                        }
-//                    }
-//                });
+                    });
+                }
             });
 
             $('#btnSubmit').click(function (e) {
+                e.preventDefault();
+
+                if (confirm('발송하시겠습니까?') != true) return false;
+
                 var alarmMessage = registerForm.find('[name="alarmMessage"]').val();
                 var storeId = registerForm.find('#storeId').val();
+                var membershipCustomerNo = registerForm.find('[name="membershipCustomerNo"]:checked').val();
+                var alarmSendTypeCode = registerForm.find('[name="alarmSendTypeCode"]:checked').val();
+                var reserveDate = registerForm.find('[name="reserveDate"]').val();
+                var reserveTime = registerForm.find('[name="reserveTime"]').val();
+
+                console.log(membershipCustomerNo);
 
                 if(storeId == 'ALL'){
                     alert('가맹점을 선택해주세요.');
-
                     return false;
                 }
-
                 if(alarmMessage == ''){
                     alert('메시지를 입력해주세요.');
                     return false;
                 }
-
-                var checkCustomer = $('.membershipCustomer-check-validation');
-                var isCustomerCheckedCnt = 0;
-                console.log(checkCustomer);
-
-                if(checkCustomer.length != 0){
-                    for (var i = 0; i < checkCustomer.length; i++) {
-                        if (checkCustomer.eq(i).prop('checked')) {
-                            isCustomerCheckedCnt++;
-                        }
-                    }
-
-                    if(isCustomerCheckedCnt == 0){
-                        alert('수신고객을 선택해주세요.');
-                        return false;
-                    }
-
+                if (membershipCustomerNo == undefined){
+                    alert('수신고객을 선택해주세요.');
+                    return false;
                 }
 
-                if (confirm('발송하시겠습니까?') != true) return false;
+                if (alarmSendTypeCode == 'RESERVE') {
+                    if (reserveDate == '' || reserveTime == ""){
+                        alert('예약날짜와 시간을 모두 선택해주세요.');
+                        return false;
+                    }
+                    else {
+                        if (!checkAlarmReservationDateTime(reserveDate, reserveTime)) return false;
+                    }
+                }
+
             });
 
         });
 
-
+        //알림메시지 유효성체크
         function updateTextareaMsg(textareaValue) {
             $('.textarea-limit-validation').text(textareaValue.length + '/' + TEXTAREA_LIMIT_NUM);
+        }
+
+        //전체선택
+        function allCheckedValue() {
+            var allChecked = registerForm.find('[name="allChecked"]').val();
+
+            if (allChecked == 0) {
+                for (var i = 0; i < registerForm.find('[name="membershipCustomerNo"]').length; i++) {
+                    registerForm.find('[name="membershipCustomerNo"]')[i].checked = true;
+                }
+
+                registerForm.find('[name="allChecked"]').val(1);
+            }
+            else {
+                for (var i = 0; i < registerForm.find('[name="membershipCustomerNo"]').length; i++) {
+                    registerForm.find('[name="membershipCustomerNo"]')[i].checked = false;
+                }
+
+                registerForm.find('[name="allChecked"]').val(0);
+            }
+        }
+
+        //알림예약시간 유효성체크
+        function checkAlarmReservationDateTime(date, time) {
+            console.log(date + '' + time);
+
+            var today = new Date();
+
+            var todayMonth = today.getUTCMonth() + 1; //months from 1-12
+            var todayDay = today.getDate();
+            var todayYear = today.getUTCFullYear();
+            var todayHour = today.getHours();
+            var todayMin = today.getMinutes();
+            var todaySec = today.getSeconds();
+
+            //배열에 담겨있는 연,월,일을 사용해서 Date 객체 생성
+            var start_date = new Date(todayMonth + '/' + todayDay + '/' + todayYear + ' ' + todayHour + ':' + todayMin + ':' + todaySec);
+            var end_date = new Date(date + ' ' + time);
+
+            console.log(start_date);
+            console.log(end_date);
+
+            //날짜를 숫자형태의 날짜 정보로 변환하여 비교한다.
+            if (start_date.getTime() > end_date.getTime() || start_date.getTime() == end_date.getTime()) {
+                alert("예약시간은 현재 시간이후로 지정 가능합니다.");
+                return false;
+            }
+
+            return true;
         }
 
     </script>

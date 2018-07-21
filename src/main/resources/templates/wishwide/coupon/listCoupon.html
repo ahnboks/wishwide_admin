@@ -78,18 +78,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-sm-3 m-b-xs">사용여부</th>
-                                    <td>
-                                        <div class="col-sm-12 m-b-xs text-left">
-                                            <select class="input-sm form-control input-s-sm inline" id="couponUseCode">
-                                                <option value="2" th:selected="${pageVO.couponUseCode} == '2'">전체</option>
-                                                <option value="1" th:selected="${pageVO.couponUseCode} == '1'">사용</option>
-                                                <option value="0" th:selected="${pageVO.couponUseCode} == '0'">미사용</option>
-                                            </select>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <th class="col-sm-3 m-b-xs">검색대상</th>
                                     <td>
                                         <div class="col-sm-12 m-b-xs">
@@ -238,41 +226,6 @@
                 table.search(this.value).draw();
             });
 
-            $('a[name="updateCouponVisibleCode"]').click(function (e) {
-                e.preventDefault();
-
-                console.log($(this));
-
-                var node = $(this);
-                var updateCouponVisibleCode = $(this).children().eq(0).attr('value');
-                var parentNode = $(this).parent().parent();
-                var couponNo = parentNode.children().eq(0).children().eq(0).attr('value');
-
-                console.log('디바이스 번호 : '+couponNo +' 활성화코드 : ' +updateCouponVisibleCode);
-
-                $.ajax({
-                    url: "/wishwide/coupon/updateCouponVisibleCode/" + couponNo + "/" + updateCouponVisibleCode,
-                    type: 'get',
-                    contentType: 'application/json',
-                    success: function (data) {
-                        console.log("변경 성공" + data);
-                        if (data == '1') {
-                            console.log(node);
-                            node.empty();
-                            node.html('<span class="use" value="1" >사용</span>');
-                            alert('디바이스 사용 상태로 변경되었습니다.');
-                        }
-                        else {
-                            console.log(node);
-                            node.empty();
-                            node.html('<span class="not-use" value="0" >미사용</span>');
-                            alert('디바이스 미사용 상태로 변경되었습니다.')
-                        }
-                    }
-                });
-
-
-            });
         });
 
     </script>

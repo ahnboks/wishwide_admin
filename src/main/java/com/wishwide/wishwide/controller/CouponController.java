@@ -1,5 +1,6 @@
 package com.wishwide.wishwide.controller;
 
+import com.sun.corba.se.spi.ior.ObjectKey;
 import com.wishwide.wishwide.alarm.AlarmManager;
 import com.wishwide.wishwide.domain.*;
 import com.wishwide.wishwide.persistence.benefit.*;
@@ -283,24 +284,48 @@ public class CouponController {
 
 
     //상세
-    @GetMapping("/detailCoupon/{productNo}")
-    public String detailCoupon(@PathVariable("productNo") Long productNo,
+    @GetMapping("/detailCoupon/{couponNo}")
+    public String detailCoupon(@PathVariable("couponNo") Long couponNo,
                                @ModelAttribute("pageVO") PageVO pageVO,
                                Model model) {
-        log.info("데이터 : "+productNo);
+        log.info("데이터 : "+couponNo);
 
-        //매장 정보
-//        model.addAttribute("couponVO", customProductRepository.getCouponDetail(productNo));
-//
-//        //페이징 정보
-//        model.addAttribute("pageVO", pageVO);
-//
-//        //서브상품 개수
-//        model.addAttribute("subProductCnt", subProductRepository.findBySubProductCnt(productNo));
+        //페이징 정보
+        model.addAttribute("pageVO", pageVO);
+
+        //쿠폰 정보
+        model.addAttribute("couponVO", customCouponRepository.getCouponDetail(couponNo));
 
         return "wishwide/coupon/detailCoupon";
     }
 
+    //자동발송쿠폰 수정
+    @PostMapping("/update")
+    public String updateCoupon(@ModelAttribute(value = "couponVO") Coupon couponVO,
+                                     @ModelAttribute("pageVO") PageVO pageVO,
+                                     RedirectAttributes redirectAttributes) {
+        log.info("데이터 : " + couponVO);
+
+        //VO 세팅
+        customCouponRepository.findById(couponVO.getCouponNo()).ifPresent(coupon ->{
+            coupon.setCouponBenefitValue(couponVO.getCouponBenefitValue());
+            coupon.setCouponDiscountTypeCode(couponVO.getCouponDiscountTypeCode());
+            coupon.setCouponDiscountValue(couponVO.getCouponDiscountValue());
+            coupon.setCouponTitle(couponVO.getCouponTitle());
+            coupon.setProductTitle(couponVO.getProductTitle());
+            coupon.setCouponTypeNo(couponVO.getCouponTypeNo());
+            coupon.setCouponFinishdate(couponVO.getCouponFinishdate());
+
+            customCouponRepository.save(coupon);;
+        });
+
+        redirectAttributes.addFlashAttribute("message", "successUpdate");
+        pageRedirectProperty(redirectAttributes, pageVO);
+
+        return "redirect:/wishwide/coupon/listCoupon";
+    }
+
+    //쿠폰발행내역로그 저장
     private void saveCouponPublishHistoryLog(Coupon coupon) {
         CouponPublishHistory couponPublishHistory = new CouponPublishHistory();
         couponPublishHistory.setCouponBenefitValue(coupon.getCouponBenefitValue());
@@ -333,6 +358,7 @@ public class CouponController {
         couponPublishLogRepository.save(couponPublishLog);
     }
 
+    //VO 셋팅
     public CouponBox setCouponBox(Coupon coupon, Long membershipCustomerNo){
         CouponBox couponBox = new CouponBox();
         couponBox.setCouponNo(coupon.getCouponNo());
@@ -354,6 +380,7 @@ public class CouponController {
         return couponBox;
     }
 
+    //쿠폰함내역로그 저장
     private void saveCouponBoxHistoryLog(CouponBox coupon, MembershipCustomer customer) {
         CouponBoxHistory couponBoxHistory = new CouponBoxHistory();
         couponBoxHistory.setCouponNo(coupon.getCouponNo());
@@ -392,6 +419,7 @@ public class CouponController {
         couponBoxLogRepository.save(couponBoxLog);
     }
 
+    //알림 발송 저장
     public void sendAlarm(Coupon coupon, MembershipCustomer membershipCustomer){
         //할인쿠폰
         if(coupon.getCouponTypeNo() == 1) {
@@ -407,6 +435,7 @@ public class CouponController {
         }
     }
 
+    //혜택 저장
     private void saveBenefit(CouponBox couponBoxVO, Coupon coupon, MembershipCustomer customer) {
         //쿠폰타입이 도장이나 포인트면 바로 사용처리
         if(coupon.getCouponTypeNo() != 1){
@@ -472,6 +501,7 @@ public class CouponController {
         }
     }
 
+    //도장내역로그 저장
     private void saveStampHistoryLog(Stamp stamp){
         StampHistory stampHistory = new StampHistory();
         stampHistory.setStampNo(stamp.getStampNo());
@@ -498,6 +528,7 @@ public class CouponController {
         stampLogRepository.save(stampLog);
     }
 
+    //포인트내역로그 저장
     private void savePointHistoryLog(Point point) {
         PointHistory pointHistory = new PointHistory();
 
@@ -539,6 +570,13 @@ public class CouponController {
                                                                @PathVariable("couponTargetTypeCode") String couponTargetTypeCode) {
         log.info("코드 : " + storeId+couponTargetTypeCode);
         return new ResponseEntity<>(customCouponRepository.findByStoreRegisterCoupon(storeId, couponTargetTypeCode), HttpStatus.CREATED);
+    }
+
+    //쿠폰 발송내역 가져오기
+    @GetMapping("/selectCouponHistory/{couponNo}")
+    public ResponseEntity<List<Object[]>> selectStoreCouponBox(@PathVariable("couponNo") Long couponNo) {
+        log.info("코드 : " +couponNo);
+        return new ResponseEntity<>(customCouponBoxRepository.getCouponHistoryList(couponNo), HttpStatus.CREATED);
     }
 
 }
