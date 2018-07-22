@@ -49,6 +49,8 @@
                         <div class="form-group" sec:authorize="hasRole('ST')">
                             <input type="hidden" th:value="${storeId}" name="productOwnerId">
                         </div>
+                        <div class="hr-line-dashed"></div>
+
 
                         <!--상품카테고리-->
                         <div class="form-group" sec:authorize="hasRole('MA')">
@@ -455,7 +457,7 @@
                 $('#productDiscountTypeCode').css('display', 'none');
                 $('#productDiscountValue').css('display', 'none');
 
-                registerForm.find('[name="subProductDiscountValue"]').val(0);
+                registerForm.find('[name="subProductDiscountValue"]').val('0');
                 registerForm.find('[name="subProductDiscountValue"]').attr("readonly", true);
             }
         });
@@ -640,7 +642,7 @@
 
                 element.find('[name="subProductName"]').attr('value', 'none');
                 element.find('[name="subProductPrice"]').attr('value', 0);
-                element.find('[name="subProductDiscountValue"]').attr('value', 0);
+                element.find('[name="subProductDiscountValue"]').attr('value', '0');
 
                 renameForModelAttribute(element, 0);
 
@@ -704,12 +706,58 @@
                 registerForm.find('[name="giftBundleDiscountInitQuantity"]').val('0');
                 console.log(registerForm.find('[name="giftBundleDiscountInitQuantity"]').val());
             }
+            else{
+                if (giftBundleDiscountCode == undefined) {
+                    alert('묶음할인여부를 선택해주세요.');
+                    return false;
+                }
+                else {
+                    if (giftBundleDiscountCode == 1) {
+                        if (giftBundleDiscountTypeCode == 'DCR') {
+                            if (DCRValue == '') {
+                                alert('할인률을 입력해주세요');
+                                return false;
+                            }
+                            else if (parseInt(DCRValue) > 100) {
+                                alert('할인률은 100%까지 입력가능합니다.');
+                                return false;
+                            }
+                            else {
+                                registerForm.find('[name="giftBundleDiscountValue"]').val(DCRValue);
+                            }
+                        }
+                        var productPrice = registerForm.find('[name="productPrice"]').val();
+                        if (giftBundleDiscountTypeCode == 'DCP') {
+                            if (DCPValue == '') {
+                                alert('할인가를 입력해주세요');
+                                return false;
+                            }
+                            else if (parseInt(DCPValue) > parseInt(productPrice)) {
+                                alert('할인가는 상품가격보다 크게 입력이 불가능합니다.');
+                                return false;
+                            }
+                            else {
+                                registerForm.find('[name="giftBundleDiscountValue"]').val(DCPValue);
+                            }
+                        }
+
+                        if (giftBundleDiscountInitQuantity == '') {
+                            alert('묶음할인 시작수량을 입력해주세요.');
+                            return false;
+                        }
+                    }
+                    else {
+                        registerForm.find('[name="giftBundleDiscountValue"]').val('0');
+                        registerForm.find('[name="giftBundleDiscountInitQuantity"]').val('0');
+                    }
+                }
+            }
 
             if (productOwnerId == 'ALL') {
                 alert('가맹점을 선택해주세요.');
                 return false;
             }
-            if (majorCategoryNo == 0) {
+            if (majorCategoryNo == 'ALL' || majorCategoryNo == '0') {
                 alert('상품 카테고리를 선택해주세요.');
                 return false;
             }
@@ -717,58 +765,15 @@
                 alert('상품명을 입력해주세요.');
                 return false;
             }
-            if (productDiscountCode == '') {
+            if (productDiscountCode == undefined) {
                 alert('할인여부를 선택해주세요.');
                 return false;
             }
-            if (productDiscountTypeCode == '') {
+            if (productDiscountTypeCode == undefined) {
                 alert('할인타입을 선택해주세요.');
                 return false;
             }
-            if (giftBundleDiscountCode == '') {
-                alert('묶음할인여부를 선택해주세요.');
-                return false;
-            }
-            else {
-                if (giftBundleDiscountCode == 1) {
-                    if (giftBundleDiscountTypeCode == 'DCR') {
-                        if (DCRValue == '') {
-                            alert('할인률을 입력해주세요');
-                            return false;
-                        }
-                        else if (parseInt(DCRValue) > 100) {
-                            alert('할인률은 100%까지 입력가능합니다.');
-                            return false;
-                        }
-                        else {
-                            registerForm.find('[name="giftBundleDiscountValue"]').val(DCRValue);
-                        }
-                    }
-                    var productPrice = registerForm.find('[name="productPrice"]').val();
-                    if (giftBundleDiscountTypeCode == 'DCP') {
-                        if (DCPValue == '') {
-                            alert('할인가를 입력해주세요');
-                            return false;
-                        }
-                        else if (parseInt(DCPValue) > parseInt(productPrice)) {
-                            alert('할인가는 상품가격보다 크게 입력이 불가능합니다.');
-                            return false;
-                        }
-                        else {
-                            registerForm.find('[name="giftBundleDiscountValue"]').val(DCPValue);
-                        }
-                    }
 
-                    if (giftBundleDiscountInitQuantity == '') {
-                        alert('묶음할인 시작수량을 입력해주세요.');
-                        return false;
-                    }
-                }
-                else {
-                    registerForm.find('[name="giftBundleDiscountValue"]').val('0');
-                    registerForm.find('[name="giftBundleDiscountInitQuantity"]').val('0');
-                }
-            }
 
             var productImage = $('input[name="productImage"]').val();
 
@@ -870,6 +875,16 @@
 
         return true;
     };
+
+    function InputOnlyNumber(obj) {
+        console.log(obj);
+        $(obj).keyup(function(){
+            $(this).val($(this).val().replace(/[^0-9]/g,''));
+        });
+        $(obj).keydown(function(){
+            $(this).val($(this).val().replace(/[^0-9]/g,''));
+        });
+    }
 
 </script>
 </th:block>

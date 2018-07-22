@@ -124,6 +124,7 @@
                                             <span th:case="C">쿠폰</span>
                                             <span th:case="S">도장</span>
                                             <span th:case="P">포인트</span>
+                                            <span th:case="ETC">기타</span>
                                         </span>
                                     </td>
                                     <td>[[${vo[7]}]]</td>
@@ -288,6 +289,7 @@
 
                 console.log($(this));
 
+                $('#alarmMessage').val('');
                 $('#modalAlarmMessage').modal('show');
 
                 var parentNode = $(this).parent().parent();
@@ -295,19 +297,18 @@
 
                 console.log('번호 : '+alarmNo);
 
-                if(!isGetAlarmMessage) {
-                    $.ajax({
-                        url: "/wishwide/alarm/selectAlarmMessage/" + alarmNo,
-                        type: 'get',
-                        contentType: 'application/json',
-                        success: function (data) {
-                            console.log(data);
-                            $('#alarmMessage').text(data);
-                            $('#updateAlarmMessage').val(alarmNo);
-                            isGetAlarmMessage = true;
-                        }
-                    });
-                }
+                $.ajax({
+                    url: "/wishwide/alarm/selectAlarmMessage/" + alarmNo,
+                    type: 'get',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data);
+                        $('#alarmMessage').val(data);
+                        $('#updateAlarmMessage').val(alarmNo);
+                    }
+                });
+
+
             });
 
             $('a[name="updateAlarmVisibleCode"]').click(function (e) {

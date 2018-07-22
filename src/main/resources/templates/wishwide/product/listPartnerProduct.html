@@ -53,11 +53,8 @@
                                         <div class="col-sm-12 m-b-xs">
                                             <select class="input-sm form-control input-s-sm inline" id="searchType">
                                                 <option value="ALL" th:selected="${pageVO.type} == 'ALL'">전체</option>
-                                                <option value="majorCategoryTitle" th:selected="${pageVO.type} == 'majorCategoryTitle'" >대분류명</option>
-                                                <option value="subCategoryTitle" th:selected="${pageVO.type} == 'subCategoryTitle'" >중분류명</option>
                                                 <option value="productTitle" th:selected="${pageVO.type} == 'productTitle'">상품명</option>
                                                 <option value="productPrice" th:selected="${pageVO.type} == 'productPrice'">판매가격</option>
-                                                <option value="giftProductDiscountPrice" th:selected="${pageVO.type} == 'giftProductDiscountPrice'">할인가격</option>
                                             </select>
                                         </div>
                                     </td>
@@ -107,7 +104,7 @@
                                     <td>
                                          <span th:if="${vo[14]} != null" class="lightBoxGallery">
                                              <a th:href="${vo[14]}" data-gallery="">
-                                                 <img th:src="${vo[13]}" style="width: 35px; height: 35px;">
+                                                 <img th:src="${vo[14]}" style="width: 35px; height: 35px;">
                                              </a>
                                          </span>
                                         <span th:if="${vo[14]} == null">
@@ -153,14 +150,13 @@
                     </div>
                 </nav>
                 <!--페이지 및 검색조건 get방식으로 넘김-->
-                <form id="pageInfo" th:action="@{listStoreProduct}" method="get">
+                <form id="pageInfo" th:action="@{listPartnerProduct}" method="get">
                     <input type="hidden" name="page" th:value="${productVO.currentPageNum}"/>
                     <input type="hidden" name="size" th:value="${productVO.currentPage.pageSize}"/>
                     <input type="hidden" name="type" th:value="${pageVO.type}"/>
                     <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
                     <input type="hidden" name="userId" th:value="${pageVO.userId}"/>
                     <input type="hidden" name="productSellStatusCode" th:value="${pageVO.productSellStatusCode}"/>
-                    <input type="hidden" name="giftProductRegisterCode" th:value="${pageVO.giftProductRegisterCode}"/>
                 </form>
             </div>
         </div>

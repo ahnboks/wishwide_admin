@@ -35,8 +35,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">디바이스 타입<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2" >
-                                <label class="radio-inline"><input type="radio" th:checked="${deviceVO[3]} == 'TABLET'" name="deviceTypeCode" value="TABLET">태블릿</label>
-                                <label class="radio-inline"><input type="radio" th:checked="${deviceVO[3]} == 'BEACON'" name="deviceTypeCode" value="BEACON">비콘</label>
+                                <label class="radio-inline" th:if="${deviceVO[3]} == 'TABLET'"><input type="radio" th:checked="${deviceVO[3]} == 'TABLET'" name="deviceTypeCode" value="TABLET">태블릿</label>
+                                <label class="radio-inline" th:if="${deviceVO[3]} == 'BEACON'"><input type="radio" th:checked="${deviceVO[3]} == 'BEACON'" name="deviceTypeCode" value="BEACON">비콘</label>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>

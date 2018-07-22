@@ -11,5 +11,8 @@ public interface CustomDeviceRepository extends CrudRepository<Device, Long>, Cu
     @Query(value = "UPDATE Device d SET d.deviceVisibleCode = ?1 WHERE d.storeId = ?2")
     public void changeDeviceVisibleCode(int visibleCode, String storeId);
 
+    @Query(value = "select count(d.deviceNo) from Device d")
+    public int findByStoreDeviceCnt();
+
     public Device findTop1ByOrderByDeviceNoDesc();
 }

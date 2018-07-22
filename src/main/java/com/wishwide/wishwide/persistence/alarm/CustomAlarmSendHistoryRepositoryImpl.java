@@ -61,6 +61,10 @@ public class CustomAlarmSendHistoryRepositoryImpl extends QuerydslRepositorySupp
                 .leftJoin(store).on(alarmSendHistory.storeId.eq(store.storeId))
                 .leftJoin(customer).on(alarmSendHistory.membershipCustomerNo.eq(customer.membershipCustomerNo));
 
+        //권한:매장이 로그인했을 경우 한개의 리스트만 가져오기
+        if (roleCode.equals("ST"))
+            tupleJPQLQuery.where(alarmSendHistory.storeId.eq(sessionId));
+
         //검색조건 : 가맹점명
         if(!searchUserId.equals("ALL")){
             tupleJPQLQuery.where(alarmSendHistory.storeId.eq(searchUserId));

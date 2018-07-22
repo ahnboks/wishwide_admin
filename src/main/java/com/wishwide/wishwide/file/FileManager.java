@@ -210,9 +210,9 @@ public class FileManager {
         storeImage.setStoreImageDbName(dbFile + "." + fileExtension);
         storeImage.setStoreImageSize(fileSize);
         storeImage.setStoreImageExtension(fileExtension);
+        storeImage.setStoreImageUrl(cdnAddress + dbFile + "." + fileExtension);
         storeImage.setStoreImageThumbnailName("th_" + dbFile + "." + fileExtension);
         storeImage.setStoreImageThumbnailUrl(cdnAddress + "th_" + dbFile + "." + fileExtension);
-        storeImage.setStoreImageUrl(cdnAddress + dbFile + "." + fileExtension);
         storeImage.setStoreId(storeId);
         storeImage.setStoreImageTypeCode(fileTypeCode);
 

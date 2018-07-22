@@ -318,7 +318,7 @@
             }
             else{
                 detailForm.find('[name="subProductDiscountValue"]').attr("readonly", true);
-                detailForm.find('[name="subProductDiscountValue"]').val(0);
+                detailForm.find('[name="subProductDiscountValue"]').val('0');
             }
 
             //할인 사용여부에 따른 CSS
@@ -337,7 +337,7 @@
                     $('#productDiscountTypeCode').css('display', 'none');
                     $('#productDiscountValue').css('display', 'none');
 
-                    detailForm.find('[name="subProductDiscountValue"]').val(0);
+                    detailForm.find('[name="subProductDiscountValue"]').val('0');
                     detailForm.find('[name="subProductDiscountValue"]').attr("readonly", true);
                 }
             });
@@ -487,7 +487,7 @@
 
                     element.find('[name="subProductName"]').attr('value', 'none');
                     element.find('[name="subProductPrice"]').attr('value', 0);
-                    element.find('[name="subProductDiscountValue"]').attr('value', 0);
+                    element.find('[name="subProductDiscountValue"]').attr('value', '0');
 
                     renameForModelAttribute(element, 0);
 

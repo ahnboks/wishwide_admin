@@ -321,6 +321,8 @@ public class ProductController {
             product.setGiftProductRegisterCode(productVO.getGiftProductRegisterCode());
             product.setProductDescription(productVO.getProductDescription());
             product.setProductPrice(productVO.getProductPrice());
+            product.setProductDiscountCode(productVO.getProductDiscountCode());
+            product.setProductDiscountTypeCode(productVO.getProductDiscountTypeCode());
 
             if (productImage != null && !(productImage.isEmpty())) {
                 //상품 이미지 파일 값 저장
@@ -354,6 +356,7 @@ public class ProductController {
                 }
                 else{
                     product.setProductSubProductCode(0);
+                    product.setProductDiscountValue(productVO.getProductDiscountValue());
                 }
             });
 
@@ -606,6 +609,8 @@ public class ProductController {
             product.setGiftProductRegisterCode(productVO.getGiftProductRegisterCode());
             product.setProductDescription(productVO.getProductDescription());
             product.setProductPrice(productVO.getProductPrice());
+            product.setProductDiscountCode(productVO.getProductDiscountCode());
+            product.setProductDiscountTypeCode(productVO.getProductDiscountTypeCode());
 
             if (productImage != null && !(productImage.isEmpty())) {
                 //상품 이미지 파일 값 저장
@@ -639,6 +644,7 @@ public class ProductController {
                 }
                 else{
                     product.setProductSubProductCode(0);
+                    product.setProductDiscountValue(productVO.getProductDiscountValue());
                 }
             });
 

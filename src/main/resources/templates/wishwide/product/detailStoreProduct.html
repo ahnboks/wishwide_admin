@@ -754,6 +754,53 @@
                     detailForm.find('[name="giftBundleDiscountInitQuantity"]').val('0');
                     console.log(detailForm.find('[name="giftBundleDiscountInitQuantity"]').val());
                 }
+                else{
+                    if (giftBundleDiscountCode == undefined) {
+                        alert('묶음할인여부를 선택해주세요.');
+                        return false;
+                    }
+                    else {
+                        if (giftBundleDiscountCode == 1) {
+                            if (giftBundleDiscountTypeCode == 'DCR') {
+                                if (DCRValue == '') {
+                                    alert('할인률을 입력해주세요');
+                                    return false;
+                                }
+                                else if (parseInt(DCRValue) > 100) {
+                                    alert('할인률은 100%까지 입력가능합니다.');
+                                    return false;
+                                }
+                                else {
+                                    detailForm.find('[name="giftBundleDiscountValue"]').val(DCRValue);
+                                }
+                            }
+                            var productPrice = detailForm.find('[name="productPrice"]').val();
+                            if (giftBundleDiscountTypeCode == 'DCP') {
+                                if (DCPValue == '') {
+                                    alert('할인가를 입력해주세요');
+                                    return false;
+                                }
+                                else if (parseInt(DCPValue) > parseInt(productPrice)) {
+                                    alert('할인가는 상품가격보다 크게 입력이 불가능합니다.');
+                                    return false;
+                                }
+                                else {
+                                    detailForm.find('[name="giftBundleDiscountValue"]').val(DCPValue);
+                                }
+                            }
+
+                            if (giftBundleDiscountInitQuantity == '') {
+                                alert('묶음할인 시작수량을 입력해주세요.');
+                                return false;
+                            }
+                        }
+                        else {
+                            detailForm.find('[name="giftBundleDiscountValue"]').val('0');
+                            detailForm.find('[name="giftBundleDiscountInitQuantity"]').val('0');
+                        }
+                    }
+                }
+                
                 if(storeId == 'ALL') {
                     alert('가맹점을 선택해주세요.');
                     return false;
@@ -908,8 +955,17 @@
             }
 
             return true;
-        };
+        }
 
+        function InputOnlyNumber(obj) {
+            console.log(obj);
+            $(obj).keyup(function(){
+                $(this).val($(this).val().replace(/[^0-9]/g,''));
+            });
+            $(obj).keydown(function(){
+                $(this).val($(this).val().replace(/[^0-9]/g,''));
+            });
+        }
     </script>
 </th:block>
 

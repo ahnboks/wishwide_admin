@@ -122,11 +122,11 @@
                                                 <div class="col-sm-2">
                                                     <input type="text" th:value="${#strings.substring(storeVO[9], 0, 3)}" data-mask="999" class="form-control" name="storeBusinessRegistrationNumber" maxlength="3">
                                                 </div>
-                                                <div class="col-sm-3">
-                                                    <input type="text" th:value="${#strings.substring(storeVO[9], 3, 8)}" data-mask="99999" class="form-control" name="storeBusinessRegistrationNumber" maxlength="5">
-                                                </div>
                                                 <div class="col-sm-2">
-                                                    <input type="text" th:value="${#strings.substring(storeVO[9], 8, 10)}" data-mask="99" class="form-control" name="storeBusinessRegistrationNumber" maxlength="2">
+                                                    <input type="text" th:value="${#strings.substring(storeVO[9], 3, 5)}" data-mask="99" class="form-control" name="storeBusinessRegistrationNumber" maxlength="2">
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <input type="text" th:value="${#strings.substring(storeVO[9], 5, 10)}" data-mask="99999" class="form-control" name="storeBusinessRegistrationNumber" maxlength="5">
                                                 </div>
                                             </div>
                                         </div>
@@ -768,7 +768,7 @@
                 }
 
                 checkNullValue();
-                checkPlacehoderNullValue();
+                checkPlaceholderNullValue();
 
             });
         });

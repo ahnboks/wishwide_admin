@@ -97,7 +97,7 @@
                                     <td>
                                          <span th:if="${vo[8]} != null">
                                              <a th:href="${vo[8]}" data-gallery="">
-                                                 <img th:src="${vo[7]}" style="width: 35px; height: 35px;">
+                                                 <img th:src="${vo[8]}" style="width: 35px; height: 35px;">
                                              </a>
                                          </span>
                                         <span th:if="${vo[8]} == null">
@@ -268,7 +268,7 @@
             <div class="modal-body">
                 <table class="footable table table-bordered table-hover">
                     <thead>
-                    <th>선물 설정</th>
+                    <th data-sort-ignore="true">선물 설정</th>
                     <th>카테고리</th>
                     <th>상품명</th>
                     <th>판매가격</th>
@@ -492,13 +492,13 @@
                                     deviceVisibleCode = '미사용';
 
                                 /*디바이스 아이디*/
-                                if(deviceId != '')
+                                if(!(item[6] === null))
                                     deviceId = item[6];
                                 else
                                     deviceId = '-';
 
                                 /*포스 아이디*/
-                                if(posId != '')
+                                if(!(item[7] === null))
                                     posId = item[7];
                                 else
                                     posId = '-';

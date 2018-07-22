@@ -54,6 +54,10 @@ public class CustomAlarmSetRepositoryImpl extends QuerydslRepositorySupport impl
         tupleJPQLQuery
                 .leftJoin(store).on(alarm.storeId.eq(store.storeId));
 
+        //권한:매장이 로그인했을 경우 한개의 리스트만 가져오기
+        if (roleCode.equals("ST"))
+            tupleJPQLQuery.where(alarm.storeId.eq(sessionId));
+
         //검색조건 : 가맹점명
         if(!searchUserId.equals("ALL")){
             tupleJPQLQuery.where(alarm.storeId.eq(searchUserId));

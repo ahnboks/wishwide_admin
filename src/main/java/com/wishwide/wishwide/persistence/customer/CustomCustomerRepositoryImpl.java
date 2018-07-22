@@ -84,6 +84,19 @@ public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport impl
             tupleJPQLQuery.where(customer.customerGradeTypeCode.eq(customerGradeTypeCode));
         }
 
+        //검색조건 : 전화번호, 이름, 쿠폰명
+        if(type != null) {
+            switch (type.trim()) {
+                case "ALL" :
+                    tupleJPQLQuery.where(customer.customerPhone.like("%" + keyword + "%")
+                    );
+                    break;
+                case "customerPhone" :
+                    tupleJPQLQuery.where(customer.customerPhone.like("%" + keyword + "%"));
+                    break;
+            }
+        }
+
         //Group By
         tupleJPQLQuery.groupBy(customer.membershipCustomerNo);
 

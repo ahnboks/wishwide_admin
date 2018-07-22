@@ -261,8 +261,16 @@ public class DeviceController {
 
         //태블릿일때만 값 세팅
         if (deviceVO.getDeviceTypeCode().equals("TABLET")) {
-            //가장 마지막에 등록된 디바이스 번호 가져옴
-            Long resentDeviceNo = customDeviceRepository.findTop1ByOrderByDeviceNoDesc().getDeviceNo() + 1;
+            int deviceCnt = customDeviceRepository.findByStoreDeviceCnt();
+            Long resentDeviceNo;
+
+            if(deviceCnt == 0){
+                resentDeviceNo = (long)1;
+            }
+            else{
+                //가장 마지막에 등록된 디바이스 번호 가져옴
+                resentDeviceNo = customDeviceRepository.findTop1ByOrderByDeviceNoDesc().getDeviceNo() + 1;
+            }
 
             log.info("최신 디바이스 번호 : " + resentDeviceNo);
 

@@ -2,7 +2,9 @@ package com.wishwide.wishwide.controller;
 
 import com.wishwide.wishwide.alarm.AlarmManager;
 import com.wishwide.wishwide.domain.*;
-import com.wishwide.wishwide.persistence.*;
+import com.wishwide.wishwide.persistence.LoginInfoRepository;
+import com.wishwide.wishwide.persistence.WwBrandRepository;
+import com.wishwide.wishwide.persistence.WwRoleRepository;
 import com.wishwide.wishwide.persistence.alarm.CustomAlarmSetRepository;
 import com.wishwide.wishwide.persistence.alarm.CustomAlarmTemplateRepository;
 import com.wishwide.wishwide.persistence.ar.MarkerRepository;
@@ -35,13 +37,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
-
 import java.util.List;
 
 import static com.wishwide.wishwide.controller.DefaultController.pageRedirectProperty;
-import static com.wishwide.wishwide.file.FileManager.saveCloudFile;
-import static com.wishwide.wishwide.file.FileManager.saveDBStoreFile;
-import static com.wishwide.wishwide.file.FileManager.saveDBStoreImage;
+import static com.wishwide.wishwide.file.FileManager.*;
 
 @Log
 @Controller
@@ -241,7 +240,7 @@ public class StoreController {
             storeBusinessRegistrationNumber += brn;
         }
         log.info("사업자 번호 : "+storeBusinessRegistrationNumber);
-        storeVO.setStoreBusinessRegistrationNumber(Integer.parseInt(storeBusinessRegistrationNumber));
+        storeVO.setStoreBusinessRegistrationNumber(storeBusinessRegistrationNumber);
 
         //매장 정보 저장
         customStoreRepository.save(storeVO);
@@ -373,7 +372,7 @@ public class StoreController {
                 for (String brn : storeBusinessRegistrationNumberList) {
                     storeBusinessRegistrationNumber += brn;
                 }
-                store.setStoreBusinessRegistrationNumber(Integer.parseInt(storeBusinessRegistrationNumber));
+                store.setStoreBusinessRegistrationNumber(storeBusinessRegistrationNumber);
 
                 //계약상태 코드가 계약종료 & 계약취소 & 계약대기일 시
                 if(storeVO.getStoreContractStatusCode().equals("CC") ||

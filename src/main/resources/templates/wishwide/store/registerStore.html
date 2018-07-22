@@ -103,7 +103,7 @@
                                     <!--브랜드명-->
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label">브랜드명<label class="notnull-mark-color"> *</label></label>
-                                        <div class="col-sm-2">
+                                            <div class="col-sm-2">
                                             <input type="text" maxlength="20" class="form-control title-input-validation" name="brandName">
                                         </div>
                                     </div>
@@ -127,11 +127,11 @@
                                                 <div class="col-sm-2">
                                                     <input type="text" data-mask="999" class="form-control" name="storeBusinessRegistrationNumber" maxlength="3">
                                                 </div>
-                                                <div class="col-sm-3">
-                                                    <input type="text" data-mask="99999" class="form-control" name="storeBusinessRegistrationNumber" maxlength="5">
-                                                </div>
                                                 <div class="col-sm-2">
                                                     <input type="text" data-mask="99" class="form-control" name="storeBusinessRegistrationNumber" maxlength="2">
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <input type="text" data-mask="99999" class="form-control" name="storeBusinessRegistrationNumber" maxlength="5">
                                                 </div>
                                             </div>
                                         </div>
@@ -623,6 +623,9 @@
                 var logoFile = $('input[name="logoFile"]').val();
                 var storeBenefitTypeCode = registerForm.find('[name="storeBenefitTypeCode"]:checked').val();
 
+                if (checkNullValue() != true) return false;
+                if (checkPlaceholderNullValue() != true) return false;
+
                 if (contractBeginDate.length != 0) {
                     if (!checkContractBeginDate(contractBeginDate.val()))
                         return false;
@@ -656,9 +659,6 @@
                         return false;
                     }
                 }
-
-                checkNullValue();
-                checkPlacehoderNullValue();
 
             });
         });
