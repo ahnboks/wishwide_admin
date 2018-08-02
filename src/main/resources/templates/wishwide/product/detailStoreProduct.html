@@ -47,14 +47,22 @@
                         <!--상품카테고리-->
                         <div class="form-group">
                             <label class="col-sm-2 control-label">상품 카테고리<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-2" id="majorCategoryNo">
-                                <p class="form-control-static" th:text="${productVO[4]}"></p>
-                                <input type="hidden" th:value="${productVO[17]}" class="form-control" name="majorCategoryNo"/>
+                            <div class="col-sm-2" id="pdMajorCategoryNo">
+                                <select class="form-control m-b" name="pdMajorCategoryNo">
+                                    <option value="ALL">전체</option>
+                                    <option th:each="majorCategory:${majorCategoryVO}" th:value="${majorCategory[0]}" th:selected="${majorCategory[0]} == ${productVO[17]}">[[${majorCategory[2]}]]</option>
+                                </select>
                             </div>
-                            <div class="col-sm-2" id="subCategoryName" th:if="${productVO[18]} != 0">
-                                <p class="form-control-static" th:text="${productVO[5]}"></p>
+                            <div class="col-sm-2" th:if="${productVO[18]} != 0" name="pdSubCategoryTitle">
+                                <select class="form-control m-b" name="pdSubCategoryNo">
+                                    <option th:each="subCategory:${subCategoryVO}" th:value="${subCategory[0]}" th:selected="${subCategory[0]} == ${productVO[18]}">[[${subCategory[2]}]]</option>
+                                </select>
                             </div>
-                            <input type="hidden" th:value="${productVO[18]}" class="form-control" name="subCategoryNo"/>
+                            <div class="col-sm-2" th:if="${productVO[18]} == 0" name="pdSubCategoryTitle" style="display: none">
+                                <select class="form-control m-b" name="pdSubCategoryNo">
+                                    <option th:value="0">중분류 선택</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="hr-line-dashed"></div>
 
@@ -192,7 +200,7 @@
 
                         <!--판매가격-->
                         <div class="form-group" id="productPrice">
-                            <label class="col-sm-2 control-label">판매가격(원)</label>
+                            <label class="col-sm-2 control-label">판매가격(원)<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
                                 <input type="text" th:value="${productVO[7]}" maxlength="5" class="form-control" value="0" name="productPrice" onkeypress="InputOnlyNumber(this);">
                             </div>
@@ -424,6 +432,13 @@
                     }
                 });
             }
+
+            //대분류에 따른 중분류명
+            detailForm.find('[name="pdMajorCategoryNo"]').change(function () {
+                var pdMajorCategoryNo = detailForm.find('[name="pdMajorCategoryNo"]').val();
+
+                selectSubCategory(pdMajorCategoryNo);
+            });
 
             //할인여부에 따른 CSS
             if(productDiscountCode == 1){
@@ -662,7 +677,7 @@
                 var giftProductRegisterCode = detailForm.find('[name="giftProductRegisterCode"]:checked').val();
                 var storeId = detailForm.find('[name="storeId"]').val();
                 var productTitle = detailForm.find('[name="productTitle"]').val();
-                var majorCategoryNo = detailForm.find('[name="majorCategoryNo"]').val();
+                var pdMajorCategoryNo = detailForm.find('[name="pdMajorCategoryNo"]').val();
                 var productDiscountValue = detailForm.find('[name="productDiscountValue"]').val();
                 var productDiscountCode = detailForm.find('[name="productDiscountCode"]:checked').val();
 
@@ -750,7 +765,7 @@
                     if(!subProductValidation(element, 4)) return false;
                 }
 
-                if(giftProductRegisterCode == undefined){
+                if (giftProductRegisterCode == undefined) {
                     detailForm.find('[name="giftBundleDiscountInitQuantity"]').val('0');
                     console.log(detailForm.find('[name="giftBundleDiscountInitQuantity"]').val());
                 }
@@ -805,64 +820,27 @@
                     alert('가맹점을 선택해주세요.');
                     return false;
                 }
-                if(majorCategoryNo == 0) {
+
+                if(pdMajorCategoryNo == 0) {
                     alert('상품 카테고리를 선택해주세요.');
                     return false;
                 }
+
                 if(productTitle == '') {
                     alert('상품명을 입력해주세요.');
                     return false;
                 }
-                if(productDiscountCode == '') {
+
+                if (productDiscountCode == undefined) {
                     alert('할인여부를 선택해주세요.');
                     return false;
                 }
-                if(productDiscountTypeCode == '') {
-                    alert('할인타입을 선택해주세요.');
-                    return false;
-                }
-                if(giftBundleDiscountCode == '') {
-                    alert('묶음할인여부를 선택해주세요.');
-                    return false;
-                }
                 else{
-                    if(giftBundleDiscountCode == 1){
-                        if (giftBundleDiscountTypeCode == 'DCR'){
-                            if (DCRValue == ''){
-                                alert('할인률을 입력해주세요');
-                                return false;
-                            }
-                            else if (parseInt(DCRValue) > 100){
-                                alert('할인률은 100%까지 입력가능합니다.');
-                                return false;
-                            }
-                            else{
-                                detailForm.find('[name="giftBundleDiscountValue"]').val(DCRValue);
-                            }
-                        }
-                        var productPrice = detailForm.find('[name="productPrice"]').val();
-                        if (giftBundleDiscountTypeCode == 'DCP'){
-                            if (DCPValue == ''){
-                                alert('할인가를 입력해주세요');
-                                return false;
-                            }
-                            else if (parseInt(DCPValue) > parseInt(productPrice)){
-                                alert('할인가는 상품가격보다 크게 입력이 불가능합니다.');
-                                return false;
-                            }
-                            else{
-                                detailForm.find('[name="giftBundleDiscountValue"]').val(DCPValue);
-                            }
-                        }
-
-                        if(giftBundleDiscountInitQuantity == ''){
-                            alert('묶음할인 시작수량을 입력해주세요.');
+                    if(productDiscountCode == 1){
+                        if (productDiscountTypeCode == undefined) {
+                            alert('할인타입을 선택해주세요.');
                             return false;
                         }
-                    }
-                    else{
-                        detailForm.find('[name="giftBundleDiscountValue"]').val('0');
-                        detailForm.find('[name="giftBundleDiscountInitQuantity"]').val('0');
                     }
                 }
 
@@ -909,6 +887,35 @@
             $(element).find("input[name=subProductName]").attr("name", "subProductList[" + index + "].subProductName");
             $(element).find("input[name=subProductPrice]").attr("name", "subProductList[" + index + "].subProductPrice");
             $(element).find("input[name=subProductDiscountValue]").attr("name", "subProductList[" + index + "].subProductDiscountValue");
+        }
+
+        function selectSubCategory(pdMajorCategoryNo) {
+            $.ajax({
+                url: "/wishwide/product/selectSubCategory/" + pdMajorCategoryNo,
+                type: 'get',
+                contentType: 'application/json',
+                success: function (data) {
+                    console.log(data);
+                    if (data.length != 0) {
+                        detailForm.find('[name="pdSubCategoryTitle"]').css('display', 'block');
+                        detailForm.find('[name="pdSubCategoryNo"] option').remove();
+
+                        $.each(data, function (index, item) {
+                            console.log(item);
+
+                            detailForm.find('[name="pdSubCategoryNo"]').append(
+                                '<option value="' + item[0] + '" >' + item[2] + '</option>'
+                            );
+                        });
+                    }
+                    else {
+                        console.log('데이터없음');
+                        detailForm.find('[name="pdSubCategoryTitle"]').css('display', 'none');
+                        detailForm.find('[name="pdSubCategoryNo"] option').remove();
+                        detailForm.find('[name="pdSubCategoryNo"]').append('<option value="0">중분류 선택</option>');
+                    }
+                }
+            });
         }
 
         function subProductValidation(element, index) {

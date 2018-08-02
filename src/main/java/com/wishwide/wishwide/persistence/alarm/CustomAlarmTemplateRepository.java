@@ -9,8 +9,8 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface CustomAlarmTemplateRepository extends CrudRepository<AlarmTemplate, Long>, CustomAlarmTemplate {
-    @Query(value = "select at.alarmMessage from AlarmTemplate at WHERE at.alarmTemplateNo = ?1")
-    public String findByAlarmMessageByAlarmTemplateNo(Long alarmTemplateNo);
+    @Query(value = "select at.alarmTpMessage from AlarmTemplate at WHERE at.alarmTpNo = ?1")
+    public String findByAlarmMessageByalarmTpNo(Long alarmTpNo);
 
     //알림 템플릿 리스트
     @Query(value = "select at from AlarmTemplate at")

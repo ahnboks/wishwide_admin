@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomGiftPaymentRepositoryImpl extends QuerydslRepositorySupport implements CustomGiftPayment {
-    public CustomGiftPaymentRepositoryImpl(){
+    public CustomGiftPaymentRepositoryImpl() {
         super(GiftPayment.class);
     }
 
@@ -33,11 +33,11 @@ public class CustomGiftPaymentRepositoryImpl extends QuerydslRepositorySupport i
                 giftPayment.giftPaymentNo,  //선물결제번호0
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
-                giftPayment.giftSenderPhone,    //구매자 전화번호3
-                giftPayment.giftSenderName, //구매자명4
-                giftPayment.giftReceiverPhone,  //수신자 전화번호5
-                giftPayment.giftReceiverName,   //수신자명6
-                giftPayment.productTitle,   //상품명7
+                giftPayment.gpGiftSenderPhone,    //구매자 전화번호3
+                giftPayment.gpGiftSenderName, //구매자명4
+                giftPayment.gpGiftReceiverPhone,  //수신자 전화번호5
+                giftPayment.gpGiftReceiverName,   //수신자명6
+                giftPayment.gpProductTitle,   //상품명7
                 giftPayment.giftQuantity,   //선물수량8
                 giftPayment.giftPaymentPrice,   //선물결제가격9
                 giftPayment.giftPaymentStatusCode,  //선물결제상태10
@@ -50,52 +50,52 @@ public class CustomGiftPaymentRepositoryImpl extends QuerydslRepositorySupport i
         //조건식
 
         //권한:매장이 로그인했을 경우 한개의 리스트만 가져오기
-        if(roleCode.equals("ST"))
+        if (roleCode.equals("ST"))
             tupleJPQLQuery.where(giftPayment.storeId.eq(sessionId));
 
         //검색조건 : 가맹점명
-        if(!searchUserId.equals("ALL")){
-            System.out.println("검색아이디"+searchUserId);
+        if (!searchUserId.equals("ALL")) {
+            System.out.println("검색아이디" + searchUserId);
             tupleJPQLQuery.where(giftPayment.storeId.eq(searchUserId));
         }
 
         //검색조건 : 선물결제상태코드
-        if(!giftPaymentStatusCode.equals("ALL")){
+        if (!giftPaymentStatusCode.equals("ALL")) {
             tupleJPQLQuery.where(giftPayment.giftPaymentStatusCode.eq(giftPaymentStatusCode));
         }
 
         //검색조건 : 구매자번호, 구매자명, 수신자번호, 수신자명, 상품명, 수량, 결제금액
-        if(type != null) {
+        if (type != null) {
             switch (type.trim()) {
-                case "ALL" :
-                    tupleJPQLQuery.where(giftPayment.giftSenderPhone.like("%" + keyword + "%")
-                                        .or(giftPayment.giftSenderName.like("%" + keyword + "%"))
-                                        .or(giftPayment.giftReceiverPhone.like("%" + keyword + "%"))
-                                        .or(giftPayment.giftReceiverName.like("%" + keyword + "%"))
-                                        .or(giftPayment.productTitle.like("%" + keyword + "%"))
-                                        .or(giftPayment.giftQuantity.like("%" + keyword + "%"))
-                                        .or(giftPayment.giftPaymentPrice.like("%" + keyword + "%"))
+                case "ALL":
+                    tupleJPQLQuery.where(giftPayment.gpGiftSenderPhone.like("%" + keyword + "%")
+                            .or(giftPayment.gpGiftSenderName.like("%" + keyword + "%"))
+                            .or(giftPayment.gpGiftReceiverPhone.like("%" + keyword + "%"))
+                            .or(giftPayment.gpGiftReceiverName.like("%" + keyword + "%"))
+                            .or(giftPayment.gpProductTitle.like("%" + keyword + "%"))
+                            .or(giftPayment.giftQuantity.like("%" + keyword + "%"))
+                            .or(giftPayment.giftPaymentPrice.like("%" + keyword + "%"))
                     );
                     break;
-                case "giftSenderPhone" :
-                    tupleJPQLQuery.where(giftPayment.giftSenderPhone.like("%" + keyword + "%"));
+                case "gpGiftSenderPhone":
+                    tupleJPQLQuery.where(giftPayment.gpGiftSenderPhone.like("%" + keyword + "%"));
                     break;
-                case "giftSenderName" :
-                    tupleJPQLQuery.where(giftPayment.giftSenderName.like("%" + keyword + "%"));
+                case "gpGiftSenderName":
+                    tupleJPQLQuery.where(giftPayment.gpGiftSenderName.like("%" + keyword + "%"));
                     break;
-                case "giftReceiverPhone" :
-                    tupleJPQLQuery.where(giftPayment.giftReceiverPhone.like("%" + keyword + "%"));
+                case "gpGiftReceiverPhone":
+                    tupleJPQLQuery.where(giftPayment.gpGiftReceiverPhone.like("%" + keyword + "%"));
                     break;
-                case "giftReceiverName" :
-                    tupleJPQLQuery.where(giftPayment.giftReceiverName.like("%" + keyword + "%"));
+                case "gpGiftReceiverName":
+                    tupleJPQLQuery.where(giftPayment.gpGiftReceiverName.like("%" + keyword + "%"));
                     break;
-                case "productTitle" :
-                    tupleJPQLQuery.where(giftPayment.productTitle.like("%" + keyword + "%"));
+                case "gpProductTitle":
+                    tupleJPQLQuery.where(giftPayment.gpProductTitle.like("%" + keyword + "%"));
                     break;
-                case "giftQuantity" :
+                case "giftQuantity":
                     tupleJPQLQuery.where(giftPayment.giftQuantity.like("%" + keyword + "%"));
                     break;
-                case "giftPaymentPrice" :
+                case "giftPaymentPrice":
                     tupleJPQLQuery.where(giftPayment.giftPaymentPrice.like("%" + keyword + "%"));
                     break;
             }
@@ -134,11 +134,11 @@ public class CustomGiftPaymentRepositoryImpl extends QuerydslRepositorySupport i
                 giftPayment.giftPaymentNo,  //선물결제번호0
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
-                giftPayment.giftSenderPhone,    //구매자 전화번호3
-                giftPayment.giftSenderName, //구매자명4
-                giftPayment.giftReceiverPhone,  //수신자 전화번호5
-                giftPayment.giftReceiverName,   //수신자명6
-                giftPayment.productTitle,   //상품명7
+                giftPayment.gpGiftSenderPhone,    //구매자 전화번호3
+                giftPayment.gpGiftSenderName, //구매자명4
+                giftPayment.gpGiftReceiverPhone,  //수신자 전화번호5
+                giftPayment.gpGiftReceiverName,   //수신자명6
+                giftPayment.gpProductTitle,   //상품명7
                 giftPayment.giftQuantity,   //선물수량8
                 giftPayment.giftPaymentPrice,   //선물결제가격9
                 giftPayment.giftPaymentStatusCode,  //선물결제상태10
@@ -179,11 +179,11 @@ public class CustomGiftPaymentRepositoryImpl extends QuerydslRepositorySupport i
                 giftPayment.giftPaymentNo,  //선물결제번호0
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
-                giftPayment.giftSenderPhone,    //구매자 전화번호3
-                giftPayment.giftSenderName, //구매자명4
-                giftPayment.giftReceiverPhone,  //수신자 전화번호5
-                giftPayment.giftReceiverName,   //수신자명6
-                giftPayment.productTitle,   //상품명7
+                giftPayment.gpGiftSenderPhone,    //구매자 전화번호3
+                giftPayment.gpGiftSenderName, //구매자명4
+                giftPayment.gpGiftReceiverPhone,  //수신자 전화번호5
+                giftPayment.gpGiftReceiverName,   //수신자명6
+                giftPayment.gpProductTitle,   //상품명7
                 giftPayment.giftQuantity,   //선물수량8
                 giftPayment.giftPaymentPrice,   //선물결제가격9
                 giftPayment.giftPaymentStatusCode,  //선물결제상태10

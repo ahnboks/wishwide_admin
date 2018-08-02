@@ -11,10 +11,10 @@ public interface CustomCustomerRepository extends CrudRepository<MembershipCusto
     @Query(value = "select c from MembershipCustomer c where c.storeId =?1")
     public List<MembershipCustomer> findCustomerByStoreId(String storeId);
 
-    @Query(value = "select c from MembershipCustomer c where c.storeId =?1 and c.customerGradeTypeCode = 'VIP'")
+    @Query(value = "select c from MembershipCustomer c where c.storeId =?1 and c.membershipCustomerGradeTypeCode = 'VIP'")
     public List<MembershipCustomer> findVIPCustomerByStoreId(String storeId);
 
     @Modifying
-    @Query(value = "UPDATE MembershipCustomer c SET c.customerBenefitValue = ?1 WHERE c.membershipCustomerNo = ?2")
+    @Query(value = "UPDATE MembershipCustomer c SET c.membershipCustomerBenefitValue = ?1 WHERE c.membershipCustomerNo = ?2")
     public void changeCustomerBenefitValue(int benefitValue, Long membershipCustomerNo);
 }

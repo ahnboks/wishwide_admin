@@ -44,7 +44,8 @@
                             <label class="col-sm-2 control-label">파트너명<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
                                 <p class="form-control-static" th:text="${partnerVO[1]}"></p>
-                                <input type="hidden" th:value="${partnerVO[1]}" class="form-control" name="partnerName"/>
+                                <input type="hidden" th:value="${partnerVO[1]}" class="form-control president-name-input-validation" name="partnerName"/>
+                                <span class="msg-president-name-input-validation"></span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -53,8 +54,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">담당자명<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
-                                <input type="text" th:value="${partnerVO[2]}" maxlength="20" class="form-control" name="partnerOperatorName">
-                                <span class="msg-operator-name-input-validation"/>
+                                <input type="text" th:value="${partnerVO[2]}" maxlength="20" class="form-control operator-name-input-validation" name="partnerOperatorName">
+                                <span class="msg-operator-name-input-validation"></span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -63,8 +64,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">담당자 연락처<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
-                                <input type="text" th:value="${partnerVO[4]}" maxlength="11" class="form-control phone-number-input-validation" name="partnerOperatorPhone" placeholder="ex) 01012345678">
-                                <span class="msg-phone-number-input-validation"></span>
+                                <input type="text" th:value="${partnerVO[4]}" maxlength="11" class="form-control operator-phone-number-input-validation" name="partnerOperatorPhone" placeholder="ex) 01012345678" onkeypress="InputOnlyNumber(this);">
+                                <span class="msg-operator-phone-number-input-validation"></span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -74,8 +75,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">담당자 이메일<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
-                                <input type="email" th:value="${partnerVO[3]}" maxlength="40" placeholder="이메일 @ sample.com" class="form-control email-input-validation" name="partnerOperatorEmail">
-                                <span class="msg-email-input-validation"></span>
+                                <input type="email" th:value="${partnerVO[3]}" maxlength="40" placeholder="이메일 @ sample.com" class="form-control operator-email-input-validation" name="partnerOperatorEmail">
+                                <span class="msg-operator-email-input-validation"></span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -103,7 +104,7 @@
                                     <div class="modal-body">
                                         <table class="footable table table-bordered table-hover">
                                             <thead>
-                                            <th data-sort-ignore="true">선택</th>
+                                            <th data-sort-ignore="true">선택<input type="checkbox" value="0" name="allChecked" onclick="allCheckedValue();"></th>
                                             <th>가맹점명</th>
                                             <th>가입자수</th>
                                             <th>디바이스</th>
@@ -269,22 +270,36 @@
             });
 
             $('#btnUpdate').click(function (e) {
-                var checkStore = $('.store-check-validation');
-                var isStoreCheckedCnt = 0;
-                console.log(checkStore);
+//                e.preventDefault();
 
-                if(checkStore.length != 0){
-                    for (var i = 0; i < checkStore.length; i++) {
-                        if (checkStore.eq(i).prop('checked')) {
-                            isStoreCheckedCnt++;
-                        }
-                    }
+                if (confirm('수정하시겠습니까?') != true) return false;
 
-                    if(isStoreCheckedCnt == 0){
-                        alert('가맹점을 선택해주세요.');
-                        return false;
-                    }
+                var storeId = detailForm.find('[name="storeId"]:checked').val();
+                var operatorNameValue = $('.operator-name-input-validation').val();
+                var operatorNameMsg = $('.msg-operator-name-input-validation');
+                var operatorPhoneNumberValue = $('.operator-phone-number-input-validation').val();
+                var operatorPhoneNumberMsg = $('.msg-operator-phone-number-input-validation');
+                var operatorEmailValue = $('.operator-email-input-validation').val();
+                var operatorEmailMsg = $('.msg-operator-email-input-validation');
 
+                if (checkValidName(1, operatorNameValue, operatorNameMsg) != true){
+                    alert('담당자명을 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidPhoneNumber(1,operatorPhoneNumberValue, operatorPhoneNumberMsg ) != true){
+                    alert('담당자연락처를 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidEmail(operatorEmailValue, operatorEmailMsg) != true){
+                    alert('담당자이메일을 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (storeId == undefined){
+                    alert('가맹점을 선택해주세요.');
+                    return false;
                 }
             });
 
@@ -341,6 +356,26 @@
 
                 }
             });
+        }
+
+        //전체선택
+        function allCheckedValue() {
+            var allChecked = registerForm.find('[name="allChecked"]').val();
+
+            if(allChecked == 0){
+                for (var i = 0; i < registerForm.find('[name="storeId"]').length; i++) {
+                    registerForm.find('[name="storeId"]')[i].checked = true;
+                }
+
+                registerForm.find('[name="allChecked"]').val(1);
+            }
+            else{
+                for (var i = 0; i < registerForm.find('[name="storeId"]').length; i++) {
+                    registerForm.find('[name="storeId"]')[i].checked = false;
+                }
+
+                registerForm.find('[name="allChecked"]').val(0);
+            }
         }
 
     </script>

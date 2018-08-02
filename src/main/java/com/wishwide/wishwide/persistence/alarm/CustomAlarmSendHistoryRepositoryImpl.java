@@ -37,23 +37,23 @@ public class CustomAlarmSendHistoryRepositoryImpl extends QuerydslRepositorySupp
                 alarmSendHistory.alarmNo,  //알림번호1
                 store.storeId,  //매장아이디2
                 store.storeName,    //가맹점명3
-                alarmSendHistory.alarmTemplateNo,  //알림템플릿번호4
-                alarmSendHistory.alarmTypeCode,    //알림유형코드5
-                alarmSendHistory.alarmMessageUpdateCode,    //6
-                alarmSendHistory.alarmPurposeCode, //알림목적코드7
-                alarmSendHistory.alarmPurposeName, //알림목적명8
-                alarmSendHistory.alarmSendPointCode,   //알림발송시점코드9
-                alarmSendHistory.alarmSendPointName,   //알림발송시점명10
-                alarmSendHistory.alarmTargetTypeCode,  //알림대상자코드11
-                alarmSendHistory.alarmMessage,//알림메시지12
-                alarmSendHistory.alarmSendWayCode, //발송수단코드13
-                alarmSendHistory.alarmMessage,     //알림메시지14
-                alarmSendHistory.alarmMessageUpdateCode,    //알림메시지업데이트여부코드15
+                alarmSendHistory.alarmTpNo,  //알림템플릿번호4
+                alarmSendHistory.ashAlarmTypeCode,    //알림유형코드5
+                alarmSendHistory.ashAlarmMessageUpdateCode,    //6
+                alarmSendHistory.ashAlarmPurposeCode, //알림목적코드7
+                alarmSendHistory.ashAlarmPurposeName, //알림목적명8
+                alarmSendHistory.ashAlarmSendPointCode,   //알림발송시점코드9
+                alarmSendHistory.ashAlarmSendPointName,   //알림발송시점명10
+                alarmSendHistory.ashAlarmTargetTypeCode,  //알림대상자코드11
+                alarmSendHistory.ashAlarmMessage,//알림메시지12
+                alarmSendHistory.ashAlarmSendWayCode, //발송수단코드13
+                alarmSendHistory.ashAlarmMessage,     //알림메시지14
+                alarmSendHistory.ashAlarmMessageUpdateCode,    //알림메시지업데이트여부코드15
                 alarmSendHistory.alarmSendHistoryRegdate,    //알림발송일시 16
-                alarmSendHistory.alarmSendTypeCode, //알림발송유형코드17
+                alarmSendHistory.ashAlarmSendTypeCode, //알림발송유형코드17
                 customer.membershipCustomerNo,    //멤버쉽고객번호18
-                customer.customerPhone,  //고객전화번호19
-                customer.customerName   //고객명20
+                customer.membershipCustomerPhone,  //고객전화번호19
+                customer.membershipCustomerName   //고객명20
         );
 
         //조인문
@@ -71,21 +71,21 @@ public class CustomAlarmSendHistoryRepositoryImpl extends QuerydslRepositorySupp
         }
         //검색조건 : 알림유형코드
         if(!alarmTypeCode.equals("ALL")){
-            tupleJPQLQuery.where(alarmSendHistory.alarmTypeCode.eq(alarmTypeCode));
+            tupleJPQLQuery.where(alarmSendHistory.ashAlarmTypeCode.eq(alarmTypeCode));
         }
         //검색조건 : 알림목적코드
         if(!alarmPurposeCode.equals("ALL")){
-            tupleJPQLQuery.where(alarmSendHistory.alarmPurposeCode.eq(alarmPurposeCode));
+            tupleJPQLQuery.where(alarmSendHistory.ashAlarmPurposeCode.eq(alarmPurposeCode));
         }
         //검색조건 : 대상자코드
         if(!alarmTargetTypeCode.equals("ALL")){
-            tupleJPQLQuery.where(alarmSendHistory.alarmTargetTypeCode.eq(alarmTargetTypeCode));
+            tupleJPQLQuery.where(alarmSendHistory.ashAlarmTargetTypeCode.eq(alarmTargetTypeCode));
         }
 
         //검색조건 : 알림목적, 발송시점
         if(keyword != null) {
-            tupleJPQLQuery.where(alarmSendHistory.alarmPurposeName.like("%" + keyword + "%")
-                    .or(alarmSendHistory.alarmSendPointName.like("%" + keyword + "%"))
+            tupleJPQLQuery.where(alarmSendHistory.ashAlarmPurposeName.like("%" + keyword + "%")
+                    .or(alarmSendHistory.ashAlarmSendPointName.like("%" + keyword + "%"))
             );
         }
 

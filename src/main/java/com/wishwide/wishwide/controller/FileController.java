@@ -187,7 +187,7 @@ public class FileController {
             log.info("클라우드 파일삭제 완료");
 
             //DB 정보 삭제
-            deviceImageRepository.deleteById(productImage.getProductImageNo());
+            productImageRepository.deleteById(productImage.getProductImageNo());
             log.info("DB 삭제 완료");
         }
 

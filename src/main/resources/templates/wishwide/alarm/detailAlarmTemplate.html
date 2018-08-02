@@ -27,7 +27,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">알림유형<label class="notnull-mark-color"> *</label></label>
                             <div class="col-md-2">
-                                <select class="form-control m-b" name="alarmTypeCode">
+                                <select class="form-control m-b" name="alarmTpTypeCode">
                                     <option th:selected="${alarmTemplateVO[1]} == 'G'" value="G">선물</option>
                                     <option th:selected="${alarmTemplateVO[1]} == 'C'" value="C">쿠폰</option>
                                     <option th:selected="${alarmTemplateVO[1]} == 'S'" value="S">도장</option>
@@ -43,7 +43,7 @@
                             <div class="col-sm-6">
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <select class="form-control m-b" name="alarmPurposeCode">
+                                        <select class="form-control m-b" name="alarmTpPurposeCode">
                                             <option th:selected="${alarmTemplateVO[3]} == '0'" value="0">도착</option>
                                             <option th:selected="${alarmTemplateVO[3]} == '1'" value="1">사용</option>
                                             <option th:selected="${alarmTemplateVO[3]} == '2'" value="2">구매</option>
@@ -52,10 +52,10 @@
                                             <option th:selected="${alarmTemplateVO[3]} == '5'" value="5">차감</option>
                                         </select>
                                     </div>
-                                    <div id="alarmSendPointCode" style="display:none;">
+                                    <div id="alarmTpSendPointCode" style="display:none;">
                                         <label class="col-sm-2 control-label">발송시점</label>
                                         <div class="col-md-3">
-                                            <select class="form-control m-b" name="alarmSendPointCode">
+                                            <select class="form-control m-b" name="alarmTpSendPointCode">
                                                 <option th:selected="${alarmTemplateVO[5]} == '30'" value="30">30일전</option>
                                                 <option th:selected="${alarmTemplateVO[5]} == '15'" value="15">15일전</option>
                                                 <option th:selected="${alarmTemplateVO[5]} == '7'" value="7">7일전</option>
@@ -74,7 +74,7 @@
                             <label class="col-sm-2 control-label">대상자<label class="notnull-mark-color"> *</label></label>
 
                             <div class="col-md-2">
-                                <select class="form-control m-b" name="alarmTargetTypeCode">
+                                <select class="form-control m-b" name="alarmTpTargetTypeCode">
                                     <option th:selected="${alarmTemplateVO[7]} == 'BC'" value="BC">구매자</option>
                                     <option th:selected="${alarmTemplateVO[7]} == 'RC'" value="RC">수신자</option>
                                     <option th:selected="${alarmTemplateVO[7]} == 'AC'" value="AC">적립자</option>
@@ -86,7 +86,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">알림 메시지</label>
                             <div class="col-sm-2">
-                                <textarea class="form-control input-textarea" th:text="${alarmTemplateVO[8]}" name="alarmMessage" rows="10"></textarea>
+                                <textarea class="form-control input-textarea" th:text="${alarmTemplateVO[8]}" name="alarmTpMessage" rows="10"></textarea>
                                 <span class="textarea-limit-validation"></span>
                             </div>
                             <div>
@@ -110,7 +110,7 @@
                         <input type="hidden" name="size" th:value="${pageVO.size}"/>
                         <input type="hidden" name="type" th:value="${pageVO.type}"/>
                         <input type="hidden" name="keyword" th:value="${pageVO.keyword}"/>
-                        <input type="hidden" th:value="${alarmTemplateVO[0]}"  name="alarmTemplateNo"/>
+                        <input type="hidden" th:value="${alarmTemplateVO[0]}"  name="alarmTpNo"/>
                     </form>
                 </div>
             </div>
@@ -169,16 +169,16 @@
             });
 
             //게임타입 코드에 따른 CSS
-            detailForm.find('[name="alarmPurposeCode"]').change(function () {
-                var alarmPurposeCode = detailForm.find('[name="alarmPurposeCode"] option:selected').val();
+            detailForm.find('[name="alarmTpPurposeCode"]').change(function () {
+                var alarmTpPurposeCode = detailForm.find('[name="alarmTpPurposeCode"] option:selected').val();
 
-                console.log(alarmPurposeCode + '값');
+                console.log(alarmTpPurposeCode + '값');
 
-                if(alarmPurposeCode == '3'){
-                    $('#alarmSendPointCode').css('display','block');
+                if(alarmTpPurposeCode == '3'){
+                    $('#alarmTpSendPointCode').css('display','block');
                 }
                 else{
-                    $('#alarmSendPointCode').css('display','none');
+                    $('#alarmTpSendPointCode').css('display','none');
                 }
             });
 

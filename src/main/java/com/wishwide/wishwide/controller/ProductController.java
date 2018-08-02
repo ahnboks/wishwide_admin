@@ -165,18 +165,18 @@ public class ProductController {
         String majorCategoryTitle = "";
         String subCategoryTitle = "";
 
-        majorCategoryTitle = majorCategoryRepository.findByMajorCategoryNo(productVO.getMajorCategoryNo()).getMajorCategoryTitle();
+        majorCategoryTitle = majorCategoryRepository.findByMajorCategoryNo(productVO.getPdMajorCategoryNo()).getMajorCategoryTitle();
 
-        if((!(productVO.getSubCategoryNo() == 0)) && (!(productVO.getSubCategoryNo() == null))){
-            subCategoryTitle = subCategoryRepository.findBySubCategoryNo(productVO.getSubCategoryNo()).getSubCategoryTitle();
+        if((!(productVO.getPdSubCategoryNo() == 0)) && (!(productVO.getPdSubCategoryNo() == null))){
+            subCategoryTitle = subCategoryRepository.findBySubCategoryNo(productVO.getPdSubCategoryNo()).getSubCategoryTitle();
         }
 
         //VO 세팅
         productVO.setProductOwnerRole("ST");
-        productVO.setMajorCategoryTitle(majorCategoryTitle);
+        productVO.setPdMajorCategoryTitle(majorCategoryTitle);
 
         if(!subCategoryTitle.equals(""))
-            productVO.setSubCategoryTitle(subCategoryTitle);
+            productVO.setPdSubCategoryTitle(subCategoryTitle);
 
         //상품 이미지 파일 값 저장
         ProductImage pm = saveDBProductImage(productVO.getProductOwnerId(), saveCloudFile(productImage));
@@ -221,15 +221,15 @@ public class ProductController {
             if(productVO.getProductSubProductCode() == 1) {
                 subProductList.getSubProductList().forEach(subProduct -> {
                     GiftProduct giftProduct = new GiftProduct();
-                    giftProduct.setSubCategoryNo(productVO.getSubCategoryNo());
-                    giftProduct.setSubCategoryTitle(productVO.getSubCategoryTitle());
+                    giftProduct.setGpSubCategoryNo(productVO.getPdSubCategoryNo());
+                    giftProduct.setGpSubCategoryTitle(productVO.getPdSubCategoryTitle());
                     giftProduct.setStoreId(productVO.getProductOwnerId());
-                    giftProduct.setProductTitle(productVO.getProductTitle() +" "+subProduct.getSubProductName());
-                    giftProduct.setProductPrice(subProduct.getSubProductPrice());
-                    giftProduct.setProductImageUrl(productVO.getProductImageUrl());
-                    giftProduct.setProductDescription(productVO.getProductDescription());
-                    giftProduct.setMajorCategoryNo(productVO.getMajorCategoryNo());
-                    giftProduct.setMajorCategoryTitle(productVO.getMajorCategoryTitle());
+                    giftProduct.setGiftProductTitle(productVO.getProductTitle() +" "+subProduct.getSubProductName());
+                    giftProduct.setGiftProductPrice(subProduct.getSubProductPrice());
+                    giftProduct.setGiftProductImageUrl(productVO.getProductImageUrl());
+                    giftProduct.setGiftProductDescription(productVO.getProductDescription());
+                    giftProduct.setGpMajorCategoryNo(productVO.getPdMajorCategoryNo());
+                    giftProduct.setGpMajorCategoryTitle(productVO.getPdMajorCategoryTitle());
                     giftProduct.setGiftProductDiscountValue(subProduct.getSubProductDiscountValue());
                     giftProduct.setProductNo(productNo);
 
@@ -245,15 +245,15 @@ public class ProductController {
             }
             else{
                 GiftProduct giftProduct = new GiftProduct();
-                giftProduct.setSubCategoryNo(productVO.getSubCategoryNo());
-                giftProduct.setSubCategoryTitle(productVO.getSubCategoryTitle());
+                giftProduct.setGpSubCategoryNo(productVO.getPdSubCategoryNo());
+                giftProduct.setGpSubCategoryTitle(productVO.getPdSubCategoryTitle());
                 giftProduct.setStoreId(productVO.getProductOwnerId());
-                giftProduct.setProductTitle(productVO.getProductTitle());
-                giftProduct.setProductPrice(productVO.getProductPrice());
-                giftProduct.setProductImageUrl(productVO.getProductImageUrl());
-                giftProduct.setProductDescription(productVO.getProductDescription());
-                giftProduct.setMajorCategoryNo(productVO.getMajorCategoryNo());
-                giftProduct.setMajorCategoryTitle(productVO.getMajorCategoryTitle());
+                giftProduct.setGiftProductTitle(productVO.getProductTitle());
+                giftProduct.setGiftProductPrice(productVO.getProductPrice());
+                giftProduct.setGiftProductImageUrl(productVO.getProductImageUrl());
+                giftProduct.setGiftProductDescription(productVO.getProductDescription());
+                giftProduct.setGpMajorCategoryNo(productVO.getPdMajorCategoryNo());
+                giftProduct.setGpMajorCategoryTitle(productVO.getPdMajorCategoryTitle());
                 giftProduct.setGiftProductDiscountValue(productVO.getProductDiscountValue());
                 giftProduct.setProductNo(productNo);
 
@@ -284,8 +284,16 @@ public class ProductController {
                                      Model model) {
         log.info("데이터 : "+productNo);
 
+        Object[] productVO = customProductRepository.getStoreProductDetail(productNo);
+
         //매장 정보
-        model.addAttribute("productVO", customProductRepository.getStoreProductDetail(productNo));
+        model.addAttribute("productVO", productVO);
+
+        //상품 카테고리 정보
+        model.addAttribute("majorCategoryVO", customProductCategoryRepository.getMajorCategoryList(productVO[2].toString()));
+
+        log.info("대분류번호"+Long.parseLong(productVO[17].toString()));
+        model.addAttribute("subCategoryVO", customProductCategoryRepository.getSubCategoryList(Long.parseLong(productVO[17].toString())));
 
         //페이징 정보
         model.addAttribute("pageVO", pageVO);
@@ -314,6 +322,22 @@ public class ProductController {
             log.info(""+a.toString());
         });
 
+        //대분류명, 중분류명
+        String majorCategoryTitle = "";
+        String subCategoryTitle = "";
+
+        majorCategoryTitle = majorCategoryRepository.findByMajorCategoryNo(productVO.getPdMajorCategoryNo()).getMajorCategoryTitle();
+
+        if((!(productVO.getPdSubCategoryNo() == 0)) && (!(productVO.getPdSubCategoryNo() == null))){
+            subCategoryTitle = subCategoryRepository.findBySubCategoryNo(productVO.getPdSubCategoryNo()).getSubCategoryTitle();
+        }
+
+        //VO 세팅
+        productVO.setPdMajorCategoryTitle(majorCategoryTitle);
+
+        if(!subCategoryTitle.equals(""))
+            productVO.setPdSubCategoryTitle(subCategoryTitle);
+
         //상품 정보 조회
         customProductRepository.findById(productVO.getProductNo()).ifPresent(product -> {
             //수정 값 세팅
@@ -323,6 +347,10 @@ public class ProductController {
             product.setProductPrice(productVO.getProductPrice());
             product.setProductDiscountCode(productVO.getProductDiscountCode());
             product.setProductDiscountTypeCode(productVO.getProductDiscountTypeCode());
+            product.setPdMajorCategoryNo(productVO.getPdMajorCategoryNo());
+            product.setPdMajorCategoryTitle(productVO.getPdMajorCategoryTitle());
+            product.setPdSubCategoryNo(productVO.getPdSubCategoryNo());
+            product.setPdSubCategoryTitle(productVO.getPdSubCategoryTitle());
 
             if (productImage != null && !(productImage.isEmpty())) {
                 //상품 이미지 파일 값 저장
@@ -368,18 +396,18 @@ public class ProductController {
                 }
 
                 //서브상품이 존재할 경우 각각의 서브상품명, 서브상품가격으로 선물 등록
-                if(productVO.getProductSubProductCode() == 1) {
+                if(product.getProductSubProductCode() == 1) {
                     subProductList.getSubProductList().forEach(subProduct -> {
                         GiftProduct giftProduct = new GiftProduct();
-                        giftProduct.setSubCategoryNo(productVO.getSubCategoryNo());
-                        giftProduct.setSubCategoryTitle(productVO.getSubCategoryTitle());
-                        giftProduct.setStoreId(productVO.getProductOwnerId());
-                        giftProduct.setProductTitle(productVO.getProductTitle() +" "+subProduct.getSubProductName());
-                        giftProduct.setProductPrice(subProduct.getSubProductPrice());
-                        giftProduct.setProductImageUrl(product.getProductImageUrl());
-                        giftProduct.setProductDescription(productVO.getProductDescription());
-                        giftProduct.setMajorCategoryNo(productVO.getMajorCategoryNo());
-                        giftProduct.setMajorCategoryTitle(productVO.getMajorCategoryTitle());
+                        giftProduct.setGpSubCategoryNo(product.getPdSubCategoryNo());
+                        giftProduct.setGpSubCategoryTitle(product.getPdSubCategoryTitle());
+                        giftProduct.setStoreId(product.getProductOwnerId());
+                        giftProduct.setGiftProductTitle(product.getProductTitle() +" "+subProduct.getSubProductName());
+                        giftProduct.setGiftProductPrice(subProduct.getSubProductPrice());
+                        giftProduct.setGiftProductImageUrl(product.getProductImageUrl());
+                        giftProduct.setGiftProductDescription(product.getProductDescription());
+                        giftProduct.setGpMajorCategoryNo(product.getPdMajorCategoryNo());
+                        giftProduct.setGpMajorCategoryTitle(product.getPdMajorCategoryTitle());
                         giftProduct.setProductNo(product.getProductNo());
                         giftProduct.setGiftProductDiscountValue(subProduct.getSubProductDiscountValue());
 
@@ -395,17 +423,17 @@ public class ProductController {
                 }
                 else{
                     GiftProduct giftProduct = new GiftProduct();
-                    giftProduct.setSubCategoryNo(productVO.getSubCategoryNo());
-                    giftProduct.setSubCategoryTitle(productVO.getSubCategoryTitle());
-                    giftProduct.setStoreId(productVO.getProductOwnerId());
-                    giftProduct.setProductTitle(productVO.getProductTitle());
-                    giftProduct.setProductPrice(productVO.getProductPrice());
-                    giftProduct.setProductImageUrl(product.getProductImageUrl());
-                    giftProduct.setProductDescription(productVO.getProductDescription());
-                    giftProduct.setMajorCategoryNo(productVO.getMajorCategoryNo());
-                    giftProduct.setMajorCategoryTitle(productVO.getMajorCategoryTitle());
+                    giftProduct.setGpSubCategoryNo(product.getPdSubCategoryNo());
+                    giftProduct.setGpSubCategoryTitle(product.getPdSubCategoryTitle());
+                    giftProduct.setStoreId(product.getProductOwnerId());
+                    giftProduct.setGiftProductTitle(product.getProductTitle());
+                    giftProduct.setGiftProductPrice(product.getProductPrice());
+                    giftProduct.setGiftProductImageUrl(product.getProductImageUrl());
+                    giftProduct.setGiftProductDescription(product.getProductDescription());
+                    giftProduct.setGpMajorCategoryNo(product.getPdMajorCategoryNo());
+                    giftProduct.setGpMajorCategoryTitle(product.getPdMajorCategoryTitle());
                     giftProduct.setProductNo(product.getProductNo());
-                    giftProduct.setGiftProductDiscountValue(productVO.getProductDiscountValue());
+                    giftProduct.setGiftProductDiscountValue(product.getProductDiscountValue());
 
                     //묶음할인코드가 1일경우에만 등록
                     if(giftProductVO.getGiftBundleDiscountCode() == 1){

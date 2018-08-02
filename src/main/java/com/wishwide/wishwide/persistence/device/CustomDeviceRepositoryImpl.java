@@ -36,7 +36,7 @@ public class CustomDeviceRepositoryImpl extends QuerydslRepositorySupport implem
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
                 device.deviceTypeCode,  //디바이스타입코드3
-                device.deviceModelTitle,    //모델명4
+                device.dvDeviceModelTitle,    //모델명4
                 device.deviceTitle, //디바이스명5
                 device.deviceId,    //디바이스id 6
                 device.posId,   //포스 id 7
@@ -79,14 +79,14 @@ public class CustomDeviceRepositoryImpl extends QuerydslRepositorySupport implem
         if(type != null) {
             switch (type.trim()) {
                 case "ALL" :
-                    tupleJPQLQuery.where(device.deviceModelTitle.like("%" + keyword + "%")
+                    tupleJPQLQuery.where(device.dvDeviceModelTitle.like("%" + keyword + "%")
                             .or(device.deviceTitle.like("%" + keyword + "%"))
                             .or(device.deviceId.like("%" + keyword + "%"))
                             .or(device.posId.like("%" + keyword + "%"))
                     );
                     break;
                 case "deviceModelTitle" :
-                    tupleJPQLQuery.where(device.deviceModelTitle.like("%" + keyword + "%"));
+                    tupleJPQLQuery.where(device.dvDeviceModelTitle.like("%" + keyword + "%"));
                     break;
                 case "deviceTitle" :
                     tupleJPQLQuery.where(device.deviceTitle.like("%" + keyword + "%"));
@@ -135,7 +135,7 @@ public class CustomDeviceRepositoryImpl extends QuerydslRepositorySupport implem
                 store.storeName,    //매장명2
                 device.deviceTypeCode,  //디바이스타입코드3
                 device.deviceModelNo,   //디바이스모델번호4
-                device.deviceModelTitle,    //디바이스모델명5
+                device.dvDeviceModelTitle,    //디바이스모델명5
                 device.deviceTitle, //디바이스명6
                 device.deviceId,    //디바이스아이디7
                 device.posId,   //포스아이디8
@@ -178,7 +178,7 @@ public class CustomDeviceRepositoryImpl extends QuerydslRepositorySupport implem
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
                 device.deviceTypeCode,  //디바이스타입코드3
-                device.deviceModelTitle,    //모델명4
+                device.dvDeviceModelTitle,    //모델명4
                 device.deviceTitle, //디바이스명5
                 device.deviceId,    //디바이스id 6
                 device.posId,   //포스 id 7

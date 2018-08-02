@@ -114,7 +114,7 @@ public class StoreController {
         String sessionId = session.getAttribute("userId").toString();
         String roleCode = session.getAttribute("userRole").toString();
 
-        log.info("세션 : "+sessionId+roleCode);
+        log.info("세션 : " + sessionId + roleCode);
 
         Pageable pageable = pageVO.makePageable(0, "storeId");
 
@@ -133,7 +133,7 @@ public class StoreController {
         log.info("총 행 수" + result.getTotalElements());
 
         result.forEach(store -> {
-            log.info("매장 정보"+ java.util.Arrays.toString(store));
+            log.info("매장 정보" + java.util.Arrays.toString(store));
         });
 
         //매장 리스트
@@ -225,7 +225,7 @@ public class StoreController {
         //VO에 세션값 세팅
         storeVO.setStoreUpdateId(session.getAttribute("userId").toString());
         storeVO.setStoreRegId(session.getAttribute("userId").toString());
-        if(!storeVO.getStoreContractStatusCode().equals("CY"))
+        if (!storeVO.getStoreContractStatusCode().equals("CY"))
             storeVO.setStoreServiceOperationCode("TERMINATE");
 
         //게임 타입에 따라 게임명 입력7
@@ -236,29 +236,29 @@ public class StoreController {
 
         //사업자 번호 set
         String storeBusinessRegistrationNumber = "";
-        for(String brn : storeBusinessRegistrationNumberList){
+        for (String brn : storeBusinessRegistrationNumberList) {
             storeBusinessRegistrationNumber += brn;
         }
-        log.info("사업자 번호 : "+storeBusinessRegistrationNumber);
+        log.info("사업자 번호 : " + storeBusinessRegistrationNumber);
         storeVO.setStoreBusinessRegistrationNumber(storeBusinessRegistrationNumber);
 
         //매장 정보 저장
         customStoreRepository.save(storeVO);
 
         //알림 발송 설정 등록
-        alarmTemplateRepository.getAlarmTemplateList().forEach(alarmTemplate ->{
+        alarmTemplateRepository.getAlarmTemplateList().forEach(alarmTemplate -> {
             Alarm alarm = new Alarm();
-            alarm.setAlarmMessage(alarmTemplate.getAlarmMessage());
-            alarm.setAlarmPurposeName(alarmTemplate.getAlarmPurposeName());
-            alarm.setAlarmSendPointName(alarmTemplate.getAlarmSendPointName());
+            alarm.setAlarmMessage(alarmTemplate.getAlarmTpMessage());
+            alarm.setAlarmPurposeName(alarmTemplate.getAlarmTpPurposeName());
+            alarm.setAlarmSendPointName(alarmTemplate.getAlarmTpSendPointName());
             alarm.setAlarmSendTypeCode("AUTO");
             alarm.setAlarmSendWayCode("MESSAGE");
-            alarm.setAlarmTargetTypeCode(alarmTemplate.getAlarmTargetTypeCode());
-            alarm.setAlarmTemplateNo(alarmTemplate.getAlarmTemplateNo());
-            alarm.setAlarmTypeCode(alarmTemplate.getAlarmTypeCode());
+            alarm.setAlarmTargetTypeCode(alarmTemplate.getAlarmTpTargetTypeCode());
+            alarm.setAlarmTpNo(alarmTemplate.getAlarmTpNo());
+            alarm.setAlarmTypeCode(alarmTemplate.getAlarmTpTypeCode());
             alarm.setStoreId(storeVO.getStoreId());
-            alarm.setAlarmPurposeCode(alarmTemplate.getAlarmPurposeCode());
-            alarm.setAlarmSendPointCode(alarmTemplate.getAlarmSendPointCode());
+            alarm.setAlarmPurposeCode(alarmTemplate.getAlarmTpPurposeCode());
+            alarm.setAlarmSendPointCode(alarmTemplate.getAlarmTpSendPointCode());
             alarm.setAlarmVisibleCode(0);
 
             Long alarmNo = customAlarmSetRepository.save(alarm).getAlarmNo();
@@ -278,8 +278,8 @@ public class StoreController {
     //상세
     @GetMapping("/detailStore/{storeId}")
     public String detailStore(@PathVariable("storeId") String storeId,
-                                   @ModelAttribute("pageVO") PageVO pageVO,
-                                   Model model){
+                              @ModelAttribute("pageVO") PageVO pageVO,
+                              Model model) {
         //매장 정보
         model.addAttribute("storeVO", customStoreRepository.getStoreDetail(storeId));
 
@@ -299,8 +299,8 @@ public class StoreController {
                               @RequestParam("storeBusinessRegistrationNumber") List<String> storeBusinessRegistrationNumberList,
                               @ModelAttribute("pageVO") PageVO pageVO,
                               HttpServletRequest request,
-                              RedirectAttributes redirectAttributes){
-        log.info("수정 데이터 : "+storeVO);
+                              RedirectAttributes redirectAttributes) {
+        log.info("수정 데이터 : " + storeVO);
 
         //세션 값 get
         HttpSession session = request.getSession();
@@ -309,7 +309,7 @@ public class StoreController {
         customStoreRepository.findById(storeVO.getStoreId()).ifPresent(store -> {
             //사업자등록증 파일 등록
             if (bziFile != null && !(bziFile.isEmpty())) {
-                storeFileRepository.save(saveDBStoreFile("BSN",storeVO.getStoreId(), saveCloudFile(bziFile)));
+                storeFileRepository.save(saveDBStoreFile("BSN", storeVO.getStoreId(), saveCloudFile(bziFile)));
                 log.info("사업자 등록증 등록 성공");
             }
 
@@ -330,105 +330,105 @@ public class StoreController {
             }
 
             //수정 값 세팅
-                store.setStorePhone(storeVO.getStorePhone());
-                store.setStoreEmail(storeVO.getStoreEmail());
-                store.setStoreZipCode(storeVO.getStoreZipCode());
-                store.setStoreAddress(storeVO.getStoreAddress());
-                store.setStoreAddressDetail(storeVO.getStoreAddressDetail());
-                store.setStoreIntroduction(storeVO.getStoreIntroduction());
-                store.setStorePresidentName(storeVO.getStorePresidentName());
-                store.setStoreOpeningHour(storeVO.getStoreOpeningHour());
-                store.setStoreClosingHour(storeVO.getStoreClosingHour());
-                store.setStoreKakaoYellowId(storeVO.getStoreKakaoYellowId());
-                store.setStoreBenefitTypeCode(storeVO.getStoreBenefitTypeCode());
-                store.setStoreStampGoal(storeVO.getStoreStampGoal());
-                store.setStoreStampVipGoal(storeVO.getStoreStampVipGoal());
-                store.setStorePointUseGoal(storeVO.getStorePointUseGoal());
-                store.setStorePointVipGoal(storeVO.getStorePointVipGoal());
-                store.setStoreArGameUseCode(storeVO.getStoreArGameUseCode());
-                store.setStoreArGameTypeCode(storeVO.getStoreArGameTypeCode());
-                store.setStoreArGameWord(storeVO.getStoreArGameWord());
-                store.setStoreMemo(storeVO.getStoreMemo());
-                store.setStoreBusinessRegistrationNumber(storeVO.getStoreBusinessRegistrationNumber());
-                store.setStoreContractBegindate(storeVO.getStoreContractBegindate());
-                store.setStoreContractFinishdate(storeVO.getStoreContractFinishdate());
-                store.setStoreOperatorEmail(storeVO.getStoreOperatorEmail());
-                store.setStoreOperatorName(storeVO.getStoreOperatorName());
-                store.setStoreOperatorPhone(storeVO.getStoreOperatorPhone());
-                store.setStorePresidentName(storeVO.getStorePresidentName());
-                store.setStoreUpdateId(session.getAttribute("userId").toString());
-                store.setStoreServiceUseCode(storeVO.getStoreServiceUseCode());
-                store.setStoreLatitude(storeVO.getStoreLatitude());
-                store.setStoreLongitude(storeVO.getStoreLongitude());
+            store.setStorePhone(storeVO.getStorePhone());
+            store.setStoreEmail(storeVO.getStoreEmail());
+            store.setStoreZipCode(storeVO.getStoreZipCode());
+            store.setStoreAddress(storeVO.getStoreAddress());
+            store.setStoreAddressDetail(storeVO.getStoreAddressDetail());
+            store.setStoreIntroduction(storeVO.getStoreIntroduction());
+            store.setStorePresidentName(storeVO.getStorePresidentName());
+            store.setStoreOpeningHour(storeVO.getStoreOpeningHour());
+            store.setStoreClosingHour(storeVO.getStoreClosingHour());
+            store.setStoreKakaoYellowId(storeVO.getStoreKakaoYellowId());
+            store.setStoreBenefitTypeCode(storeVO.getStoreBenefitTypeCode());
+            store.setStoreStampGoal(storeVO.getStoreStampGoal());
+            store.setStoreStampVipGoal(storeVO.getStoreStampVipGoal());
+            store.setStorePointUseGoal(storeVO.getStorePointUseGoal());
+            store.setStorePointVipGoal(storeVO.getStorePointVipGoal());
+            store.setStoreArGameUseCode(storeVO.getStoreArGameUseCode());
+            store.setStoreArGameTypeCode(storeVO.getStoreArGameTypeCode());
+            store.setStoreArGameWord(storeVO.getStoreArGameWord());
+            store.setStoreMemo(storeVO.getStoreMemo());
+            store.setStoreBusinessRegistrationNumber(storeVO.getStoreBusinessRegistrationNumber());
+            store.setStoreContractBegindate(storeVO.getStoreContractBegindate());
+            store.setStoreContractFinishdate(storeVO.getStoreContractFinishdate());
+            store.setStoreOperatorEmail(storeVO.getStoreOperatorEmail());
+            store.setStoreOperatorName(storeVO.getStoreOperatorName());
+            store.setStoreOperatorPhone(storeVO.getStoreOperatorPhone());
+            store.setStorePresidentName(storeVO.getStorePresidentName());
+            store.setStoreUpdateId(session.getAttribute("userId").toString());
+            store.setStoreServiceUseCode(storeVO.getStoreServiceUseCode());
+            store.setStoreLatitude(storeVO.getStoreLatitude());
+            store.setStoreLongitude(storeVO.getStoreLongitude());
 
-                //게임 타입에 따라 게임명 입력
-                if(storeVO.getStoreArGameTypeCode() == 1)
-                    store.setStoreArGameTypeName("캐릭터잡기");
-                else
-                    store.setStoreArGameTypeName("글자맞추기");
+            //게임 타입에 따라 게임명 입력
+            if (storeVO.getStoreArGameTypeCode() == 1)
+                store.setStoreArGameTypeName("캐릭터잡기");
+            else
+                store.setStoreArGameTypeName("글자맞추기");
 
-                //사업자 번호 set
-                String storeBusinessRegistrationNumber = "";
-                for (String brn : storeBusinessRegistrationNumberList) {
-                    storeBusinessRegistrationNumber += brn;
-                }
-                store.setStoreBusinessRegistrationNumber(storeBusinessRegistrationNumber);
+            //사업자 번호 set
+            String storeBusinessRegistrationNumber = "";
+            for (String brn : storeBusinessRegistrationNumberList) {
+                storeBusinessRegistrationNumber += brn;
+            }
+            store.setStoreBusinessRegistrationNumber(storeBusinessRegistrationNumber);
 
-                //계약상태 코드가 계약종료 & 계약취소 & 계약대기일 시
-                if(storeVO.getStoreContractStatusCode().equals("CC") ||
-                        storeVO.getStoreContractStatusCode().equals("CE") ||
-                            storeVO.getStoreContractStatusCode().equals("CW")){
+            //계약상태 코드가 계약종료 & 계약취소 & 계약대기일 시
+            if (storeVO.getStoreContractStatusCode().equals("CC") ||
+                    storeVO.getStoreContractStatusCode().equals("CE") ||
+                    storeVO.getStoreContractStatusCode().equals("CW")) {
+                // 서비스 운영코드 값 변경
+                store.setStoreServiceOperationCode("TERMINATE");
+
+                //상품 비활성화 처리
+                customProductRepository.changeProductVisibleCode(0, storeVO.getStoreId());
+                //선물상품 비활성화 처리
+                giftProductRepository.changeAllGiftProductVisibleCode(0, storeVO.getStoreId());
+                //마커 비활성화 처리
+                markerRepository.changeMarkerVisibleCode(0, storeVO.getStoreId());
+                //알림 비활성화 처리
+                customAlarmSetRepository.changeAlarmVisibleCode(0, storeVO.getStoreId());
+                //쿠폰 비활성화 처리
+                customCouponRepository.changeCouponVisibleCode(0, storeVO.getStoreId());
+                //디바이스 비활성화 처리
+                customDeviceRepository.changeDeviceVisibleCode(0, storeVO.getStoreId());
+
+                log.info("비활성화 처리");
+            }
+            //계약취소, 계약종료, 계약대기 상태에서 계약중으로 코드가 바뀔 시
+            if (storeVO.getStoreContractStatusCode().equals("CY")) {
+                if (store.getStoreContractStatusCode().equals("CC") ||
+                        store.getStoreContractStatusCode().equals("CE") ||
+                        store.getStoreContractStatusCode().equals("CW")) {
                     // 서비스 운영코드 값 변경
-                    store.setStoreServiceOperationCode("TERMINATE");
+                    store.setStoreServiceOperationCode("PREACTIVE");
 
-                    //상품 비활성화 처리
-                    customProductRepository.changeProductVisibleCode(0, storeVO.getStoreId());
-                    //선물상품 비활성화 처리
-                    giftProductRepository.changeAllGiftProductVisibleCode(0, storeVO.getStoreId());
-                    //마커 비활성화 처리
-                    markerRepository.changeMarkerVisibleCode(0, storeVO.getStoreId());
-                    //알림 비활성화 처리
-                    customAlarmSetRepository.changeAlarmVisibleCode(0, storeVO.getStoreId());
-                    //쿠폰 비활성화 처리
-                    customCouponRepository.changeCouponVisibleCode(0, storeVO.getStoreId());
-                    //디바이스 비활성화 처리
-                    customDeviceRepository.changeDeviceVisibleCode(0, storeVO.getStoreId());
+                    //상품 활성화 처리
+                    customProductRepository.changeProductVisibleCode(1, storeVO.getStoreId());
+                    //선물상품 활성화 처리
+                    giftProductRepository.changeAllGiftProductVisibleCode(1, storeVO.getStoreId());
+                    //마커 활성화 처리
+                    markerRepository.changeMarkerVisibleCode(1, storeVO.getStoreId());
+                    //알림 활성화 처리
+                    customAlarmSetRepository.changeAlarmVisibleCode(1, storeVO.getStoreId());
+                    //쿠폰 활성화 처리
+                    customCouponRepository.changeCouponVisibleCode(1, storeVO.getStoreId());
+                    //디바이스 활성화 처리
+                    customDeviceRepository.changeDeviceVisibleCode(1, storeVO.getStoreId());
 
-                    log.info("비활성화 처리");
+                    log.info("활성화 처리");
                 }
-                //계약취소, 계약종료, 계약대기 상태에서 계약중으로 코드가 바뀔 시
-                if(storeVO.getStoreContractStatusCode().equals("CY")){
-                    if(store.getStoreContractStatusCode().equals("CC") ||
-                            store.getStoreContractStatusCode().equals("CE") ||
-                                store.getStoreContractStatusCode().equals("CW")){
-                        // 서비스 운영코드 값 변경
-                        store.setStoreServiceOperationCode("PREACTIVE");
+            }
 
-                        //상품 활성화 처리
-                        customProductRepository.changeProductVisibleCode(1, storeVO.getStoreId());
-                        //선물상품 활성화 처리
-                        giftProductRepository.changeAllGiftProductVisibleCode(1, storeVO.getStoreId());
-                        //마커 활성화 처리
-                        markerRepository.changeMarkerVisibleCode(1, storeVO.getStoreId());
-                        //알림 활성화 처리
-                        customAlarmSetRepository.changeAlarmVisibleCode(1, storeVO.getStoreId());
-                        //쿠폰 활성화 처리
-                        customCouponRepository.changeCouponVisibleCode(1, storeVO.getStoreId());
-                        //디바이스 활성화 처리
-                        customDeviceRepository.changeDeviceVisibleCode(1, storeVO.getStoreId());
+            //VO 셋팅
+            store.setStoreContractStatusCode(storeVO.getStoreContractStatusCode());
 
-                        log.info("활성화 처리");
-                    }
-                }
+            customStoreRepository.save(store);
 
-                //VO 셋팅
-                store.setStoreContractStatusCode(storeVO.getStoreContractStatusCode());
+            redirectAttributes.addFlashAttribute("message", "successUpdate");
 
-                customStoreRepository.save(store);
-
-                redirectAttributes.addFlashAttribute("message", "successUpdate");
-
-                pageRedirectProperty(redirectAttributes, pageVO);
+            pageRedirectProperty(redirectAttributes, pageVO);
         });
 
 
@@ -437,34 +437,29 @@ public class StoreController {
     }
 
     private String resultCode = "";
+
     //서비스운영타입코드 변경
     @GetMapping("/updateServiceOperationCode/{storeId}/{storeServiceOperationCode}")
     public ResponseEntity<String> updateServiceOperationCode(@PathVariable("storeId") String storeId,
-                                 @PathVariable("storeServiceOperationCode") String storeServiceOperationCode) {
-        log.info("서비스 타입 코드 : "+storeServiceOperationCode);
-
+                                                             @PathVariable("storeServiceOperationCode") String storeServiceOperationCode) {
+        log.info("서비스 타입 코드 : " + storeServiceOperationCode);
 
 
         //서비스 타입 코드 변경
         customStoreRepository.findById(storeId).ifPresent(store -> {
-            if(store.getStoreIntroduction().equals("") || store.getStoreIntroduction() == null){
+            if (store.getStoreIntroduction().equals("") || store.getStoreIntroduction() == null) {
                 resultCode = "not-introduction";
-            }
-            else if(store.getStoreOpeningHour() == null || store.getStoreClosingHour() == null){
+            } else if (store.getStoreOpeningHour() == null || store.getStoreClosingHour() == null) {
                 resultCode = "not-storeHour";
-            }
-            else if(store.getStoreAddress().equals("") || store.getStoreAddress() == null){
+            } else if (store.getStoreAddress().equals("") || store.getStoreAddress() == null) {
                 resultCode = "not-storeAddress";
-            }
-            else if(store.getStoreBenefitTypeCode().equals("N") || store.getStoreBenefitTypeCode() == null){
+            } else if (store.getStoreBenefitTypeCode().equals("N") || store.getStoreBenefitTypeCode() == null) {
                 resultCode = "not-benefitCode";
-            }
-            else{
-                if(storeServiceOperationCode.equals("ACTIVE")) {
+            } else {
+                if (storeServiceOperationCode.equals("ACTIVE")) {
                     store.setStoreServiceOperationCode("PREACTIVE");
                     resultCode = "PREACTIVE";
-                }
-                else {
+                } else {
                     store.setStoreServiceOperationCode("ACTIVE");
                     resultCode = "ACTIVE";
                 }
@@ -473,7 +468,7 @@ public class StoreController {
             customStoreRepository.save(store);
         });
 
-        return new ResponseEntity<>(resultCode,HttpStatus.CREATED);
+        return new ResponseEntity<>(resultCode, HttpStatus.CREATED);
     }
 
     //비밀번호 변경
@@ -482,7 +477,7 @@ public class StoreController {
                                                  @RequestParam("userPw") String userPw,
                                                  RedirectAttributes redirectAttributes,
                                                  PageVO pageVO) {
-        log.info("비밀번호 변경"+userPw);
+        log.info("비밀번호 변경" + userPw);
         loginInfoRepository.findById(storeId).ifPresent(loginInfo -> {
             loginInfo.setUserPw(passwordEncoder.encode(userPw));
             loginInfoRepository.save(loginInfo);
@@ -490,7 +485,7 @@ public class StoreController {
 
         pageRedirectProperty(redirectAttributes, pageVO);
 
-        return new ResponseEntity<>("1",HttpStatus.CREATED);
+        return new ResponseEntity<>("1", HttpStatus.CREATED);
     }
 
     //가맹점 리스트 가져오기
@@ -545,8 +540,8 @@ public class StoreController {
     //리스트
     @GetMapping("/listStoreContract")
     public void listStoreContract(HttpServletRequest request,
-                          @ModelAttribute("pageVO") PageVO pageVO,
-                          Model model) {
+                                  @ModelAttribute("pageVO") PageVO pageVO,
+                                  Model model) {
         Pageable pageable = pageVO.makePageable(0, "storeId");
 
         Page<Object[]> result = customStoreRepository.getStoreContractPage(
@@ -563,7 +558,7 @@ public class StoreController {
         log.info("총 행 수" + result.getTotalElements());
 
         result.forEach(store -> {
-            log.info("계약 정보"+ java.util.Arrays.toString(store));
+            log.info("계약 정보" + java.util.Arrays.toString(store));
         });
 
         //매장 리스트

@@ -32,19 +32,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-sm-3 m-b-xs">쿠폰유형</th>
-                                    <td>
-                                        <div class="col-sm-6 m-b-xs">
-                                            <select class="input-sm form-control input-s-sm inline" id="couponTypeCode">
-                                                <option value="ALL" th:selected="${pageVO.couponTypeCode} == 'ALL'">전체</option>
-                                                <option value="1" th:selected="${pageVO.couponTypeCode} == '1'">할인</option>
-                                                <option value="2" th:selected="${pageVO.couponTypeCode} == '2'">도장</option>
-                                                <option value="3" th:selected="${pageVO.couponTypeCode} == '3'">포인트</option>
-                                            </select>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <th class="col-sm-3 m-b-xs">발급대상</th>
                                     <td>
                                         <div class="col-sm-6 m-b-xs text-left">
@@ -116,7 +103,6 @@
                                 <thead>
                                 <th>상세</th>
                                 <th sec:authorize="hasRole('MA')">가맹점명</th>
-                                <th>쿠폰유형</th>
                                 <th>발송유형</th>
                                 <th>쿠폰명</th>
                                 <th>발급대상</th>
@@ -132,16 +118,15 @@
                                         </a>
                                     </td>
                                     <td sec:authorize="hasRole('MA')">[[${vo[2]}]]</td>
-                                    <td>[[${vo[4]}]]</td>
                                     <td>
-                                        <span th:switch="${vo[11]}">
+                                        <span th:switch="${vo[9]}">
                                             <span th:case="IMME">수동발행</span>
                                             <span th:case="AUTO">자동발행</span>
                                         </span>
                                     </td>
-                                    <td>[[${vo[5]}]]</td>
+                                    <td>[[${vo[3]}]]</td>
                                     <td>
-                                        <span th:switch="${vo[6]}">
+                                        <span th:switch="${vo[4]}">
                                             <span th:case="BIRTH">생일</span>
                                             <span th:case="STAMP">도장적립</span>
                                             <span th:case="NEW">신규</span>
@@ -152,15 +137,15 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span th:switch="${vo[7]}">
+                                        <span th:switch="${vo[5]}">
                                             <span th:case="AR">AR게임</span>
                                             <span th:case="CB">쿠폰함</span>
                                         </span>
                                     </td>
                                     <td>
-                                        <span th:if="${vo[8]} != null">[[${#temporals.format(vo[8], 'yyyy-MM-dd', locale)}]]</span>
-                                        <span th:if="${vo[8]} == null">-</span>
-                                    <td>[[${#temporals.format(vo[9], 'yyyy-MM-dd HH:mm:ss', locale)}]]</td>
+                                        <span th:if="${vo[6]} != null">[[${#temporals.format(vo[8], 'yyyy-MM-dd', locale)}]]</span>
+                                        <span th:if="${vo[6]} == null">-</span>
+                                    <td>[[${#temporals.format(vo[7], 'yyyy-MM-dd HH:mm:ss', locale)}]]</td>
                                 </tr>
                                 </tbody>
                             </table>

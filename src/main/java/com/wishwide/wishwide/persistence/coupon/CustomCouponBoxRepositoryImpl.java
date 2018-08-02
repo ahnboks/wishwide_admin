@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomCouponBoxRepositoryImpl extends QuerydslRepositorySupport implements CustomCouponBox {
-    public CustomCouponBoxRepositoryImpl(){
+    public CustomCouponBoxRepositoryImpl() {
         super(Device.class);
     }
 
@@ -31,7 +31,6 @@ public class CustomCouponBoxRepositoryImpl extends QuerydslRepositorySupport imp
         QCouponBox couponBox = QCouponBox.couponBox;
         QStore store = QStore.store;
         QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
-        QCouponType couponType = QCouponType.couponType;
 
         JPQLQuery<CouponBox> query = from(couponBox);
 
@@ -40,71 +39,66 @@ public class CustomCouponBoxRepositoryImpl extends QuerydslRepositorySupport imp
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
                 customer.membershipCustomerNo,    //멤버쉽고객번호3
-                customer.customerPhone, //고객전화번호4
-                customer.customerName,  //고객명5
-                couponType.couponTypeName,  //쿠폰유형명6
-                couponBox.couponTitle,  //쿠폰명7
-                couponBox.couponTargetTypeCode, //쿠폰발급대상코드8
-                couponBox.couponPublishTypeCode,    //쿠폰발급경로코드9
-                couponBox.couponUseCode,    //쿠폰사용여부10
-                couponBox.couponUsedate,    //쿠폰사용일11
-                couponBox.couponBegindate,  //유효시작일12
-                couponBox.couponFinishdate, //유효만료일13
+                customer.membershipCustomerPhone, //고객전화번호4
+                customer.membershipCustomerName,  //고객명5
+                couponBox.cbCouponImageUrl, //쿠폰 url6
+                couponBox.cbCouponTitle,  //쿠폰명7
+                couponBox.cbCouponTargetTypeCode, //쿠폰발급대상코드8
+                couponBox.cbCouponPublishTypeCode,    //쿠폰발급경로코드9
+                couponBox.cbCouponUseCode,    //쿠폰사용여부10
+                couponBox.cbCouponUsedate,    //쿠폰사용일11
+                couponBox.cbCouponBegindate,  //유효시작일12
+                couponBox.cbCouponFinishdate, //유효만료일13
                 couponBox.couponBoxRegdate,  //쿠폰수신일14
-                couponBox.couponPublishCode //쿠폰발급코드15
+                couponBox.cbCouponPublishCode //쿠폰발급코드15
 
         );
 
         //조인문
         tupleJPQLQuery
                 .join(customer).on(couponBox.membershipCustomerNo.eq(customer.membershipCustomerNo))
-                .join(couponType).on(couponBox.couponTypeNo.eq(couponType.couponTypeNo))
                 .join(store).on(couponBox.storeId.eq(store.storeId));
 
         //조건식
 
         //권한:매장이 로그인했을 경우 한개의 리스트만 가져오기
-        if(roleCode.equals("ST"))
+        if (roleCode.equals("ST"))
             tupleJPQLQuery.where(couponBox.storeId.eq(sessionId));
 
         //검색조건 : 가맹점명
-        if(!searchUserId.equals("ALL")){
+        if (!searchUserId.equals("ALL")) {
             tupleJPQLQuery.where(store.storeId.eq(searchUserId));
         }
-        //검색조건 : 쿠폰유형코드
-        if(!couponTypeCode.equals("ALL")){
-            tupleJPQLQuery.where(couponBox.couponTypeNo.eq(Long.parseLong(couponTypeCode)));
-        }
         //검색조건 : 쿠폰발급대상코드
-        if(!couponTargetTypeCode.equals("ALL")){
-            tupleJPQLQuery.where(couponBox.couponTargetTypeCode.eq(couponTargetTypeCode));
+        if (!couponTargetTypeCode.equals("ALL")) {
+            tupleJPQLQuery.where(couponBox.cbCouponTargetTypeCode.eq(couponTargetTypeCode));
         }
         //검색조건 : 쿠폰발급경로코드
-        if(!couponPublishTypeCode.equals("ALL")){
-            tupleJPQLQuery.where(couponBox.couponPublishTypeCode.eq(couponPublishTypeCode));
+        if (!couponPublishTypeCode.equals("ALL")) {
+            tupleJPQLQuery.where(couponBox.cbCouponPublishTypeCode.eq(couponPublishTypeCode));
         }
         //검색조건 : 쿠폰사용여부코드
-        if(couponUseCode != 2){
-            tupleJPQLQuery.where(couponBox.couponUseCode.eq(couponUseCode));
+        if (couponUseCode != 2) {
+            tupleJPQLQuery.where(couponBox.cbCouponUseCode.eq(couponUseCode));
         }
 
         //검색조건 : 전화번호, 이름, 쿠폰명
-        if(type != null) {
+        if (type != null) {
             switch (type.trim()) {
-                case "ALL" :
-                    tupleJPQLQuery.where(customer.customerPhone.like("%" + keyword + "%")
-                            .or(customer.customerName.like("%" + keyword + "%"))
-                            .or(couponBox.couponTitle.like("%" + keyword + "%"))
+                case "ALL":
+                    tupleJPQLQuery.where(customer.membershipCustomerPhone.like("%" + keyword + "%")
+                            .or(customer.membershipCustomerName.like("%" + keyword + "%"))
+                            .or(couponBox.cbCouponTitle.like("%" + keyword + "%"))
                     );
                     break;
-                case "customerPhone" :
-                    tupleJPQLQuery.where(customer.customerPhone.like("%" + keyword + "%"));
+                case "customerPhone":
+                    tupleJPQLQuery.where(customer.membershipCustomerPhone.like("%" + keyword + "%"));
                     break;
-                case "customerName" :
-                    tupleJPQLQuery.where(customer.customerName.like("%" + keyword + "%"));
+                case "customerName":
+                    tupleJPQLQuery.where(customer.membershipCustomerName.like("%" + keyword + "%"));
                     break;
-                case "couponTitle" :
-                    tupleJPQLQuery.where(couponBox.couponTitle.like("%" + keyword + "%"));
+                case "couponTitle":
+                    tupleJPQLQuery.where(couponBox.cbCouponTitle.like("%" + keyword + "%"));
                     break;
             }
         }
@@ -135,7 +129,6 @@ public class CustomCouponBoxRepositoryImpl extends QuerydslRepositorySupport imp
         QCouponBox couponBox = QCouponBox.couponBox;
         QStore store = QStore.store;
         QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
-        QCouponType couponType = QCouponType.couponType;
 
         JPQLQuery<CouponBox> query = from(couponBox);
 
@@ -144,29 +137,28 @@ public class CustomCouponBoxRepositoryImpl extends QuerydslRepositorySupport imp
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
                 customer.membershipCustomerNo,    //멤버쉽고객번호3
-                customer.customerPhone, //고객전화번호4
-                customer.customerName,  //고객명5
-                couponType.couponTypeName,  //쿠폰유형명6
-                couponBox.couponTitle,  //쿠폰명7
-                couponBox.couponTargetTypeCode, //쿠폰발급대상코드8
-                couponBox.couponPublishTypeCode,    //쿠폰발급경로코드9
-                couponBox.couponUseCode,    //쿠폰사용여부10
-                couponBox.couponUsedate,    //쿠폰사용일11
-                couponBox.couponBegindate,  //유효시작일12
-                couponBox.couponFinishdate, //유효만료일13
+                customer.membershipCustomerPhone, //고객전화번호4
+                customer.membershipCustomerName,  //고객명5
+                couponBox.cbCouponImageUrl, //쿠폰url
+                couponBox.cbCouponTitle,  //쿠폰명7
+                couponBox.cbCouponTargetTypeCode, //쿠폰발급대상코드8
+                couponBox.cbCouponPublishTypeCode,    //쿠폰발급경로코드9
+                couponBox.cbCouponUseCode,    //쿠폰사용여부10
+                couponBox.cbCouponUsedate,    //쿠폰사용일11
+                couponBox.cbCouponBegindate,  //유효시작일12
+                couponBox.cbCouponFinishdate, //유효만료일13
                 couponBox.couponBoxRegdate  //쿠폰수신일14
         );
 
         //조인문
         tupleJPQLQuery
                 .join(customer).on(couponBox.membershipCustomerNo.eq(customer.membershipCustomerNo))
-                .join(couponType).on(couponBox.couponTypeNo.eq(couponType.couponTypeNo))
                 .join(store).on(couponBox.storeId.eq(store.storeId));
 
         //조건식
         //사용된 쿠폰목록만 가져옴
         tupleJPQLQuery.where(couponBox.storeId.eq(storeId))
-                        .where(couponBox.couponUseCode.eq(1));
+                .where(couponBox.cbCouponUseCode.eq(1));
 
         //정렬
         tupleJPQLQuery.orderBy(couponBox.couponBoxRegdate.desc());
@@ -188,7 +180,6 @@ public class CustomCouponBoxRepositoryImpl extends QuerydslRepositorySupport imp
         QCouponBox couponBox = QCouponBox.couponBox;
         QStore store = QStore.store;
         QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
-        QCouponType couponType = QCouponType.couponType;
 
         JPQLQuery<CouponBox> query = from(couponBox);
 
@@ -197,23 +188,22 @@ public class CustomCouponBoxRepositoryImpl extends QuerydslRepositorySupport imp
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
                 customer.membershipCustomerNo,    //멤버쉽고객번호3
-                customer.customerPhone, //고객전화번호4
-                customer.customerName,  //고객명5
-                couponType.couponTypeName,  //쿠폰유형명6
-                couponBox.couponTitle,  //쿠폰명7
-                couponBox.couponTargetTypeCode, //쿠폰발급대상코드8
-                couponBox.couponPublishTypeCode,    //쿠폰발급경로코드9
-                couponBox.couponUseCode,    //쿠폰사용여부10
-                couponBox.couponUsedate,    //쿠폰사용일11
-                couponBox.couponBegindate,  //유효시작일12
-                couponBox.couponFinishdate, //유효만료일13
+                customer.membershipCustomerPhone, //고객전화번호4
+                customer.membershipCustomerName,  //고객명5
+                couponBox.cbCouponImageUrl, //쿠폰url
+                couponBox.cbCouponTitle,  //쿠폰명7
+                couponBox.cbCouponTargetTypeCode, //쿠폰발급대상코드8
+                couponBox.cbCouponPublishTypeCode,    //쿠폰발급경로코드9
+                couponBox.cbCouponUseCode,    //쿠폰사용여부10
+                couponBox.cbCouponUsedate,    //쿠폰사용일11
+                couponBox.cbCouponBegindate,  //유효시작일12
+                couponBox.cbCouponFinishdate, //유효만료일13
                 couponBox.couponBoxRegdate  //쿠폰수신일14
         );
 
         //조인문
         tupleJPQLQuery
                 .join(customer).on(couponBox.membershipCustomerNo.eq(customer.membershipCustomerNo))
-                .join(couponType).on(couponBox.couponTypeNo.eq(couponType.couponTypeNo))
                 .join(store).on(couponBox.storeId.eq(store.storeId));
 
         //조건식
@@ -239,7 +229,6 @@ public class CustomCouponBoxRepositoryImpl extends QuerydslRepositorySupport imp
         QCouponBox couponBox = QCouponBox.couponBox;
         QStore store = QStore.store;
         QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
-        QCouponType couponType = QCouponType.couponType;
 
         JPQLQuery<CouponBox> query = from(couponBox);
 
@@ -248,23 +237,22 @@ public class CustomCouponBoxRepositoryImpl extends QuerydslRepositorySupport imp
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
                 customer.membershipCustomerNo,    //멤버쉽고객번호3
-                customer.customerPhone, //고객전화번호4
-                customer.customerName,  //고객명5
-                couponType.couponTypeName,  //쿠폰유형명6
-                couponBox.couponTitle,  //쿠폰명7
-                couponBox.couponTargetTypeCode, //쿠폰발급대상코드8
-                couponBox.couponPublishTypeCode,    //쿠폰발급경로코드9
-                couponBox.couponUseCode,    //쿠폰사용여부10
-                couponBox.couponUsedate,    //쿠폰사용일11
-                couponBox.couponBegindate,  //유효시작일12
-                couponBox.couponFinishdate, //유효만료일13
+                customer.membershipCustomerPhone, //고객전화번호4
+                customer.membershipCustomerName,  //고객명5
+                couponBox.cbCouponImageUrl, //쿠폰url6
+                couponBox.cbCouponTitle,  //쿠폰명7
+                couponBox.cbCouponTargetTypeCode, //쿠폰발급대상코드8
+                couponBox.cbCouponPublishTypeCode,    //쿠폰발급경로코드9
+                couponBox.cbCouponUseCode,    //쿠폰사용여부10
+                couponBox.cbCouponUsedate,    //쿠폰사용일11
+                couponBox.cbCouponBegindate,  //유효시작일12
+                couponBox.cbCouponFinishdate, //유효만료일13
                 couponBox.couponBoxRegdate  //쿠폰수신일14
         );
 
         //조인문
         tupleJPQLQuery
                 .join(customer).on(couponBox.membershipCustomerNo.eq(customer.membershipCustomerNo))
-                .join(couponType).on(couponBox.couponTypeNo.eq(couponType.couponTypeNo))
                 .join(store).on(couponBox.storeId.eq(store.storeId));
 
         //조건식

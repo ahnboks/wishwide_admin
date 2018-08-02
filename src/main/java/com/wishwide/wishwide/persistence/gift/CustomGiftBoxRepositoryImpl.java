@@ -28,11 +28,11 @@ public class CustomGiftBoxRepositoryImpl extends QuerydslRepositorySupport imple
                 giftBox.giftBoxNo,  //선물번호0
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
-                giftBox.giftSenderPhone,    //구매자 전화번호3
-                giftBox.giftSenderName, //구매자명4
-                giftBox.giftReceiverPhone,  //수신자 전화번호5
-                giftBox.giftReceiverName,   //수신자명6
-                giftBox.productTitle,   //상품명7
+                giftBox.gbGiftSenderPhone,    //구매자 전화번호3
+                giftBox.gbGiftSenderName, //구매자명4
+                giftBox.gbGiftReceiverPhone,  //수신자 전화번호5
+                giftBox.gbGiftReceiverName,   //수신자명6
+                giftBox.gbProductTitle,   //상품명7
                 giftBox.giftBegindate,   //선물시작일8
                 giftBox.giftFinishdate,  //선물만료일9
                 giftBox.giftUseCode,  //선물사용여부10
@@ -41,7 +41,7 @@ public class CustomGiftBoxRepositoryImpl extends QuerydslRepositorySupport imple
 
         //조인문
         tupleJPQLQuery.join(store).on(giftBox.storeId.eq(store.storeId))
-                .join(customer).on(giftBox.giftReceiverPhone.eq(customer.customerPhone));
+                .join(customer).on(giftBox.gbGiftReceiverPhone.eq(customer.membershipCustomerPhone));
 
         //조건식
         tupleJPQLQuery.where(customer.membershipCustomerNo.eq(customerNo)

@@ -36,8 +36,8 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 product.giftProductRegisterCode,    //선물등록여부코드1
                 store.storeId,  //매장아이디2
                 store.storeName,    //가맹점명3
-                product.majorCategoryTitle, //대분류명4
-                product.subCategoryTitle,   //중분류명5
+                product.pdMajorCategoryTitle, //대분류명4
+                product.pdSubCategoryTitle,   //중분류명5
                 product.productTitle,   //상품명6
                 product.productPrice,   //판매가격7
                 product.productImageUrl,   //할인가격8
@@ -82,17 +82,17 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
         if(type != null) {
             switch (type.trim()) {
                 case "ALL" :
-                    tupleJPQLQuery.where(product.majorCategoryTitle.like("%" + keyword + "%")
-                            .or(product.subCategoryTitle.like("%" + keyword + "%"))
+                    tupleJPQLQuery.where(product.pdMajorCategoryTitle.like("%" + keyword + "%")
+                            .or(product.pdSubCategoryTitle.like("%" + keyword + "%"))
                             .or(product.productTitle.like("%" + keyword + "%"))
                             .or(product.productPrice.like("%" + keyword + "%"))
                     );
                     break;
                 case "majorCategoryTitle" :
-                    tupleJPQLQuery.where(product.majorCategoryTitle.like("%" + keyword + "%"));
+                    tupleJPQLQuery.where(product.pdMajorCategoryTitle.like("%" + keyword + "%"));
                     break;
                 case "subCategoryTitle" :
-                    tupleJPQLQuery.where(product.subCategoryTitle.like("%" + keyword + "%"));
+                    tupleJPQLQuery.where(product.pdSubCategoryTitle.like("%" + keyword + "%"));
                     break;
                 case "productTitle" :
                     tupleJPQLQuery.where(product.productTitle.like("%" + keyword + "%"));
@@ -144,8 +144,8 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 product.productNo,  //상품번호0
                 partner.partnerId,  //파트너아이디1
                 partner.partnerName,    //파트너명2
-                product.majorCategoryTitle, //대분류명3
-                product.subCategoryTitle,   //중분류명4
+                product.pdMajorCategoryTitle, //대분류명3
+                product.pdSubCategoryTitle,   //중분류명4
                 product.productTitle,   //상품명5
                 product.productPrice,   //판매가격6
                 product.productSellStatusCode,  //판매상태코드7
@@ -189,17 +189,17 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
         if(type != null) {
             switch (type.trim()) {
                 case "ALL" :
-                    tupleJPQLQuery.where(product.majorCategoryTitle.like("%" + keyword + "%")
-                                            .or(product.subCategoryTitle.like("%" + keyword + "%"))
+                    tupleJPQLQuery.where(product.pdMajorCategoryTitle.like("%" + keyword + "%")
+                                            .or(product.pdSubCategoryTitle.like("%" + keyword + "%"))
                                             .or(product.productTitle.like("%" + keyword + "%"))
                                             .or(product.productPrice.like("%" + keyword + "%"))
                     );
                     break;
                 case "majorCategoryTitle" :
-                    tupleJPQLQuery.where(product.majorCategoryTitle.like("%" + keyword + "%"));
+                    tupleJPQLQuery.where(product.pdMajorCategoryTitle.like("%" + keyword + "%"));
                     break;
                 case "subCategoryTitle" :
-                    tupleJPQLQuery.where(product.subCategoryTitle.like("%" + keyword + "%"));
+                    tupleJPQLQuery.where(product.pdSubCategoryTitle.like("%" + keyword + "%"));
                     break;
                 case "productTitle" :
                     tupleJPQLQuery.where(product.productTitle.like("%" + keyword + "%"));
@@ -245,8 +245,8 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 product.giftProductRegisterCode,    //선물등록여부코드1
                 store.storeId,  //매장아이디2
                 store.storeName,    //가맹점명3
-                product.majorCategoryTitle, //대분류명4
-                product.subCategoryTitle,   //중분류명5
+                product.pdMajorCategoryTitle, //대분류명4
+                product.pdSubCategoryTitle,   //중분류명5
                 product.productTitle,   //상품명6
                 product.productPrice,   //판매가격7
                 product.productSellStatusCode,  //판매상태코드8
@@ -258,13 +258,12 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 productImage.productImageThumbnailUrl,  //상품이미지썸네일주소14
                 productImage.productImageUrl,    //상품이미지주소15
                 product.productDescription,  //상품설명16
-                product.majorCategoryNo,    //17
-                product.subCategoryNo,   //18
+                product.pdMajorCategoryNo,    //17
+                product.pdSubCategoryNo,   //18
                 product.productSubProductCode,  //19
                 product.productDiscountTypeCode,    //20
                 product.productDiscountCode,     //21
                 product.productDiscountValue    //22
-
         );
 
         //조인문
@@ -293,8 +292,8 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 product.productNo,  //상품번호0
                 partner.partnerId,  //파트너아이디1
                 partner.partnerName,    //파트너명2
-                product.majorCategoryTitle, //대분류명3
-                product.subCategoryTitle,   //중분류명4
+                product.pdMajorCategoryTitle, //대분류명3
+                product.pdSubCategoryTitle,   //중분류명4
                 product.productTitle,   //상품명5
                 product.productPrice,   //판매가격6
                 product.productSellStatusCode,  //판매상태코드7
@@ -341,8 +340,8 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 product.giftProductRegisterCode,    //선물등록여부코드1
                 store.storeId,  //매장아이디2
                 store.storeName,    //가맹점명3
-                product.majorCategoryTitle, //대분류명4
-                product.subCategoryTitle,   //중분류명5
+                product.pdMajorCategoryTitle, //대분류명4
+                product.pdSubCategoryTitle,   //중분류명5
                 product.productTitle,   //상품명6
                 product.productPrice,   //판매가격7
                 product.productOwnerRole,   //상품등록자 권한8
@@ -396,8 +395,8 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 product.giftProductRegisterCode,    //선물등록여부코드1
                 partner.partnerId,  //매장아이디2
                 partner.partnerName,    //가맹점명3
-                product.majorCategoryTitle, //대분류명4
-                product.subCategoryTitle,   //중분류명5
+                product.pdMajorCategoryTitle, //대분류명4
+                product.pdSubCategoryTitle,   //중분류명5
                 product.productTitle,   //상품명6
                 product.productPrice,   //판매가격7
                 product.productSellStatusCode,  //판매상태코드8
@@ -486,7 +485,7 @@ public class CustomProductRepositoryImpl extends QuerydslRepositorySupport imple
                 giftProduct.giftBundleDiscountInitQuantity,    //묶음할인수량3
                 giftProduct.giftBundleDiscountTypeCode,    //할인타입코드4
                 giftProduct.giftProductDiscountValue,   //할인값5
-                giftProduct.productPrice    //선물할인가격6
+                giftProduct.giftProductPrice    //선물할인가격6
         );
 
         //조인문

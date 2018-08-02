@@ -13,7 +13,7 @@ import java.util.List;
 
 public class CustomPartnerRepositoryImpl extends QuerydslRepositorySupport implements CustomPartner {
     public CustomPartnerRepositoryImpl(){
-        super(Store.class);
+        super(Partner.class);
     }
 
     @Override
@@ -159,9 +159,9 @@ public class CustomPartnerRepositoryImpl extends QuerydslRepositorySupport imple
                 .leftJoin(storeImage).on(store.storeId.eq(storeImage.storeId).and(storeImage.storeImageTypeCode.eq("LOGO")))
                 .leftJoin(device).on(store.storeId.eq(device.storeId))
                 .leftJoin(product).on(store.storeId.eq(product.productOwnerId).and(product.productSellStatusCode.eq(1)).and(product.productOwnerRole.eq("ST")))
-                .leftJoin(customer).on(store.storeId.eq(customer.storeId).and(customer.customerVisibleCode.eq(1)))
+                .leftJoin(customer).on(store.storeId.eq(customer.storeId).and(customer.membershipCustomerVisibleCode.eq(1)))
                 .leftJoin(giftReceiveHistory).on(store.storeId.eq(giftReceiveHistory.storeId))
-                .leftJoin(couponBox).on(store.storeId.eq(couponBox.storeId).and(couponBox.couponUseCode.eq(1)));
+                .leftJoin(couponBox).on(store.storeId.eq(couponBox.storeId).and(couponBox.cbCouponUseCode.eq(1)));
 
         //조건식
 
@@ -226,11 +226,14 @@ public class CustomPartnerRepositoryImpl extends QuerydslRepositorySupport imple
                 .leftJoin(storeImage).on(store.storeId.eq(storeImage.storeId).and(storeImage.storeImageTypeCode.eq("LOGO")))
                 .leftJoin(device).on(store.storeId.eq(device.storeId))
                 .leftJoin(product).on(store.storeId.eq(product.productOwnerId).and(product.productSellStatusCode.eq(1)).and(product.productOwnerRole.eq("ST")))
-                .leftJoin(customer).on(store.storeId.eq(customer.storeId).and(customer.customerVisibleCode.eq(1)))
+                .leftJoin(customer).on(store.storeId.eq(customer.storeId).and(customer.membershipCustomerVisibleCode.eq(1)))
                 .leftJoin(giftReceiveHistory).on(store.storeId.eq(giftReceiveHistory.storeId))
-                .leftJoin(couponBox).on(store.storeId.eq(couponBox.storeId).and(couponBox.couponUseCode.eq(1)));
+                .leftJoin(couponBox).on(store.storeId.eq(couponBox.storeId).and(couponBox.cbCouponUseCode.eq(1)));
 
         //조건식
+
+        //서비스 해지상태가 아니고 계약중인 매장 리스트만 불러옴
+        tupleJPQLQuery.where(store.storeServiceOperationCode.notIn("TERMINATE").and(store.storeContractStatusCode.eq("CY")));
 
         //정렬
         tupleJPQLQuery.orderBy(store.storeName.asc());

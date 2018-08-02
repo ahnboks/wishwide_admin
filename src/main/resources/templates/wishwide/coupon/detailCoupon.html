@@ -32,61 +32,44 @@
                         <input type="hidden" th:value="${couponVO[1]}" class="form-control" name="storeId"/>
                         <div class="hr-line-dashed"></div>
 
-                        <!--쿠폰 유형-->
-                        <div class="form-group" >
-                            <label class="col-sm-2 control-label">쿠폰 유형<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-6">
-                                <div class="row">
-                                    <div class="col-sm-2">
-                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[4]} == 1" name="couponTypeNo" value="1">할인</label>
-                                    </div>
-                                    <div class="col-sm-2" id="stamp" th:if="${couponVO[18]} == 'S'">
-                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[4]} == 2" name="couponTypeNo" value="2">도장</label>
-                                    </div>
-                                    <div class="col-sm-2" id="point" th:if="${couponVO[18]} == 'P'">
-                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[4]} == 3" name="couponTypeNo" value="3">포인트</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-
                         <!--상품 선택-->
-                        <div class="form-group" id="selectProduct" style="display:none;">
+                        <div class="form-group" id="selectProduct">
                             <label class="col-sm-2 control-label">상품 정보<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-3" id="productTitle">
-                                <span th:if="${couponVO[7]} == 'BIRTH' or ${couponVO[7]} == 'NEW' or ${couponVO[7]} == 'UPGRADE' or ${couponVO[7]} == 'STAMP'">
-                                    <select class="form-control m-b" name="productTitle">
+                            <div class="col-sm-3">
+                                <span th:if="${couponVO[4]} == 'BIRTH' or ${couponVO[4]} == 'NEW' or ${couponVO[4]} == 'UPGRADE' or ${couponVO[4]} == 'STAMP'">
+                                   <select class="form-control m-b" name="productNo">
                                         <option value="0">상품 선택</option>
+                                        <option th:each="product:${productList}" th:value="${product[6]}" th:selected="${couponVO[8]} == ${product[6]}">[[${product[6]}]]([[${product[7]}]]원)</option>
                                     </select>
+                                    <input type="hidden" name="productTitle"/>
                                 </span>
-                                <span th:if="${couponVO[7]} == 'WHOLE' or ${couponVO[7]} == 'VIP' or ${couponVO[7]} == 'SELECT'">
-                                    <p class="form-control-static" th:text="${couponVO[11]}"></p>
-                                    <input type="hidden" th:value="${couponVO[11]}" class="form-control" name="productTitle"/>
+                                <span th:if="${couponVO[4]} == 'WHOLE' or ${couponVO[4]} == 'VIP' or ${couponVO[4]} == 'SELECT'">
+                                    <p class="form-control-static" th:text="${couponVO[8]}"></p>
+                                    <input type="hidden" th:value="${couponVO[8]}" class="form-control" name="productTitle"/>
                                 </span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
 
                         <!--할인타입-->
-                        <div class="form-group" id="couponDiscountTypeCode" style="display:none;">
+                        <div class="form-group" id="couponDiscountTypeCode">
                             <label class="col-sm-2 control-label">할인타입<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-3">
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[14]} == 'DCR'" name="couponDiscountTypeCode" value="DCR">할인율</label>
+                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[10]} == 'DCR'" name="couponDiscountTypeCode" value="DCR">할인율</label>
                                     </div>
                                     <div class="col-sm-4">
-                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[14]} == 'DCP'" name="couponDiscountTypeCode" value="DCP">할인가</label>
+                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[10]} == 'DCP'" name="couponDiscountTypeCode" value="DCP">할인가</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div id="DCPValue" style="display: none;">
-                                        <label class="control-label"><input class="form-control" th:value="${couponVO[15]}" maxlength="5" type="text" onkeypress="InputOnlyNumber(this);" name="DCPValue"></label>
+                                        <label class="control-label"><input class="form-control" th:value="${couponVO[11]}" maxlength="5" type="text" onkeypress="InputOnlyNumber(this);" name="DCPValue"></label>
                                         <label class="control-label">원</label>
                                     </div>
                                     <div id="DCRValue" style="display: none;">
-                                        <label class="control-label"><input class="form-control" th:value="${couponVO[15]}" maxlength="3" type="text" onkeypress="InputOnlyNumber(this);" name="DCRValue"></label>
+                                        <label class="control-label"><input class="form-control" th:value="${couponVO[11]}" maxlength="3" type="text" onkeypress="InputOnlyNumber(this);" name="DCRValue"></label>
                                         <label class="control-label">%</label>
                                     </div>
                                 </div>
@@ -95,51 +78,32 @@
                         <div class="hr-line-dashed"></div>
                         <input type="hidden" name="couponDiscountValue">
 
-                        <!--도장포인트 혜택값-->
-                        <div class="form-group" id="couponBenefitValue" style="display:none;">
-                            <label class="col-sm-2 control-label">혜택값<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-3">
-                                <div class="row">
-                                    <div id="stampValue">
-                                        <label class="control-label"><input class="form-control" th:value="${couponVO[13]}" maxlength="2" type="text" onkeypress="InputOnlyNumber(this);" name="stampValue"></label>
-                                        <label class="control-label">개</label>
-                                    </div>
-                                    <div id="pointValue">
-                                        <label class="control-label"><input class="form-control" th:value="${couponVO[13]}" maxlength="4" type="text" onkeypress="InputOnlyNumber(this);" name="pointValue"></label>
-                                        <label class="control-label">P</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <input type="hidden" name="couponBenefitValue">
-                        <div class="hr-line-dashed"></div>
-
                         <!--발송대상-->
                         <div class="form-group">
                             <label class="col-sm-2 control-label">발송대상<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-7">
                                 <div class="row">
-                                    <div class="col-md-2" th:if="${couponVO[7]} == 'BIRTH'">
+                                    <div class="col-md-2" th:if="${couponVO[4]} == 'BIRTH'">
                                         <label class="radio-inline"><input type="radio" name="couponTargetTypeCode" value="BIRTH" checked>생일</label>
                                     </div>
-                                    <div class="col-md-2" id="couponTargetSTAMP" th:if="${couponVO[7]} == 'STAMP'">
+                                    <div class="col-md-2" id="couponTargetSTAMP" th:if="${couponVO[4]} == 'STAMP'">
                                         <label class="radio-inline"><input type="radio" name="couponTargetTypeCode" value="STAMP" checked>도장적립</label>
                                     </div>
-                                    <div class="col-md-2" th:if="${couponVO[7]} == 'NEW'">
+                                    <div class="col-md-2" th:if="${couponVO[4]} == 'NEW'">
                                         <label class="radio-inline"><input type="radio" name="couponTargetTypeCode" value="NEW" checked>신규</label>
                                     </div>
-                                    <div class="col-md-2" th:if="${couponVO[7]} == 'UPGRADE'">
+                                    <div class="col-md-2" th:if="${couponVO[4]} == 'UPGRADE'">
                                         <label class="radio-inline"><input type="radio" name="couponTargetTypeCode" value="UPGRADE" checked>단골등업</label>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-2" th:if="${couponVO[7]} == 'WHOLE'">
+                                    <div class="col-md-2" th:if="${couponVO[4]} == 'WHOLE'">
                                         <label class="radio-inline"><input type="radio" name="couponTargetTypeCode" value="WHOLE" checked>전체</label>
                                     </div>
-                                    <div class="col-md-2" th:if="${couponVO[7]} == 'VIP'">
+                                    <div class="col-md-2" th:if="${couponVO[4]} == 'VIP'">
                                         <label class="radio-inline"><input type="radio" name="couponTargetTypeCode" value="VIP" checked>단골</label>
                                     </div>
-                                    <div class="col-md-4" th:if="${couponVO[7]} == 'SELECT'">
+                                    <div class="col-md-4" th:if="${couponVO[4]} == 'SELECT'">
                                         <div class="row">
                                             <div class="col-sm-4">
                                                 <label class="radio-inline"><input type="radio" name="couponTargetTypeCode" value="SELECT" checked>특정</label>
@@ -173,18 +137,18 @@
                             <div class="col-sm-7">
                                 <div class="row">
                                     <div class="col-sm-2" >
-                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[8]} == 'CB'"  name="couponPublishTypeCode" value="CB">쿠폰함</label>
+                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[5]} == 'CB'"  name="couponPublishTypeCode" value="CB">쿠폰함</label>
                                     </div>
-                                    <div class="col-sm-2" id="couponARPublish">
-                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[8]} == 'AR'" name="couponPublishTypeCode" value="AR">AR게임</label>
-                                    </div>
+                                    <!--<div class="col-sm-2" id="couponARPublish">-->
+                                        <!--<label class="radio-inline"><input type="radio" th:checked="${couponVO[5]} == 'AR'" name="couponPublishTypeCode" value="AR">AR게임</label>-->
+                                    <!--</div>-->
                                     <div class="col-sm-2" id="couponReservation" style="display: none;">
-                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[8]} == 'RESERVE'" name="couponPublishTypeCode" value="RESERVE">예약발행</label>
+                                        <label class="radio-inline"><input type="radio" th:checked="${couponVO[5]} == 'RESERVE'" name="couponPublishTypeCode" value="RESERVE">예약발행</label>
                                     </div>
                                     <div class="col-sm-6" id="couponReservationTime" style="display: none;">
                                         <label class="radio-inline">
                                             <span class="col-md-7 input-group date">
-                                                <input type="text" class="form-control" name="couponReservationTime" th:value="${couponVO[16]}">
+                                                <input type="text" class="form-control" name="couponReservationTime" th:value="${couponVO[6]}">
                                                 <span class="input-group-addon">
                                                     <span class="fa fa-calendar"></span>
                                                 </span>
@@ -200,7 +164,7 @@
                         <div class="form-group" id="couponTitle">
                             <label class="col-sm-2 control-label">쿠폰명<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
-                                <input type="text" th:value="${couponVO[6]}" maxlength="11" class="form-control" name="couponTitle">
+                                <input type="text" th:value="${couponVO[3]}" maxlength="11" class="form-control" name="couponTitle">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -210,7 +174,7 @@
                             <label class="col-sm-2 control-label">쿠폰만료일<label class="notnull-mark-color"> *</label></label>
                             <div class="col-md-5">
                                 <span class="col-md-4 input-group date">
-                                    <input type="text" th:value="${couponVO[17]}" class="form-control" name="couponFinishdate">
+                                    <input type="text" th:value="${couponVO[13]}" class="form-control" name="couponFinishdate">
                                     <span class="input-group-addon">
                                         <span class="fa fa-calendar"></span>
                                     </span>
@@ -256,7 +220,6 @@
                     <thead>
                     <th>전화번호</th>
                     <th>이름</th>
-                    <th>쿠폰유형</th>
                     <th>쿠폰명</th>
                     <th>발급대상</th>
                     <th>발급경로</th>
@@ -286,38 +249,24 @@
 
         var couponNo = /*[[${couponVO[0]}]]*/'';
         var storeId = /*[[${couponVO[1]}]]*/'';
-        var couponTypeNo = /*[[${couponVO[3]}]]*/'';
-        var couponDiscountTypeCode = /*[[${couponVO[14]}]]*/'';
-        var couponTargetTypeCode = /*[[${couponVO[7]}]]*/'';
+        var couponDiscountTypeCode = /*[[${couponVO[10]}]]*/'';
+        var couponTargetTypeCode = /*[[${couponVO[4]}]]*/'';
 
         $(document).ready(function () {
 
             $('.chosen-select').chosen({width: "100%"});
 
             //할인여부에 따른 CSS
-            if(couponTypeNo == 1){
-                $('#selectProduct').css('display', 'block');
-                $('#couponDiscountTypeCode').css('display', 'block');
+            $('#selectProduct').css('display', 'block');
+            $('#couponDiscountTypeCode').css('display', 'block');
 
-                if (couponDiscountTypeCode == 'DCR') {
-                    $('#DCRValue').css('display', 'block');
-                    $('#DCPValue').css('display', 'none');
-                }
-                else if (couponDiscountTypeCode == 'DCP') {
-                    $('#DCPValue').css('display', 'block');
-                    $('#DCRValue').css('display', 'none');
-                }
+            if (couponDiscountTypeCode == 'DCR') {
+                $('#DCRValue').css('display', 'block');
+                $('#DCPValue').css('display', 'none');
             }
-            else{
-                $('#couponBenefitValue').css('display', 'block');
-                if(couponTypeNo == 2){
-                    $('#stampValue').css('display', 'block');
-                    $('#pointValue').css('display', 'none');
-                }
-                if(couponTypeNo == 3){
-                    $('#pointValue').css('display', 'block');
-                    $('#stampValue').css('display', 'none');
-                }
+            else if (couponDiscountTypeCode == 'DCP') {
+                $('#DCPValue').css('display', 'block');
+                $('#DCRValue').css('display', 'none');
             }
 
             if (couponTargetTypeCode == 'WHOLE' || couponTargetTypeCode == 'VIP'
@@ -334,7 +283,7 @@
 
             }
             else{
-                selectProduct(storeId);
+//                selectProduct(storeId);
                 $('#btnUpdate').css('visibility', 'visible');
             }
 
@@ -397,7 +346,6 @@
                                     '<tr>' +
                                     '<td>' + item[4].replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3") + '</td>' +
                                     '<td>' + customerName + '</td>' +
-                                    '<td>' + item[6] + '</td>' +
                                     '<td>' + item[7] + '</td>' +
                                     '<td>' + couponTargetTypeCode + '</td>' +
                                     '<td>' + couponPublishTypeCode + '</td>' +
@@ -420,49 +368,6 @@
 
                     }
                 });
-            });
-
-            //쿠폰유형에 따른 CSS
-            detailForm.find('[name="couponTypeNo"]').change(function (e) {
-                var storeId = detailForm.find('[name="storeId"]').val();
-                var couponTypeNo = detailForm.find('[name="couponTypeNo"]:checked').val();
-
-                console.log(couponTypeNo + '값');
-
-                if(storeId == 'ALL') {
-                    alert('가맹점을 먼저 선택해주세요.');
-                    console.log($(this));
-                    $(this).prop('checked', false);
-
-                    return false;
-                }
-                else{
-                    if(couponTypeNo == 1){
-                        $('#selectProduct').css('display','block');
-                        $('#couponDiscountTypeCode').css('display','block');
-                        $('#couponReservation').css('display','block');
-                        $('#couponBenefitValue').css('display','none');
-                        detailForm.find('[name="couponPublishTypeCode"]').prop('checked', false);
-                        selectProduct(storeId);
-                    }
-                    else{
-                        $('#selectProduct').css('display','none');
-                        $('#couponReservation').css('display','none');
-                        $('#couponReservationTime').css('display','none');
-                        $('#couponDiscountTypeCode').css('display','none');
-                        $('#couponBenefitValue').css('display','block');
-
-                        if(couponTypeNo == 2){
-                            $('#stampValue').css('display','block');
-                            $('#pointValue').css('display','none');
-                        }
-                        if(couponTypeNo == 3){
-                            $('#pointValue').css('display','block');
-                            $('#stampValue').css('display','none');
-                        }
-                    }
-                }
-
             });
 
             //할인타입에 따른 CSS
@@ -497,16 +402,13 @@
                 if (confirm('수정하시겠습니까?') != true) return false;
 
                 var storeId = detailForm.find('[name="storeId"]').val();
-                var productTitle = detailForm.find('[name="productTitle"]').val();
-                var productPrice = detailForm.find('[name="productTitle"] option:selected').text();
+                var productNo = detailForm.find('[name="productNo"]').val();
+                var productPrice = detailForm.find('[name="productNo"] option:selected').text();
                 var couponDiscountTypeCode = detailForm.find('[name="couponDiscountTypeCode"]:checked').val();
                 var DCPValue = detailForm.find('[name="DCPValue"]').val();
                 var DCRValue = detailForm.find('[name="DCRValue"]').val();
                 var couponTargetTypeCode = detailForm.find('[name="couponTargetTypeCode"]:checked').val();
                 var couponPublishTypeCode = detailForm.find('[name="couponPublishTypeCode"]:checked').val();
-                var stampValue = detailForm.find('[name="stampValue"]').val();
-                var pointValue = detailForm.find('[name="pointValue"]').val();
-                var couponTypeNo = detailForm.find('[name="couponTypeNo"]:checked').val();
                 var couponFinishDate = detailForm.find('[name="finishDate"]').val();
 
                 var productPriceValue = productPrice.substring(productPrice.indexOf("(")+1, productPrice.lastIndexOf("원"));
@@ -515,86 +417,49 @@
                     alert('가맹점을 선택해주세요.');
                     return false;
                 }
-                if(couponTypeNo == 1){
-                    detailForm.find('[name="couponBenefitValue"]').val('0');
 
-                    if (productTitle == ''){
-                        alert('상품을 선택해주세요.');
-                        return false;
-                    }
-                    if (couponDiscountTypeCode == undefined){
-                        alert('할인타입을 선택해주세요.');
-                        return false;
-                    }
-                    else{
-                        if (couponDiscountTypeCode == 'DCR'){
-                            if (DCRValue == ''){
-                                alert('할인률을 입력해주세요');
-                                return false;
-                            }
-                            else if (parseInt(DCRValue) > 100){
-                                alert('할인률은 100%까지 입력가능합니다.');
-                                return false;
-                            }
-                            else{
-                                detailForm.find('[name="couponDiscountValue"]').val(DCRValue);
-                            }
-                        }
-                        if (couponDiscountTypeCode == 'DCP'){
-                            if (DCPValue == ''){
-                                alert('할인가를 입력해주세요');
-                                return false;
-                            }
-                            else if (parseInt(DCPValue) > parseInt(productPriceValue)){
-                                alert('할인가는 상품가격보다 크게 입력이 불가능합니다.');
-                                return false;
-                            }
-                            else{
-                                detailForm.find('[name="couponDiscountValue"]').val(DCPValue);
-                            }
-                        }
-                    }
-
-                    detailForm.find('[name="productTitle"]').val(DCPValue);
-
+                if (productNo == 0) {
+                    alert('상품을 선택해주세요.');
+                    return false;
                 }
-                else{
-                    detailForm.find('[name="couponDiscountValue"]').val('0');
-
-                    if (couponTypeNo == 2){
-                        if (stampValue == ''){
-                            alert('도장 개수를 입력해주세요');
+                if (couponDiscountTypeCode == undefined) {
+                    alert('할인타입을 선택해주세요.');
+                    return false;
+                }
+                else {
+                    if (couponDiscountTypeCode == 'DCR') {
+                        if (DCRValue == '') {
+                            alert('할인률을 입력해주세요');
                             return false;
                         }
-                        else if (stampValue == 0){
-                            alert('도장은 1개 이상부터 입력해주세요');
+                        else if (parseInt(DCRValue) > 100) {
+                            alert('할인률은 100%까지 입력가능합니다.');
                             return false;
                         }
-                        else{
-                            detailForm.find('[name="couponBenefitValue"]').val(stampValue);
+                        else {
+                            detailForm.find('[name="couponDiscountValue"]').val(DCRValue);
                         }
                     }
-                    if (couponTypeNo == 3){
-                        if (pointValue == ''){
-                            alert('포인트를 입력해주세요');
+                    if (couponDiscountTypeCode == 'DCP') {
+                        console.log('ddddddd');
+                        if (DCPValue == '') {
+                            alert('할인가를 입력해주세요');
                             return false;
                         }
-                        else if (pointValue == 0){
-                            alert('포인트는 1P 이상부터 입력해주세요');
+                        else if (parseInt(DCPValue) > parseInt(productPriceValue)) {
+                            alert('할인가는 상품가격보다 크게 입력이 불가능합니다.');
                             return false;
                         }
-                        else{
-                            detailForm.find('[name="couponBenefitValue"]').val(stampValue);
+                        else {
+                            detailForm.find('[name="couponDiscountValue"]').val(DCPValue);
                         }
                     }
                 }
+
+                detailForm.find('[name="productTitle"]').val(productNo);
 
                 if (couponPublishTypeCode == undefined){
                     alert('발행방법을 선택해주세요.');
-                    return false;
-                }
-                if (couponTypeNo == undefined){
-                    alert('쿠폰유형을 선택해주세요.');
                     return false;
                 }
                 if (couponFinishDate == "") {
@@ -614,20 +479,20 @@
                 success: function (data) {
                     console.log(data);
                     if (data.length != 0) {
-                        detailForm.find('[name="productTitle"] option').remove();
+                        detailForm.find('[name="productNo"] option').remove();
 
                         $.each(data, function (index, item) {
                             console.log(item);
 
-                            detailForm.find('[name="productTitle"]').append(
+                            detailForm.find('[name="productNo"]').append(
                                 '<option value="' + item[6] + '" >' + item[6] +'('+item[7]+'원)'+'</option>'
                             );
                         });
                     }
                     else{
                         console.log('데이터없음');
-                        detailForm.find('[name="productTitle"] option').remove();
-                        detailForm.find('[name="productTitle"]').append('<option value="0">상품 선택</option>');
+                        detailForm.find('[name="productNo"] option').remove();
+                        detailForm.find('[name="productNo"]').append('<option value="0">상품 선택</option>');
 
                         alert('등록된 상품이 없습니다.');
                     }

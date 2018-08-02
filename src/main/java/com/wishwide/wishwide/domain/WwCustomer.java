@@ -52,7 +52,7 @@ public class WwCustomer {
     private String customerJoinPath;
 
     //고객활성여부
-    @Column(name="customer_visibleCode", nullable = false, length = 1)
+    @Column(name="customer_visibleCode", nullable = false, length = 1, columnDefinition = "int default 1")
     private int customerVisibleCode = 1;
 
     //고객등록일시

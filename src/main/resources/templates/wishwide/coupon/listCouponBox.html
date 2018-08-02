@@ -32,19 +32,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-sm-3 m-b-xs">쿠폰유형</th>
-                                    <td>
-                                        <div class="col-sm-6 m-b-xs">
-                                            <select class="input-sm form-control input-s-sm inline" id="couponTypeCode">
-                                                <option value="ALL" th:selected="${pageVO.couponTypeCode} == 'ALL'">전체</option>
-                                                <option value="1" th:selected="${pageVO.couponTypeCode} == '1'">할인</option>
-                                                <option value="2" th:selected="${pageVO.couponTypeCode} == '2'">도장</option>
-                                                <option value="3" th:selected="${pageVO.couponTypeCode} == '3'">포인트</option>
-                                            </select>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <th class="col-sm-3 m-b-xs">발급대상</th>
                                     <td>
                                         <div class="col-sm-6 m-b-xs text-left">
@@ -123,7 +110,6 @@
                                 <th sec:authorize="hasRole('MA')">가맹점명</th>
                                 <th>전화번호</th>
                                 <th>이름</th>
-                                <th>쿠폰유형</th>
                                 <th>쿠폰명</th>
                                 <th>발급대상</th>
                                 <th>발급경로</th>
@@ -141,7 +127,6 @@
                                         <span th:if="${vo[5]} != null">[[${vo[5]}]]</span>
                                         <span th:if="${vo[5]} == null">-</span>
                                     </td>
-                                    <td>[[${vo[6]}]]</td>
                                     <td>[[${vo[7]}]]</td>
                                     <td>
                                         <span th:switch="${vo[8]}">

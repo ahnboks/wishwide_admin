@@ -38,38 +38,32 @@
                         </div>
                         <div class="hr-line-dashed"></div>
 
-                        <!--쿠폰 유형-->
-                        <div class="form-group" >
-                            <label class="col-sm-2 control-label">쿠폰 유형<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-6">
-                                <div class="row">
-                                    <div class="col-sm-2">
-                                        <label class="radio-inline"><input type="radio" name="couponTypeNo" value="1">할인</label>
-                                    </div>
-                                    <div class="col-sm-2" id="stamp" th:if="${benefitTypeCode} != 'N'">
-                                        <label class="radio-inline"><input type="radio" name="couponTypeNo" value="2">도장</label>
-                                    </div>
-                                    <div class="col-sm-2" id="point" th:if="${benefitTypeCode} != 'N'">
-                                        <label class="radio-inline"><input type="radio" name="couponTypeNo" value="3">포인트</label>
-                                    </div>
-                                </div>
+                        <!--상품 선택-->
+                        <div class="form-group" sec:authorize="hasRole('MA')">
+                            <label class="col-sm-2 control-label">상품 선택<label class="notnull-mark-color"> *</label></label>
+                            <div class="col-sm-3">
+                                <select class="form-control m-b" name="productNo">
+                                    <option value="0">상품 선택</option>
+                                </select>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
 
                         <!--상품 선택-->
-                        <div class="form-group" id="selectProduct" style="display:none;">
+                        <div class="form-group" sec:authorize="hasRole('ST')">
                             <label class="col-sm-2 control-label">상품 선택<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-3" id="productTitle">
-                                <select class="form-control m-b" name="productTitle">
+                            <div class="col-sm-3">
+                                <select class="form-control m-b" name="productNo">
                                     <option value="0">상품 선택</option>
+                                    <option th:each="product:${productList}" th:value="${product[6]}">[[${product[6]}]]([[${product[7]}]]원)</option>
                                 </select>
                             </div>
                         </div>
-                        <!--<div class="hr-line-dashed"></div>-->
+                        <div class="hr-line-dashed"></div>
+                        <input type="hidden" name="productTitle">
 
                         <!--할인타입-->
-                        <div class="form-group" id="couponDiscountTypeCode" style="display:none;">
+                        <div class="form-group" id="couponDiscountTypeCode" >
                             <label class="col-sm-2 control-label">할인타입<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-3">
                                 <div class="row">
@@ -94,25 +88,6 @@
                         </div>
                         <div class="hr-line-dashed"></div>
                         <input type="hidden" name="couponDiscountValue">
-
-                        <!--도장포인트 혜택값-->
-                        <div class="form-group" id="couponBenefitValue" style="display:none;">
-                            <label class="col-sm-2 control-label">혜택값<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-3">
-                                <div class="row">
-                                    <div id="stampValue">
-                                        <label class="control-label"><input class="form-control" maxlength="2" type="text" onkeypress="InputOnlyNumber(this);" name="stampValue"></label>
-                                        <label class="control-label">개</label>
-                                    </div>
-                                    <div id="pointValue">
-                                        <label class="control-label"><input class="form-control" maxlength="4" type="text" onkeypress="InputOnlyNumber(this);" name="pointValue"></label>
-                                        <label class="control-label">P</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <input type="hidden" name="couponBenefitValue">
-                        <div class="hr-line-dashed"></div>
 
                         <!--발송대상-->
                         <div class="form-group">
@@ -202,9 +177,9 @@
                                     <div class="col-sm-2" >
                                         <label class="radio-inline"><input type="radio" name="couponPublishTypeCode" value="CB">쿠폰함</label>
                                     </div>
-                                    <div class="col-sm-2" id="couponARPublish">
-                                        <label class="radio-inline"><input type="radio" name="couponPublishTypeCode" value="AR">AR게임</label>
-                                    </div>
+                                    <!--<div class="col-sm-2" id="couponARPublish">-->
+                                        <!--<label class="radio-inline"><input type="radio" name="couponPublishTypeCode" value="AR">AR게임</label>-->
+                                    <!--</div>-->
                                     <div class="col-sm-2" id="couponReservation" style="display: none;">
                                         <label class="radio-inline"><input type="radio" name="couponPublishTypeCode" value="RESERVE">예약발행</label>
                                     </div>
@@ -227,8 +202,8 @@
                         <div class="form-group" id="couponTitle">
                             <label class="col-sm-2 control-label">쿠폰명<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
-                                <input type="text" maxlength="11" class="form-control" name="couponTitle">
-                                <span class="msg-title-input-validation"/>
+                                <input type="text" maxlength="11" class="form-control title-input-validation" name="couponTitle">
+                                <span class="msg-title-input-validation"></span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -319,13 +294,11 @@
 
                 registerForm.find('[name="couponTargetTypeCode"]:checked').prop('checked', false);
                 registerForm.find('[name="couponPublishTypeCode"]:checked').prop('checked', false);
-                registerForm.find('[name="couponTypeNo"]:checked').prop('checked', false);
                 $('#couponBenefitValue').css('display','none');
                 $('#stampValue').css('display','none');
                 $('#pointValue').css('display','none');
 
                 if (storeId == 'ALL'){
-                    $('#selectProduct').css('display','none');
                     $('#couponReservation').css('display','none');
                     $('#couponReservationTime').css('display','none');
                     $('#stamp').css('display','block');
@@ -335,54 +308,7 @@
                     $('#couponDiscountTypeCode').css('display','none');
                 }
 
-                var couponTypeNo = registerForm.find('[name="couponTypeNo"]:checked').val();
-
-                if(couponTypeNo == 1){
-                    selectProduct(storeId);
-                }
-            });
-
-            //쿠폰유형에 따른 CSS
-            registerForm.find('[name="couponTypeNo"]').change(function (e) {
-                var storeId = registerForm.find('[name="storeId"]').val();
-                var couponTypeNo = registerForm.find('[name="couponTypeNo"]:checked').val();
-
-                console.log(couponTypeNo + '값');
-
-                if(storeId == 'ALL') {
-                    alert('가맹점을 먼저 선택해주세요.');
-                    console.log($(this));
-                    $(this).prop('checked', false);
-
-                    return false;
-                }
-                else{
-                    if(couponTypeNo == 1){
-                        $('#selectProduct').css('display','block');
-                        $('#couponDiscountTypeCode').css('display','block');
-                        $('#couponReservation').css('display','block');
-                        $('#couponBenefitValue').css('display','none');
-                        registerForm.find('[name="couponPublishTypeCode"]').prop('checked', false);
-                        selectProduct(storeId);
-                    }
-                    else{
-                        $('#selectProduct').css('display','none');
-                        $('#couponReservation').css('display','none');
-                        $('#couponReservationTime').css('display','none');
-                        $('#couponDiscountTypeCode').css('display','none');
-                        $('#couponBenefitValue').css('display','block');
-
-                        if(couponTypeNo == 2){
-                            $('#stampValue').css('display','block');
-                            $('#pointValue').css('display','none');
-                        }
-                        if(couponTypeNo == 3){
-                            $('#pointValue').css('display','block');
-                            $('#stampValue').css('display','none');
-                        }
-                    }
-                }
-
+                selectProduct(storeId);
             });
 
             //할인타입에 따른 CSS
@@ -521,16 +447,13 @@
 
                 /*유효성 검사*/
                 var storeId = registerForm.find('[name="storeId"]').val();
-                var productTitle = registerForm.find('[name="productTitle"]').val();
-                var productPrice = registerForm.find('[name="productTitle"] option:selected').text();
+                var productNo = registerForm.find('[name="productNo"]').val();
+                var productPrice = registerForm.find('[name="productNo"] option:selected').text();
                 var couponDiscountTypeCode = registerForm.find('[name="couponDiscountTypeCode"]:checked').val();
                 var DCPValue = registerForm.find('[name="DCPValue"]').val();
                 var DCRValue = registerForm.find('[name="DCRValue"]').val();
                 var couponTargetTypeCode = registerForm.find('[name="couponTargetTypeCode"]:checked').val();
                 var couponPublishTypeCode = registerForm.find('[name="couponPublishTypeCode"]:checked').val();
-                var stampValue = registerForm.find('[name="stampValue"]').val();
-                var pointValue = registerForm.find('[name="pointValue"]').val();
-                var couponTypeNo = registerForm.find('[name="couponTypeNo"]:checked').val();
                 var couponFinishDate = registerForm.find('[name="finishDate"]').val();
 
                 var productPriceValue = productPrice.substring(productPrice.indexOf("(")+1, productPrice.lastIndexOf("원"));
@@ -539,82 +462,48 @@
                     alert('가맹점을 선택해주세요.');
                     return false;
                 }
-                if(couponTypeNo == 1){
-                    registerForm.find('[name="couponBenefitValue"]').val('0');
 
-                    if (productTitle == ''){
-                        alert('상품을 선택해주세요.');
-                        return false;
-                    }
-                    if (couponDiscountTypeCode == undefined){
-                        alert('할인타입을 선택해주세요.');
-                        return false;
-                    }
-                    else{
-                        if (couponDiscountTypeCode == 'DCR'){
-                            if (DCRValue == ''){
-                                alert('할인률을 입력해주세요');
-                                return false;
-                            }
-                            else if (parseInt(DCRValue) > 100){
-                                alert('할인률은 100%까지 입력가능합니다.');
-                                return false;
-                            }
-                            else{
-                                registerForm.find('[name="couponDiscountValue"]').val(DCRValue);
-                            }
-                        }
-                        if (couponDiscountTypeCode == 'DCP'){
-                            if (DCPValue == ''){
-                                alert('할인가를 입력해주세요');
-                                return false;
-                            }
-                            else if (parseInt(DCPValue) > parseInt(productPriceValue)){
-                                alert('할인가는 상품가격보다 크게 입력이 불가능합니다.');
-                                return false;
-                            }
-                            else{
-                                registerForm.find('[name="couponDiscountValue"]').val(DCPValue);
-                            }
-                        }
-                    }
-
-                    registerForm.find('[name="productTitle"]').val(DCPValue);
-
+                if (productNo == 0) {
+                    alert('상품을 선택해주세요.');
+                    return false;
                 }
-                else{
-                    registerForm.find('[name="couponDiscountValue"]').val('0');
-
-                    if (couponTypeNo == 2){
-                        if (stampValue == ''){
-                            alert('도장 개수를 입력해주세요');
+                if (couponDiscountTypeCode == undefined) {
+                    alert('할인타입을 선택해주세요.');
+                    return false;
+                }
+                else {
+                    if (couponDiscountTypeCode == 'DCR') {
+                        if (DCRValue == '') {
+                            alert('할인률을 입력해주세요');
                             return false;
                         }
-                        else if (stampValue == 0){
-                            alert('도장은 1개 이상부터 입력해주세요');
+                        else if (parseInt(DCRValue) > 100) {
+                            alert('할인률은 100%까지 입력가능합니다.');
                             return false;
                         }
-                        else{
-                            registerForm.find('[name="couponBenefitValue"]').val(stampValue);
+                        else {
+                            registerForm.find('[name="couponDiscountValue"]').val(DCRValue);
                         }
                     }
-                    if (couponTypeNo == 3){
-                        if (pointValue == ''){
-                            alert('포인트를 입력해주세요');
+                    if (couponDiscountTypeCode == 'DCP') {
+                        if (DCPValue == '') {
+                            alert('할인가를 입력해주세요');
                             return false;
                         }
-                        else if (pointValue == 0){
-                            alert('포인트는 1P 이상부터 입력해주세요');
+                        else if (parseInt(DCPValue) > parseInt(productPriceValue)) {
+                            alert('할인가는 상품가격보다 크게 입력이 불가능합니다.');
                             return false;
                         }
-                        else{
-                            registerForm.find('[name="couponBenefitValue"]').val(stampValue);
+                        else {
+                            registerForm.find('[name="couponDiscountValue"]').val(DCPValue);
                         }
                     }
                 }
+
+                registerForm.find('[name="productTitle"]').val(productNo);
 
                 if (couponTargetTypeCode == undefined){
-                    alert('발송대상을 선택해주세요.');
+                    alert('발행대상을 선택해주세요.');
                     return false;
                 }
                 //발행대상 유효성검사
@@ -642,10 +531,7 @@
                     alert('발행방법을 선택해주세요.');
                     return false;
                 }
-                if (couponTypeNo == undefined){
-                    alert('쿠폰유형을 선택해주세요.');
-                    return false;
-                }
+
                 if (couponFinishDate == "") {
                     alert('쿠폰 만료일을 선택해 주세요.');
                     return false;
@@ -684,20 +570,20 @@
             success: function (data) {
                 console.log(data);
                 if (data.length != 0) {
-                    registerForm.find('[name="productTitle"] option').remove();
+                    registerForm.find('[name="productNo"] option').remove();
 
                     $.each(data, function (index, item) {
                         console.log(item);
 
-                        registerForm.find('[name="productTitle"]').append(
+                        registerForm.find('[name="productNo"]').append(
                             '<option value="' + item[6] + '" >' + item[6] + '(' + item[7] + '원)' + '</option>'
                         );
                     });
                 }
                 else {
                     console.log('데이터없음');
-                    registerForm.find('[name="productTitle"] option').remove();
-                    registerForm.find('[name="productTitle"]').append('<option value="0">상품 선택</option>');
+                    registerForm.find('[name="productNo"] option').remove();
+                    registerForm.find('[name="productNo"]').append('<option value="0">상품 선택</option>');
 
                     alert('등록된 상품이 없습니다.');
                 }
@@ -725,19 +611,18 @@
                         $('#couponTargetSTAMP').css('display', 'none');
                         $('#couponTargetUPGRADE').css('display', 'none');
                     }
-                    if (data[25] == 0) {
-                        $('#couponARPublish').css('display', 'none');
-                    }
-                    if (data[25] == 1) {
-                        $('#couponARPublish').css('display', 'block');
-                    }
+//                    if (data[25] == 0) {
+//                        $('#couponARPublish').css('display', 'none');
+//                    }
+//                    if (data[25] == 1) {
+//                        $('#couponARPublish').css('display', 'block');
+//                    }
                 }
             }
         });
     }
 
-    function InputOnlyNumber(obj)
-    {
+    function InputOnlyNumber(obj) {
         console.log(obj);
         $(obj).keyup(function(){
             $(this).val($(this).val().replace(/[^0-9]/g,''));
@@ -779,8 +664,5 @@
 
         return true;
     }
-
 </script>
 </th:block>
-
-

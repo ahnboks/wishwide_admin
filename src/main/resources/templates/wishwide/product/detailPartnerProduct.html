@@ -555,13 +555,17 @@
                     alert('상품명을 입력해주세요.');
                     return false;
                 }
-                if (productDiscountCode == '') {
+                if (productDiscountCode == undefined) {
                     alert('할인여부를 선택해주세요.');
                     return false;
                 }
-                if (productDiscountTypeCode == '') {
-                    alert('할인타입을 선택해주세요.');
-                    return false;
+                else{
+                    if(productDiscountCode == 1){
+                        if (productDiscountTypeCode == undefined) {
+                            alert('할인타입을 선택해주세요.');
+                            return false;
+                        }
+                    }
                 }
 
                 var productImage = $('input[name="productImage"]').val();

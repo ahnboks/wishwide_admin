@@ -43,7 +43,7 @@ public class DeviceModelImage {
     private String deviceModelImageExtension;
 
     //디바이스 모델 이미지 파일크기
-    @Column(length = 10, nullable = false,  name = "device_model_image_size")
+    @Column(length = 10, nullable = false,  name = "device_model_image_size", columnDefinition = "int default 0")
     private int deviceModelImageSize;
 
     //디바이스 모델 이미지 파일주소

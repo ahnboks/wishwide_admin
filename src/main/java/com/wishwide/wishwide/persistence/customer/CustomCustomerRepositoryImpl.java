@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport implements CustomCustomer {
-    public CustomCustomerRepositoryImpl(){
+    public CustomCustomerRepositoryImpl() {
         super(MembershipCustomer.class);
     }
 
@@ -22,8 +22,8 @@ public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport impl
                                           String searchUserId,
                                           String roleCode,
                                           String sessionId,
-                                          String customerBenefitTypeCode,
-                                          String customerGradeTypeCode,
+                                          String membershipCustomerBenefitTypeCode,
+                                          String membershipCustomerGradeTypeCode,
                                           Pageable pageable) {
         QMembershipCustomer customer = QMembershipCustomer.membershipCustomer;
         QStore store = QStore.store;    //매장
@@ -38,18 +38,18 @@ public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport impl
 
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
                 customer.membershipCustomerNo,    //멤버쉽고객번호0
-                customer.customerPhone, //고객전화번호1
+                customer.membershipCustomerPhone, //고객전화번호1
                 store.storeId,  //매장아이디2
                 store.storeName,    //가맹점명3
-                customer.customerGradeTypeCode, //고객등급4
+                customer.membershipCustomerGradeTypeCode, //고객등급4
                 customerVisitHistory.customerVisitHistoryNo.countDistinct(),    //방문횟수5
                 giftReceiveHistory.giftReceiveHistoryNo.countDistinct(),    //선물구매수6
-                customer.customerReceiveGiftCnt,    //받은선물수7
+                customer.membershipCustomerReceiveGiftCnt,    //받은선물수7
                 useCouponBox.couponBoxNo.countDistinct(),   //사용한쿠폰수8
                 notUsecouponBox.couponBoxNo.countDistinct(),    //사용안햔쿠폰수9
-                customer.customerBenefitTypeCode,   //고객혜택타입10
-                customer.customerBenefitValue,  //고객혜택값11
-                customer.customerBirth, //고객생일12
+                customer.membershipCustomerBenefitTypeCode,   //고객혜택타입10
+                customer.membershipCustomerBenefitValue,  //고객혜택값11
+                customer.membershipCustomerBirth, //고객생일12
                 customer.membershipCustomerRegdate,    //고객 가입일시13
                 useGiftBox.giftBoxNo.countDistinct(),  //사용한선물수14
                 notUseGiftBox.giftBoxNo.countDistinct()    //사용안한선물수15
@@ -59,40 +59,40 @@ public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport impl
         tupleJPQLQuery.leftJoin(store).on(customer.storeId.eq(store.storeId))
                 .leftJoin(giftReceiveHistory).on(customer.membershipCustomerNo.eq(giftReceiveHistory.membershipCustomerNo))
                 .leftJoin(customerVisitHistory).on(customer.membershipCustomerNo.eq(customerVisitHistory.membershipCustomerNo))
-                .leftJoin(useGiftBox).on(customer.customerPhone.eq(useGiftBox.giftReceiverPhone).and(useGiftBox.giftUseCode.eq(1)).and(useGiftBox.storeId.eq(customer.storeId)))
-                .leftJoin(notUseGiftBox).on(customer.customerPhone.eq(notUseGiftBox.giftReceiverPhone).and(useGiftBox.storeId.eq(customer.storeId)))
-                .leftJoin(useCouponBox).on(customer.membershipCustomerNo.eq(useCouponBox.membershipCustomerNo).and(useCouponBox.couponUseCode.eq(1)))
+                .leftJoin(useGiftBox).on(customer.membershipCustomerPhone.eq(useGiftBox.gbGiftReceiverPhone).and(useGiftBox.giftUseCode.eq(1)).and(useGiftBox.storeId.eq(customer.storeId)))
+                .leftJoin(notUseGiftBox).on(customer.membershipCustomerPhone.eq(notUseGiftBox.gbGiftReceiverPhone).and(useGiftBox.storeId.eq(customer.storeId)))
+                .leftJoin(useCouponBox).on(customer.membershipCustomerNo.eq(useCouponBox.membershipCustomerNo).and(useCouponBox.cbCouponUseCode.eq(1)))
                 .leftJoin(notUsecouponBox).on(customer.membershipCustomerNo.eq(notUsecouponBox.membershipCustomerNo));
 
         //조건식
 
         //권한:매장이 로그인했을 경우 한개의 리스트만 가져오기
-        if(roleCode.equals("ST"))
+        if (roleCode.equals("ST"))
             tupleJPQLQuery.where(customer.storeId.eq(sessionId));
 
         //검색조건 : 가맹점명
-        if(!searchUserId.equals("ALL")){
-            System.out.println("검색아이디"+searchUserId);
+        if (!searchUserId.equals("ALL")) {
+            System.out.println("검색아이디" + searchUserId);
             tupleJPQLQuery.where(customer.storeId.eq(searchUserId));
         }
         //검색조건 : 등급
-        if(!customerBenefitTypeCode.equals("ALL")){
-            tupleJPQLQuery.where(customer.customerBenefitTypeCode.eq(customerBenefitTypeCode));
+        if (!membershipCustomerBenefitTypeCode.equals("ALL")) {
+            tupleJPQLQuery.where(customer.membershipCustomerBenefitTypeCode.eq(membershipCustomerBenefitTypeCode));
         }
         //검색조건 : 혜택
-        if(!customerGradeTypeCode.equals("ALL")){
-            tupleJPQLQuery.where(customer.customerGradeTypeCode.eq(customerGradeTypeCode));
+        if (!membershipCustomerGradeTypeCode.equals("ALL")) {
+            tupleJPQLQuery.where(customer.membershipCustomerGradeTypeCode.eq(membershipCustomerGradeTypeCode));
         }
 
         //검색조건 : 전화번호, 이름, 쿠폰명
-        if(type != null) {
+        if (type != null) {
             switch (type.trim()) {
-                case "ALL" :
-                    tupleJPQLQuery.where(customer.customerPhone.like("%" + keyword + "%")
+                case "ALL":
+                    tupleJPQLQuery.where(customer.membershipCustomerPhone.like("%" + keyword + "%")
                     );
                     break;
-                case "customerPhone" :
-                    tupleJPQLQuery.where(customer.customerPhone.like("%" + keyword + "%"));
+                case "membershipCustomerPhone":
+                    tupleJPQLQuery.where(customer.membershipCustomerPhone.like("%" + keyword + "%"));
                     break;
             }
         }
@@ -141,18 +141,18 @@ public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport impl
 
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
                 customer.membershipCustomerNo,    //멤버쉽고객번호0
-                customer.customerPhone, //고객전화번호1
+                customer.membershipCustomerPhone, //고객전화번호1
                 store.storeId,  //매장아이디2
                 store.storeName,    //가맹점명3
-                customer.customerGradeTypeCode, //고객등급4
+                customer.membershipCustomerGradeTypeCode, //고객등급4
                 customerVisitHistory.customerVisitHistoryNo.countDistinct(),    //방문횟수5
                 giftReceiveHistory.giftReceiveHistoryNo.countDistinct(),    //선물구매수6
-                customer.customerReceiveGiftCnt,    //받은선물수7
+                customer.membershipCustomerReceiveGiftCnt,    //받은선물수7
                 useCouponBox.couponBoxNo.countDistinct(),   //사용한쿠폰수8
                 notUsecouponBox.couponBoxNo.countDistinct(),    //사용안햔쿠폰수9
-                customer.customerBenefitTypeCode,   //고객혜택타입10
-                customer.customerBenefitValue,  //고객혜택값11
-                customer.customerBirth, //고객생일12
+                customer.membershipCustomerBenefitTypeCode,   //고객혜택타입10
+                customer.membershipCustomerBenefitValue,  //고객혜택값11
+                customer.membershipCustomerBirth, //고객생일12
                 customer.membershipCustomerRegdate,    //고객 가입일시13
                 useGiftBox.giftBoxNo.countDistinct(),  //사용한선물수14
                 notUseGiftBox.giftBoxNo.countDistinct()    //사용안한선물수15
@@ -162,9 +162,9 @@ public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport impl
         tupleJPQLQuery.join(store).on(customer.storeId.eq(store.storeId))
                 .leftJoin(giftReceiveHistory).on(customer.membershipCustomerNo.eq(giftReceiveHistory.membershipCustomerNo))
                 .leftJoin(customerVisitHistory).on(customer.membershipCustomerNo.eq(customerVisitHistory.membershipCustomerNo))
-                .leftJoin(useGiftBox).on(customer.customerPhone.eq(useGiftBox.giftReceiverPhone).and(useGiftBox.giftUseCode.eq(1)))
-                .leftJoin(notUseGiftBox).on(customer.customerPhone.eq(notUseGiftBox.giftReceiverPhone))
-                .leftJoin(useCouponBox).on(customer.membershipCustomerNo.eq(useCouponBox.membershipCustomerNo).and(useCouponBox.couponUseCode.eq(1)))
+                .leftJoin(useGiftBox).on(customer.membershipCustomerPhone.eq(useGiftBox.gbGiftReceiverPhone).and(useGiftBox.giftUseCode.eq(1)))
+                .leftJoin(notUseGiftBox).on(customer.membershipCustomerPhone.eq(notUseGiftBox.gbGiftReceiverPhone))
+                .leftJoin(useCouponBox).on(customer.membershipCustomerNo.eq(useCouponBox.membershipCustomerNo).and(useCouponBox.cbCouponUseCode.eq(1)))
                 .leftJoin(notUsecouponBox).on(customer.membershipCustomerNo.eq(notUsecouponBox.membershipCustomerNo));
 
         //조건식
@@ -198,17 +198,17 @@ public class CustomCustomerRepositoryImpl extends QuerydslRepositorySupport impl
 
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
                 customer.membershipCustomerNo,    //멤버쉽고객번호0
-                customer.customerPhone, //고객전화번호1
-                customer.customerEmail, //고객이메일2
-                customer.customerName,  //고객명3
-                customer.customerGenderTypeCode,    //고객성별4
-                customer.customerBirth, //고객생일5
-                customer.customerGradeTypeCode, //고객등급6
-                customer.customerReceiveGiftCnt,    //받은선물수7
-                customer.customerBenefitTypeCode,   //고객혜택타입8
-                customer.customerBenefitValue,  //고객혜택값9
+                customer.membershipCustomerPhone, //고객전화번호1
+                customer.membershipCustomerEmail, //고객이메일2
+                customer.membershipCustomerName,  //고객명3
+                customer.membershipCustomerGenderTypeCode,    //고객성별4
+                customer.membershipCustomerBirth, //고객생일5
+                customer.membershipCustomerGradeTypeCode, //고객등급6
+                customer.membershipCustomerReceiveGiftCnt,    //받은선물수7
+                customer.membershipCustomerBenefitTypeCode,   //고객혜택타입8
+                customer.membershipCustomerBenefitValue,  //고객혜택값9
                 customer.membershipCustomerRegdate,    //고객 가입일시10
-                customer.customerVisibleCode    //고객활성화여부11
+                customer.membershipCustomerVisibleCode    //고객활성화여부11
         );
 
         //조건식

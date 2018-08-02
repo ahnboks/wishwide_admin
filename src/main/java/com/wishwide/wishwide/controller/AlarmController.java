@@ -71,7 +71,7 @@ public class AlarmController {
 
         log.info("세션 : " + sessionId + roleCode);
 
-        Pageable pageable = pageVO.makePageable(0, "alarmTemplateNo");
+        Pageable pageable = pageVO.makePageable(0, "alarmTpNo");
 
         Page<Object[]> result = customAlarmSetRepository.getAlarmSetPage(
                 pageVO.getType(),   //검색조건
@@ -118,9 +118,9 @@ public class AlarmController {
         String sessionId = session.getAttribute("userId").toString();
         String roleCode = session.getAttribute("userRole").toString();
 
-        log.info("세션 : "+sessionId+roleCode);
+        log.info("세션 : " + sessionId + roleCode);
 
-        if(roleCode.equals("ST")){
+        if (roleCode.equals("ST")) {
             //가맹점아이디
             model.addAttribute("storeId", sessionId);
         }
@@ -142,29 +142,29 @@ public class AlarmController {
             for (Long membershipCustomerNo : membershipCustomerNoList) {
                 MembershipCustomer membershipCustomer = customCustomerRepository.findById(membershipCustomerNo).get();
 
-                String message = setAlarmMessage(alarmSendHistoryVO.getAlarmMessage(), membershipCustomer, alarmSendHistoryVO.getStoreId());
+                String message = setAlarmMessage(alarmSendHistoryVO.getAshAlarmMessage(), membershipCustomer, alarmSendHistoryVO.getStoreId());
 
                 //내역 저장
                 AlarmSendHistory alarmSendHistory = new AlarmSendHistory();
                 alarmSendHistory.setMembershipCustomerNo(membershipCustomerNo);
-                alarmSendHistory.setCustomerPhone(membershipCustomer.getCustomerPhone());
-                alarmSendHistory.setCustomerGradeTypeCode(membershipCustomer.getCustomerGradeTypeCode());
-                alarmSendHistory.setCustomerName(membershipCustomer.getCustomerName());
-                alarmSendHistory.setAlarmMessage(message);
+                alarmSendHistory.setAshCustomerPhone(membershipCustomer.getMembershipCustomerPhone());
+                alarmSendHistory.setAshCustomerGradeTypeCode(membershipCustomer.getMembershipCustomerGradeTypeCode());
+                alarmSendHistory.setAshCustomerName(membershipCustomer.getMembershipCustomerName());
+                alarmSendHistory.setAshAlarmMessage(message);
                 alarmSendHistory.setStoreId(alarmSendHistoryVO.getStoreId());
-                alarmSendHistory.setAlarmSendTypeCode(alarmSendHistoryVO.getAlarmSendTypeCode());
-                alarmSendHistory.setAlarmSendWayCode(alarmSendHistoryVO.getAlarmSendWayCode());
-                alarmSendHistory.setAlarmPurposeCode("ETC");
-                alarmSendHistory.setAlarmPurposeName("기타");
-                alarmSendHistory.setAlarmSendPointCode("IMME");
-                alarmSendHistory.setAlarmSendPointName("즉시");
-                alarmSendHistory.setAlarmPurposeName("기타");
-                alarmSendHistory.setAlarmTargetTypeCode("RC");
-                alarmSendHistory.setAlarmTypeCode("ETC");
+                alarmSendHistory.setAshAlarmSendTypeCode(alarmSendHistoryVO.getAshAlarmSendTypeCode());
+                alarmSendHistory.setAshAlarmSendWayCode(alarmSendHistoryVO.getAshAlarmSendWayCode());
+                alarmSendHistory.setAshAlarmPurposeCode("ETC");
+                alarmSendHistory.setAshAlarmPurposeName("기타");
+                alarmSendHistory.setAshAlarmSendPointCode("IMME");
+                alarmSendHistory.setAshAlarmSendPointName("즉시");
+                alarmSendHistory.setAshAlarmPurposeName("기타");
+                alarmSendHistory.setAshAlarmTargetTypeCode("RC");
+                alarmSendHistory.setAshAlarmTypeCode("ETC");
 
                 if (reserveDate != "" && reserveTime != "") {
                     LocalDateTime alarmReservationTime = LocalDateTime.parse(reserveDate + " " + reserveTime, DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"));
-                    alarmSendHistory.setAlarmReservationTime(alarmReservationTime);
+                    alarmSendHistory.setAshAlarmReservationTime(alarmReservationTime);
                 }
 
                 customAlarmSendHistoryRepository.save(alarmSendHistory);
@@ -172,24 +172,24 @@ public class AlarmController {
                 //로그 저장
                 AlarmSendLog alarmSendLog = new AlarmSendLog();
                 alarmSendLog.setMembershipCustomerNo(membershipCustomerNo);
-                alarmSendLog.setCustomerPhone(membershipCustomer.getCustomerPhone());
-                alarmSendLog.setCustomerGradeTypeCode(membershipCustomer.getCustomerGradeTypeCode());
-                alarmSendLog.setCustomerName(membershipCustomer.getCustomerName());
-                alarmSendLog.setAlarmMessage(message);
+                alarmSendLog.setAslCustomerPhone(membershipCustomer.getMembershipCustomerPhone());
+                alarmSendLog.setAslCustomerGradeTypeCode(membershipCustomer.getMembershipCustomerGradeTypeCode());
+                alarmSendLog.setAslCustomerName(membershipCustomer.getMembershipCustomerName());
+                alarmSendLog.setAslAlarmMessage(message);
                 alarmSendLog.setStoreId(alarmSendHistoryVO.getStoreId());
-                alarmSendLog.setAlarmSendTypeCode(alarmSendHistoryVO.getAlarmSendTypeCode());
-                alarmSendLog.setAlarmSendWayCode(alarmSendHistoryVO.getAlarmSendWayCode());
-                alarmSendLog.setAlarmPurposeCode("ETC");
-                alarmSendLog.setAlarmPurposeName("기타");
-                alarmSendLog.setAlarmSendPointCode("IMME");
-                alarmSendLog.setAlarmSendPointName("즉시");
-                alarmSendLog.setAlarmPurposeName("기타");
-                alarmSendLog.setAlarmTargetTypeCode("RC");
-                alarmSendLog.setAlarmTypeCode("ETC");
+                alarmSendLog.setAslAlarmSendTypeCode(alarmSendHistoryVO.getAshAlarmSendTypeCode());
+                alarmSendLog.setAslAlarmSendWayCode(alarmSendHistoryVO.getAshAlarmSendWayCode());
+                alarmSendLog.setAslAlarmPurposeCode("ETC");
+                alarmSendLog.setAslAlarmPurposeName("기타");
+                alarmSendLog.setAslAlarmSendPointCode("IMME");
+                alarmSendLog.setAslAlarmSendPointName("즉시");
+                alarmSendLog.setAslAlarmPurposeName("기타");
+                alarmSendLog.setAslAlarmTargetTypeCode("RC");
+                alarmSendLog.setAslAlarmTypeCode("ETC");
 
                 if (reserveDate != "" && reserveTime != "") {
                     LocalDateTime alarmReservationTime = LocalDateTime.parse(reserveDate + " " + reserveTime, DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"));
-                    alarmSendLog.setAlarmReservationTime(alarmReservationTime);
+                    alarmSendLog.setAslAlarmReservationTime(alarmReservationTime);
                 }
 
                 alarmSendLogRepository.save(alarmSendLog);
@@ -197,9 +197,9 @@ public class AlarmController {
                 MsgQueue msgQueue = new MsgQueue();
                 msgQueue.setMsg_type("3");
                 msgQueue.setFilecnt(0);
-                msgQueue.setDstaddr(membershipCustomer.getCustomerPhone());
+                msgQueue.setDstaddr(membershipCustomer.getMembershipCustomerPhone());
                 msgQueue.setCallback("01088041229");
-                msgQueue.setText(alarmSendHistoryVO.getAlarmMessage());
+                msgQueue.setText(alarmSendHistoryVO.getAshAlarmMessage());
 
                 if (reserveDate != "" && reserveTime != "")
                     msgQueue.setRequest_time(LocalDateTime.parse(reserveDate + " " + reserveTime, DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")));
@@ -261,7 +261,7 @@ public class AlarmController {
     @GetMapping("/updateAlarmMessage/{alarmNo}")
     public ResponseEntity<String> updateAlarmMessage(@PathVariable("alarmNo") Long alarmNo,
                                                      @RequestParam("alarmMessage") String alarmMessage) {
-        log.info("번호 : " + alarmNo + " 알림메시지 : "+alarmMessage);
+        log.info("번호 : " + alarmNo + " 알림메시지 : " + alarmMessage);
 
         //알림메시지 수정
         customAlarmSetRepository.findById(alarmNo).ifPresent(alarm -> {
@@ -327,7 +327,7 @@ public class AlarmController {
     public void listAlarmTemplate(@ModelAttribute("pageVO") PageVO pageVO,
                                   Model model) {
 
-        Pageable pageable = pageVO.makePageable(0, "alarmTemplateNo");
+        Pageable pageable = pageVO.makePageable(0, "alarmTpNo");
 
         Page<Object[]> result = customAlarmTemplateRepository.getAlarmTemplatePage(
                 pageVO.getType(),   //검색조건
@@ -370,27 +370,25 @@ public class AlarmController {
         //VO에 세션값 세팅
         String alarmPurposeName = "";
         String alarmPurposeCode = "";
-        alarmPurposeCode += alarmTemplateVO.getAlarmTypeCode();
-        alarmPurposeCode += alarmTemplateVO.getAlarmPurposeCode();
+        alarmPurposeCode += alarmTemplateVO.getAlarmTpPurposeCode();
+        alarmPurposeCode += alarmTemplateVO.getAlarmTpPurposeCode();
 
-        alarmPurposeName += setAlarmPurposeName(alarmTemplateVO.getAlarmTypeCode(), alarmTemplateVO.getAlarmPurposeCode());
+        alarmPurposeName += setAlarmPurposeName(alarmTemplateVO.getAlarmTpTypeCode(), alarmTemplateVO.getAlarmTpPurposeCode());
 
         //알림목적이 '유효기간 만료'가 아닐 경우 발송시점은 전부 즉시로 설정
-        if (!alarmTemplateVO.getAlarmPurposeCode().equals("3")) {
-            alarmTemplateVO.setAlarmSendPointCode("IMME");
-            alarmTemplateVO.setAlarmSendPointName("즉시");
-        }
-        else{
-            alarmTemplateVO.setAlarmSendPointName(alarmTemplateVO.getAlarmSendPointCode() + "일전");
+        if (!alarmTemplateVO.getAlarmTpPurposeCode().equals("3")) {
+            alarmTemplateVO.setAlarmTpSendPointCode("IMME");
+            alarmTemplateVO.setAlarmTpSendPointName("즉시");
+        } else {
+            alarmTemplateVO.setAlarmTpSendPointName(alarmTemplateVO.getAlarmTpSendPointCode() + "일전");
         }
 
-        if(alarmTemplateVO.getAlarmPurposeCode().equals("6")) {
-            alarmTemplateVO.setAlarmPurposeCode("ETC");
-            alarmTemplateVO.setAlarmPurposeName("신규가입");
-        }
-        else{
-            alarmTemplateVO.setAlarmPurposeCode(alarmPurposeCode);
-            alarmTemplateVO.setAlarmPurposeName(alarmPurposeName);
+        if (alarmTemplateVO.getAlarmTpPurposeCode().equals("6")) {
+            alarmTemplateVO.setAlarmTpPurposeCode("ETC");
+            alarmTemplateVO.setAlarmTpPurposeName("신규가입");
+        } else {
+            alarmTemplateVO.setAlarmTpPurposeCode(alarmPurposeCode);
+            alarmTemplateVO.setAlarmTpPurposeName(alarmPurposeName);
         }
 
         //알림 템플릿 정보 저장
@@ -399,17 +397,17 @@ public class AlarmController {
         //매장 알림발송설정으로 자동저장
         customStoreRepository.getStoreList().forEach(storeList -> {
             Alarm alarm = new Alarm();
-            alarm.setAlarmMessage(alarmTemplate.getAlarmMessage());
-            alarm.setAlarmPurposeName(alarmTemplate.getAlarmPurposeName());
-            alarm.setAlarmSendPointName(alarmTemplate.getAlarmSendPointName());
+            alarm.setAlarmMessage(alarmTemplate.getAlarmTpMessage());
+            alarm.setAlarmPurposeName(alarmTemplate.getAlarmTpPurposeName());
+            alarm.setAlarmSendPointName(alarmTemplate.getAlarmTpSendPointName());
             alarm.setAlarmSendTypeCode("IMME");
             alarm.setAlarmSendWayCode("MESSAGE");
-            alarm.setAlarmTargetTypeCode(alarmTemplate.getAlarmTargetTypeCode());
-            alarm.setAlarmTemplateNo(alarmTemplate.getAlarmTemplateNo());
-            alarm.setAlarmTypeCode(alarmTemplate.getAlarmTypeCode());
+            alarm.setAlarmTargetTypeCode(alarmTemplate.getAlarmTpTargetTypeCode());
+            alarm.setAlarmTpNo(alarmTemplate.getAlarmTpNo());
+            alarm.setAlarmTypeCode(alarmTemplate.getAlarmTpTypeCode());
             alarm.setStoreId(storeList[0].toString());
-            alarm.setAlarmPurposeCode(alarmTemplate.getAlarmPurposeCode());
-            alarm.setAlarmSendPointCode(alarmTemplate.getAlarmSendPointCode());
+            alarm.setAlarmPurposeCode(alarmTemplate.getAlarmTpPurposeCode());
+            alarm.setAlarmSendPointCode(alarmTemplate.getAlarmTpSendPointCode());
             alarm.setAlarmVisibleCode(0);
 
             Long alarmNo = customAlarmSetRepository.save(alarm).getAlarmNo();
@@ -418,9 +416,9 @@ public class AlarmController {
             alarmManager.setAlarmMessageVariable(alarm.getAlarmMessage(), alarmNo, storeList[0].toString());
 
             log.info("알림발송설정 등록 성공");
-       });
+        });
 
-       redirectAttributes.addFlashAttribute("message", "successRegister");
+        redirectAttributes.addFlashAttribute("message", "successRegister");
         pageRedirectProperty(redirectAttributes, pageVO);
 
         log.info("알림 템플릿 등록 성공");
@@ -429,12 +427,12 @@ public class AlarmController {
     }
 
     //상세
-    @GetMapping("/detailAlarmTemplate/{alarmTemplateNo}")
-    public String detailAlarmTemplate(@PathVariable("alarmTemplateNo") Long alarmTemplateNo,
+    @GetMapping("/detailAlarmTemplate/{alarmTpNo}")
+    public String detailAlarmTemplate(@PathVariable("alarmTpNo") Long alarmTpNo,
                                       @ModelAttribute("pageVO") PageVO pageVO,
                                       Model model) {
         //알림 템플릿 정보
-        model.addAttribute("alarmTemplateVO", customAlarmTemplateRepository.getAlarmTemplateDetail(alarmTemplateNo));
+        model.addAttribute("alarmTemplateVO", customAlarmTemplateRepository.getAlarmTemplateDetail(alarmTpNo));
 
         //페이징 정보
         model.addAttribute("pageVO", pageVO);
@@ -452,29 +450,29 @@ public class AlarmController {
         //VO에 세션값 세팅
         String alarmPurposeName = "";
         String alarmPurposeCode = "";
-        alarmPurposeCode += alarmTemplateVO.getAlarmTypeCode();
-        alarmPurposeCode += alarmTemplateVO.getAlarmPurposeCode();
+        alarmPurposeCode += alarmTemplateVO.getAlarmTpTypeCode();
+        alarmPurposeCode += alarmTemplateVO.getAlarmTpPurposeCode();
 
-        alarmPurposeName += setAlarmPurposeName(alarmTemplateVO.getAlarmTypeCode(), alarmTemplateVO.getAlarmPurposeCode());
+        alarmPurposeName += setAlarmPurposeName(alarmTemplateVO.getAlarmTpTypeCode(), alarmTemplateVO.getAlarmTpPurposeCode());
 
         //알림목적이 '유효기간 만료'가 아닐 경우 발송시점은 전부 즉시로 설정
-        if (!alarmTemplateVO.getAlarmPurposeCode().equals("3")) {
-            alarmTemplateVO.setAlarmSendPointCode("IMME");
-            alarmTemplateVO.setAlarmSendPointName("즉시");
+        if (!alarmTemplateVO.getAlarmTpPurposeCode().equals("3")) {
+            alarmTemplateVO.setAlarmTpSendPointCode("IMME");
+            alarmTemplateVO.setAlarmTpSendPointName("즉시");
         } else {
-            alarmTemplateVO.setAlarmSendPointName(alarmTemplateVO.getAlarmSendPointCode() + "일전");
+            alarmTemplateVO.setAlarmTpSendPointName(alarmTemplateVO.getAlarmTpSendPointCode() + "일전");
         }
-        alarmTemplateVO.setAlarmPurposeCode(alarmPurposeCode);
-        alarmTemplateVO.setAlarmPurposeName(alarmPurposeName);
+        alarmTemplateVO.setAlarmTpPurposeCode(alarmPurposeCode);
+        alarmTemplateVO.setAlarmTpPurposeName(alarmPurposeName);
 
-        customAlarmTemplateRepository.findById(alarmTemplateVO.getAlarmTemplateNo()).ifPresent(alarmTemplate -> {
-            alarmTemplate.setAlarmTypeCode(alarmTemplateVO.getAlarmTypeCode());
-            alarmTemplate.setAlarmPurposeCode(alarmTemplateVO.getAlarmPurposeCode());
-            alarmTemplate.setAlarmPurposeName(alarmTemplateVO.getAlarmPurposeName());
-            alarmTemplate.setAlarmSendPointCode(alarmTemplateVO.getAlarmSendPointCode());
-            alarmTemplate.setAlarmSendPointName(alarmTemplateVO.getAlarmSendPointName());
-            alarmTemplate.setAlarmTargetTypeCode(alarmTemplateVO.getAlarmTargetTypeCode());
-            alarmTemplate.setAlarmMessage(alarmTemplateVO.getAlarmMessage());
+        customAlarmTemplateRepository.findById(alarmTemplateVO.getAlarmTpNo()).ifPresent(alarmTemplate -> {
+            alarmTemplate.setAlarmTpTypeCode(alarmTemplateVO.getAlarmTpTypeCode());
+            alarmTemplate.setAlarmTpPurposeCode(alarmTemplateVO.getAlarmTpPurposeCode());
+            alarmTemplate.setAlarmTpPurposeName(alarmTemplateVO.getAlarmTpPurposeName());
+            alarmTemplate.setAlarmTpSendPointCode(alarmTemplateVO.getAlarmTpSendPointCode());
+            alarmTemplate.setAlarmTpSendPointName(alarmTemplateVO.getAlarmTpSendPointName());
+            alarmTemplate.setAlarmTpTargetTypeCode(alarmTemplateVO.getAlarmTpTargetTypeCode());
+            alarmTemplate.setAlarmTpMessage(alarmTemplateVO.getAlarmTpMessage());
 
             //알림 템플릿 정보 수정
             customAlarmTemplateRepository.save(alarmTemplate);
@@ -490,12 +488,12 @@ public class AlarmController {
 
 
     //알림 메시지 가져오기
-    @GetMapping("/selectAlarmTemplate/{alarmTemplateNo}")
-    public ResponseEntity<String> selectAlarmTemplate(@PathVariable("alarmTemplateNo") Long alarmTemplateNo) {
-        log.info("코드 : " + alarmTemplateNo);
+    @GetMapping("/selectAlarmTemplate/{alarmTpNo}")
+    public ResponseEntity<String> selectAlarmTemplate(@PathVariable("alarmTpNo") Long alarmTpNo) {
+        log.info("코드 : " + alarmTpNo);
 
         //알림메시지 가져오기
-        String alarmMessage = customAlarmTemplateRepository.findById(alarmTemplateNo).get().getAlarmMessage();
+        String alarmMessage = customAlarmTemplateRepository.findById(alarmTpNo).get().getAlarmTpMessage();
 
         return new ResponseEntity<>(alarmMessage, HttpStatus.CREATED);
     }
@@ -563,7 +561,7 @@ public class AlarmController {
         log.info("코드 : " + alarmSendHistoryNo);
 
         //알림메시지 가져오기
-        String alarmMessage = customAlarmSendHistoryRepository.findById(alarmSendHistoryNo).get().getAlarmMessage();
+        String alarmMessage = customAlarmSendHistoryRepository.findById(alarmSendHistoryNo).get().getAshAlarmMessage();
 
         return new ResponseEntity<>(alarmMessage, HttpStatus.CREATED);
     }
@@ -576,7 +574,7 @@ public class AlarmController {
         log.info("코드 : " + alarmNo);
 
         customAlarmSetRepository.findById(alarmNo).ifPresent(alarm -> {
-            originalAlarmMessage = customAlarmTemplateRepository.findByAlarmMessageByAlarmTemplateNo(alarm.getAlarmTemplateNo());
+            originalAlarmMessage = customAlarmTemplateRepository.findByAlarmMessageByalarmTpNo(alarm.getAlarmTpNo());
 
             alarm.setAlarmMessage(originalAlarmMessage);
         });
@@ -595,14 +593,14 @@ public class AlarmController {
         }
         if (alarmMessage.contains("#{수신자명}")) {
             System.out.println("2");
-            if (membershipCustomer.getCustomerName() != null)
-                alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerName());
+            if (membershipCustomer.getMembershipCustomerName() != null)
+                alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getMembershipCustomerName());
             else
-                alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerPhone());
+                alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getMembershipCustomerPhone());
         }
         if (alarmMessage.contains("#{수신자전화번호}")) {
             System.out.println("3");
-            alarmMessage = alarmMessage.replace("#{수신자전화번호}", membershipCustomer.getCustomerPhone());
+            alarmMessage = alarmMessage.replace("#{수신자전화번호}", membershipCustomer.getMembershipCustomerPhone());
         }
 
         System.out.println(alarmMessage);

@@ -55,13 +55,13 @@
                         <!--상품카테고리-->
                         <div class="form-group" sec:authorize="hasRole('MA')">
                             <label class="col-sm-2 control-label">상품 카테고리<label class="notnull-mark-color"> *</label></label>
-                            <div class="col-sm-2" id="majorCategoryNo">
-                                <select class="form-control m-b" name="majorCategoryNo">
+                            <div class="col-sm-2" id="pdMajorCategoryNo">
+                                <select class="form-control m-b" name="pdMajorCategoryNo">
                                     <option value="0">대분류 선택</option>
                                 </select>
                             </div>
                             <div class="col-sm-2" id="subCategoryName" style="display: none">
-                                <select class="form-control m-b" name="subCategoryNo">
+                                <select class="form-control m-b" name="pdSubCategoryNo">
                                 </select>
                             </div>
                         </div>
@@ -70,13 +70,13 @@
                         <div class="form-group" sec:authorize="hasRole('ST')">
                             <label class="col-sm-2 control-label">상품 카테고리</label>
                                 <div class="col-sm-2">
-                                    <select class="form-control m-b" name="majorCategoryNo">
+                                    <select class="form-control m-b" name="pdMajorCategoryNo">
                                         <option value="ALL">전체</option>
                                         <option th:each="category:${categoryList}" th:value="${category[0]}">[[${category[2]}]]</option>
                                     </select>
                                 </div>
                                 <div class="col-sm-2" id="subCategory" style="display: none">
-                                    <select class="form-control m-b" name="subCategoryNo">
+                                    <select class="form-control m-b" name="pdSubCategoryNo">
                                     </select>
                                 </div>
                         </div>
@@ -349,44 +349,52 @@
                 success: function (data) {
                     console.log(data);
                     if (data.length != 0) {
-                        registerForm.find('[name="majorCategoryNo"] option').remove();
+                        registerForm.find('[name="pdMajorCategoryNo"] option').remove();
 
+                        //대분류가 하나일 시 자동으로 중분류 불러옴
                         if (data.length == 1) {
                             $.each(data, function (index, item) {
                                 console.log(item);
 
-                                registerForm.find('[name="majorCategoryNo"]').append(
+                                registerForm.find('[name="pdMajorCategoryNo"]').append(
                                     '<option value="' + item[0] + '" >' + item[2] + '</option>'
                                 );
 
-                                var majorCategoryNo = item[0];
-                                selectSubCategory(majorCategoryNo);
+                                var pdMajorCategoryNo = item[0];
+                                selectSubCategory(pdMajorCategoryNo);
                             });
                         }
                         else {
                             $.each(data, function (index, item) {
                                 console.log(item);
 
-                                registerForm.find('[name="majorCategoryNo"]').append(
+                                if(index == 0){
+                                    var pdMajorCategoryNo = item[0];
+
+                                    //등록된 중분류가 없을 시
+                                    if (item[3] == 0) {
+                                        registerForm.find('[name="pdSubCategoryNo"] option').remove();
+                                        registerForm.find('[name="pdSubCategoryNo"]').append('<option value="0">중분류 선택</option>');
+                                        $('#subCategoryName').css('display', 'none');
+                                        $('#subCategory').css('display', 'none');
+                                    }
+                                    else{
+                                        selectSubCategory(pdMajorCategoryNo);
+                                    }
+                                }
+
+                                registerForm.find('[name="pdMajorCategoryNo"]').append(
                                     '<option value="' + item[0] + '" >' + item[2] + '</option>'
                                 );
-
-                                //등록된 중분류가 없을 시
-                                if (item[3] == 0) {
-                                    registerForm.find('[name="subCategoryNo"] option').remove();
-                                    registerForm.find('[name="subCategoryNo"]').append('<option value="0">중분류 선택</option>');
-                                    $('#subCategoryName').css('display', 'none');
-                                    $('#subCategory').css('display', 'none');
-                                }
                             });
                         }
                     }
                     else {
                         console.log('데이터없음');
-                        registerForm.find('[name="majorCategoryNo"] option').remove();
-                        registerForm.find('[name="majorCategoryNo"]').append('<option value="0">대분류 선택</option>');
-                        registerForm.find('[name="subCategoryNo"] option').remove();
-                        registerForm.find('[name="subCategoryNo"]').append('<option value="0">중분류 선택</option>');
+                        registerForm.find('[name="pdMajorCategoryNo"] option').remove();
+                        registerForm.find('[name="pdMajorCategoryNo"]').append('<option value="0">대분류 선택</option>');
+                        registerForm.find('[name="pdSubCategoryNo"] option').remove();
+                        registerForm.find('[name="pdSubCategoryNo"]').append('<option value="0">중분류 선택</option>');
                         $('#subCategoryName').css('display', 'none');
                         $('#subCategory').css('display', 'none');
 
@@ -397,10 +405,10 @@
         });
 
         //대분류에 따른 중분류명
-        registerForm.find('[name="majorCategoryNo"]').change(function () {
-            var majorCategoryNo = registerForm.find('[name="majorCategoryNo"]').val();
+        registerForm.find('[name="pdMajorCategoryNo"]').change(function () {
+            var pdMajorCategoryNo = registerForm.find('[name="pdMajorCategoryNo"]').val();
 
-            selectSubCategory(majorCategoryNo);
+            selectSubCategory(pdMajorCategoryNo);
         });
 
         var subProductCnt = 1;
@@ -614,7 +622,7 @@
             var giftProductRegisterCode = registerForm.find('[name="giftProductRegisterCode"]:checked').val();
             var productOwnerId = registerForm.find('[name="productOwnerId"]').val();
             var productTitle = registerForm.find('[name="productTitle"]').val();
-            var majorCategoryNo = registerForm.find('[name="majorCategoryNo"]').val();
+            var pdMajorCategoryNo = registerForm.find('[name="pdMajorCategoryNo"]').val();
             var productDiscountValue = registerForm.find('[name="productDiscountValue"]').val();
             var productDiscountCode = registerForm.find('[name="productDiscountCode"]:checked').val();
 
@@ -757,7 +765,7 @@
                 alert('가맹점을 선택해주세요.');
                 return false;
             }
-            if (majorCategoryNo == 'ALL' || majorCategoryNo == '0') {
+            if (pdMajorCategoryNo == 'ALL' || pdMajorCategoryNo == '0') {
                 alert('상품 카테고리를 선택해주세요.');
                 return false;
             }
@@ -769,11 +777,14 @@
                 alert('할인여부를 선택해주세요.');
                 return false;
             }
-            if (productDiscountTypeCode == undefined) {
-                alert('할인타입을 선택해주세요.');
-                return false;
+            else{
+                if(productDiscountCode == 1){
+                    if (productDiscountTypeCode == undefined) {
+                        alert('할인타입을 선택해주세요.');
+                        return false;
+                    }
+                }
             }
-
 
             var productImage = $('input[name="productImage"]').val();
 
@@ -787,12 +798,12 @@
             console.log(giftBundleDiscountTypeCode);
         });
 
-        });
+    });
 
 
-    function selectSubCategory(majorCategoryNo) {
+    function selectSubCategory(pdMajorCategoryNo) {
         $.ajax({
-            url: "/wishwide/product/selectSubCategory/" + majorCategoryNo,
+            url: "/wishwide/product/selectSubCategory/" + pdMajorCategoryNo,
             type: 'get',
             contentType: 'application/json',
             success: function (data) {
@@ -800,12 +811,12 @@
                 if (data.length != 0) {
                     $('#subCategoryName').css('display', 'block');
                     $('#subCategory').css('display', 'block');
-                    registerForm.find('[name="subCategoryNo"] option').remove();
+                    registerForm.find('[name="pdSubCategoryNo"] option').remove();
 
                     $.each(data, function (index, item) {
                         console.log(item);
 
-                        registerForm.find('[name="subCategoryNo"]').append(
+                        registerForm.find('[name="pdSubCategoryNo"]').append(
                             '<option value="' + item[0] + '" >' + item[2] + '</option>'
                         );
                     });
@@ -813,12 +824,10 @@
                 else {
                     console.log('데이터없음');
 
-                    registerForm.find('[name="subCategoryNo"] option').remove();
-                    registerForm.find('[name="subCategoryNo"]').append('<option value="0">중분류 선택</option>');
+                    registerForm.find('[name="pdSubCategoryNo"] option').remove();
+                    registerForm.find('[name="pdSubCategoryNo"]').append('<option value="0">중분류 선택</option>');
                     $('#subCategoryName').css('display', 'none');
                     $('#subCategory').css('display', 'none');
-
-                    alert('등록된 중분류가 없습니다.');
                 }
             }
         });

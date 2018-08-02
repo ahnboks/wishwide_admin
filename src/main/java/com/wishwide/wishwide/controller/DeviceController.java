@@ -256,7 +256,7 @@ public class DeviceController {
         deviceVO.setDeviceMacAddress(deviceMacAddress);
 
         customDeviceModelRepository.findById(deviceVO.getDeviceModelNo()).ifPresent(deviceModel -> {
-            deviceVO.setDeviceModelTitle(deviceModel.getDeviceModelTitle());
+            deviceVO.setDvDeviceModelTitle(deviceModel.getDeviceModelTitle());
         });
 
         //태블릿일때만 값 세팅
@@ -340,7 +340,7 @@ public class DeviceController {
             device.setDeviceMacAddress(deviceMacAddress);
 
             customDeviceModelRepository.findById(deviceVO.getDeviceModelNo()).ifPresent(deviceModel -> {
-                device.setDeviceModelTitle(deviceModel.getDeviceModelTitle());
+                device.setDvDeviceModelTitle(deviceModel.getDeviceModelTitle());
             });
 
             //수정 값 세팅

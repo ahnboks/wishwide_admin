@@ -15,7 +15,7 @@ public interface CustomAlarmTemplate {
                                                Pageable pageable);
 
     //알림 템플릿 상세 페이지
-    public Object[] getAlarmTemplateDetail(Long alarmTemplateNo);
+    public Object[] getAlarmTemplateDetail(Long alarmTpNo);
 
     //알림 변수 리스트
     public List<Object[]> getAlarmVariable();

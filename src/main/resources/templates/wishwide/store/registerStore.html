@@ -162,7 +162,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label">연락처<label class="notnull-mark-color"> *</label></label>
                                         <div class="col-sm-2">
-                                            <input type="text" maxlength="11" class="form-control phone-number-input-validation" name="storePhone" placeholder="ex) 01012345678">
+                                            <input type="text" maxlength="11" class="form-control phone-number-input-validation" name="storePhone" placeholder="ex) 01012345678" onkeypress="InputOnlyNumber(this);">
                                             <span class="msg-phone-number-input-validation"></span>
                                         </div>
                                     </div>
@@ -170,7 +170,7 @@
 
                                     <!--이메일-->
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">이메일</label>
+                                        <label class="col-sm-2 control-label">이메일<label class="notnull-mark-color"> *</label></label>
                                         <div class="col-sm-2">
                                             <input type="email" maxlength="40" placeholder="이메일 @ sample.com" class="form-control email-input-validation" name="storeEmail">
                                             <span class="msg-email-input-validation"></span>
@@ -182,7 +182,8 @@
                                     <div class="form-group">
                                         <label class="col-sm-2 control-label">대표자명<label class="notnull-mark-color"> *</label></label>
                                         <div class="col-sm-2">
-                                            <input type="text" maxlength="20" class="form-control" name="storePresidentName">
+                                            <input type="text" maxlength="20" class="form-control president-name-input-validation" name="storePresidentName">
+                                            <span class="msg-president-name-input-validation"/>
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
@@ -193,16 +194,16 @@
                                         <div class="col-sm-2">
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <input type="text" maxlength="20" placeholder="이름" class="form-control " name="storeOperatorName">
+                                                    <input type="text" maxlength="20" placeholder="이름" class="form-control operator-name-input-validation " name="storeOperatorName">
                                                     <span class="msg-operator-name-input-validation"/>
                                                 </div>
                                             </div>
                                             <div>
-                                                <input type="text" maxlength="11" class="form-control "  name="storeOperatorPhone" placeholder="전화번호">
+                                                <input type="text" maxlength="11" class="form-control operator-phone-number-input-validation"  name="storeOperatorPhone" placeholder="전화번호"  onkeypress="InputOnlyNumber(this);">
                                                 <span class="msg-operator-phone-number-input-validation"/>
                                             </div>
                                             <div>
-                                                <input type="email" maxlength="40" placeholder="이메일@sample.com" class="form-control " name="storeOperatorEmail">
+                                                <input type="email" maxlength="40" placeholder="이메일@sample.com" class="form-control operator-email-input-validation" name="storeOperatorEmail">
                                                 <span class="msg-operator-email-input-validation"/>
                                             </div>
                                         </div>
@@ -211,7 +212,7 @@
 
                                     <!--우편번호-->
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">우편번호</label>
+                                        <label class="col-sm-2 control-label">우편번호<label class="notnull-mark-color"> *</label></label>
                                         <div class="col-sm-5">
                                             <div class="row">
                                                 <div class="col-md-3">
@@ -227,7 +228,7 @@
 
                                     <!--주소-->
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">주소</label>
+                                        <label class="col-sm-2 control-label">주소<label class="notnull-mark-color"> *</label></label>
                                         <div class="col-sm-5">
                                             <input type="text" class="form-control" name="storeAddress"  id="storeAddress" readonly>
                                         </div>
@@ -264,9 +265,10 @@
                         <div class="col-lg-12">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
-                                    <h5>서비스정보</h5>
+                                    <h5>서비스정보
+                                            <input type="checkbox" name="storeServiceUseCode" class="js-switch" value="1" checked />
+                                    </h5>
                                     <div class="ibox-tools">
-                                        <input type="checkbox" name="storeServiceUseCode" class="js-switch" value="1" checked />
                                         <a class="collapse-link">
                                             <i class="fa fa-chevron-up"></i>
                                         </a>
@@ -433,53 +435,57 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-12">
-                            <div class="ibox float-e-margins">
-                                <div class="ibox-title">
-                                    <h5>AR게임 정보
-                                        <small class="m-l-sm"></small>
-                                    </h5>
-                                    <div class="ibox-tools">
-                                        <a class="collapse-link">
-                                            <i class="fa fa-chevron-up"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="ibox-content">
-                                    <!--AR게임-->
-                                    <div class="form-group">
-                                        <label class="col-sm-2 control-label">AR게임<label class="notnull-mark-color"> *</label></label>
-                                        <div class="col-sm-5" >
-                                            <label class="radio-inline"><input type="radio" name="storeArGameUseCode" value="0" checked="checked">미사용</label>
-                                            <label class="radio-inline"><input type="radio" name="storeArGameUseCode" value="1">사용</label>
-                                        </div>
-                                    </div>
-                                    <div class="hr-line-dashed"></div>
 
-                                    <!--게임타입-->
-                                    <div class="form-group" id="storeArGameTypeCode" style="display:none;">
-                                        <label class="col-sm-2 control-label">게임타입</label>
-                                        <div class="col-sm-6" >
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <select class="form-control m-b" name="storeArGameTypeCode">
-                                                        <option value="1">캐릭터잡기</option>
-                                                        <option value="2">글자맞추기</option>
-                                                    </select>
-                                                </div>
-                                                <div id="storeArGameWord" style="display:none;">
-                                                    <label class="col-sm-2 control-label">단어 입력</label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" maxlength="10" class="form-control only-alpha-validation" name="storeArGameWord">
-                                                        <p class="form-control-static" style="color: red">*a~z까지 10자이내로<br> 원하는 단어를 입력해주세요. </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <input type="hidden" name="storeArGameUseCode" value="0">
+                        <!--<div class="col-lg-12">-->
+                            <!--<div class="ibox float-e-margins">-->
+                                <!--<div class="ibox-title">-->
+                                    <!--<h5>AR게임 정보-->
+                                        <!--<small class="m-l-sm"></small>-->
+                                    <!--</h5>-->
+                                    <!--<div class="ibox-tools">-->
+                                        <!--<a class="collapse-link">-->
+                                            <!--<i class="fa fa-chevron-up"></i>-->
+                                        <!--</a>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+
+
+                                <!--<div class="ibox-content">-->
+                                    <!--&lt;!&ndash;AR게임&ndash;&gt;-->
+                                    <!--<div class="form-group">-->
+                                        <!--<label class="col-sm-2 control-label">AR게임<label class="notnull-mark-color"> *</label></label>-->
+                                        <!--<div class="col-sm-5" >-->
+                                            <!--<label class="radio-inline"><input type="radio" name="storeArGameUseCode" value="0" checked="checked">미사용</label>-->
+                                            <!--<label class="radio-inline"><input type="radio" name="storeArGameUseCode" value="1">사용</label>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="hr-line-dashed"></div>-->
+
+                                    <!--&lt;!&ndash;게임타입&ndash;&gt;-->
+                                    <!--<div class="form-group" id="storeArGameTypeCode" style="display:none;">-->
+                                        <!--<label class="col-sm-2 control-label">게임타입</label>-->
+                                        <!--<div class="col-sm-6" >-->
+                                            <!--<div class="row">-->
+                                                <!--<div class="col-md-3">-->
+                                                    <!--<select class="form-control m-b" name="storeArGameTypeCode">-->
+                                                        <!--<option value="1">캐릭터잡기</option>-->
+                                                        <!--<option value="2">글자맞추기</option>-->
+                                                    <!--</select>-->
+                                                <!--</div>-->
+                                                <!--<div id="storeArGameWord" style="display:none;">-->
+                                                    <!--<label class="col-sm-2 control-label">단어 입력</label>-->
+                                                    <!--<div class="col-md-4">-->
+                                                        <!--<input type="text" maxlength="10" class="form-control only-alpha-validation" name="storeArGameWord">-->
+                                                        <!--<p class="form-control-static" style="color: red">*a~z까지 10자이내로<br> 원하는 단어를 입력해주세요. </p>-->
+                                                    <!--</div>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
                         <div class="col-lg-12">
                                 <div class="ibox float-e-margins">
                                     <div class="ibox-title">
@@ -617,11 +623,77 @@
 
                 var contractBeginDate = $('.contract-begin-date-input-validation');
                 var contractFinishDate = $('.contract-finish-date-input-validation');
-                var storeAddress = $('#storeAddress').val();
                 var bziFile = $('input[name="bziFile"]').val();
                 var contractFile = $('input[name="contractFile"]').val();
                 var logoFile = $('input[name="logoFile"]').val();
                 var storeBenefitTypeCode = registerForm.find('[name="storeBenefitTypeCode"]:checked').val();
+                var storeIntroduction = registerForm.find('[name="storeIntroduction"]').val();
+                var storePointUseGoal = registerForm.find('[name="storePointUseGoal"]').val();
+                var storePointVipGoal = registerForm.find('[name="storePointVipGoal"]').val();
+                var storeStampGoal = registerForm.find('[name="storeStampGoal"]').val();
+                var storeStampVipGoal = registerForm.find('[name="storeStampVipGoal"]').val();
+                var emailValue = $('.email-input-validation').val();
+                var emailMsg = $('.msg-email-input-validation');
+                var operatorEmailValue = $('.operator-email-input-validation').val();
+                var operatorEmailMsg = $('.msg-operator-email-input-validation');
+                var phoneNumberValue = $('.phone-number-input-validation').val();
+                var phoneNumberMsg = $('.msg-phone-number-input-validation');
+                var operatorPhoneNumberValue = $('.operator-phone-number-input-validation').val();
+                var operatorPhoneNumberMsg = $('.msg-operator-phone-number-input-validation');
+                var presidentNameValue = $('.president-name-input-validation').val();
+                var presidentNameMsg = $('.msg-president-name-input-validation');
+                var operatorNameValue = $('.operator-name-input-validation').val();
+                var operatorNameMsg = $('.msg-operator-name-input-validation');
+
+                if (checkIdValidation() != true){
+                    alert('아이디를 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkPasswordValidation() != true){
+                    alert('비밀번호를 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkPasswordConfirmValidation() != true){
+                    alert('비밀번호확인을 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidEmail(emailValue, emailMsg) != true){
+                    alert('이메일을 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidPhoneNumber(1,phoneNumberValue, phoneNumberMsg) != true){
+                    alert('연락처를 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidName(1, presidentNameValue, presidentNameMsg) != true){
+                    alert('대표자명을 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidName(1, operatorNameValue, operatorNameMsg) != true){
+                    alert('담당자명을 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidPhoneNumber(1,operatorPhoneNumberValue, operatorPhoneNumberMsg ) != true){
+                    alert('담당자연락처를 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidEmail(operatorEmailValue, operatorEmailMsg) != true){
+                    alert('담당자이메일을 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkTitleValidation() != true){
+                    alert('가맹점명과 브랜드명을 바르게 입력해주세요.');
+                    return false;
+                }
 
                 if (checkNullValue() != true) return false;
                 if (checkPlaceholderNullValue() != true) return false;
@@ -648,8 +720,28 @@
                     alert('로고이미지를 등록해주세요');
                     return false;
                 }
+
                 if(storeBenefitTypeCode == undefined) {
                     alert('혜택타입을 선택해주세요');
+                    return false;
+                }
+                else{
+                    if (storePointUseGoal == ''){
+                        registerForm.find('[name="storePointUseGoal"]').val(0);
+                    }
+                    if (storePointVipGoal == ''){
+                        registerForm.find('[name="storePointVipGoal"]').val(0);
+                    }
+                    if (storeStampGoal == ''){
+                        registerForm.find('[name="storeStampGoal"]').val(0);
+                    }
+                    if (storeStampVipGoal == ''){
+                        registerForm.find('[name="storeStampVipGoal"]').val(0);
+                    }
+                }
+
+                if (storeIntroduction == ''){
+                    alert('매장소개를 입력해주세요.');
                     return false;
                 }
 

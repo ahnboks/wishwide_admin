@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport implements CustomBenefit {
-    public CustomBenefitRepositoryImpl(){
+    public CustomBenefitRepositoryImpl() {
         super(MembershipCustomer.class);
     }
 
@@ -32,10 +32,10 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
                 customer.membershipCustomerNo,    //멤버쉽고객번호0
                 store.storeId,  //매장아이디1
                 store.storeName,        //매장명2
-                customer.customerPhone, //고객전화번호3
-                customer.customerName,  //고객명4
-                customer.customerBenefitTypeCode,   //고객혜택타입5
-                customer.customerBenefitValue,  //고객혜택값6
+                customer.membershipCustomerPhone, //고객전화번호3
+                customer.membershipCustomerName,  //고객명4
+                customer.membershipCustomerBenefitTypeCode,   //고객혜택타입5
+                customer.membershipCustomerBenefitValue,  //고객혜택값6
                 customer.membershipCustomerRegdate    //고객 가입일시7
         );
 
@@ -45,28 +45,28 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
         //조건식
 
         //권한:매장이 로그인했을 경우 한개의 리스트만 가져오기
-        if(roleCode.equals("ST"))
+        if (roleCode.equals("ST"))
             tupleJPQLQuery.where(customer.storeId.eq(sessionId));
 
         //검색조건 : 가맹점명
-        if(!searchUserId.equals("ALL")){
-            System.out.println("검색아이디"+searchUserId);
+        if (!searchUserId.equals("ALL")) {
+            System.out.println("검색아이디" + searchUserId);
             tupleJPQLQuery.where(customer.storeId.eq(searchUserId));
         }
 
         //검색조건 : 이름, 전화번호
-        if(type != null) {
+        if (type != null) {
             switch (type.trim()) {
-                case "ALL" :
-                    tupleJPQLQuery.where(customer.customerPhone.like("%" + keyword + "%")
-                            .or(customer.customerName.like("%" + keyword + "%"))
+                case "ALL":
+                    tupleJPQLQuery.where(customer.membershipCustomerPhone.like("%" + keyword + "%")
+                            .or(customer.membershipCustomerName.like("%" + keyword + "%"))
                     );
                     break;
-                case "customerPhone" :
-                    tupleJPQLQuery.where(customer.customerPhone.like("%" + keyword + "%"));
+                case "customerPhone":
+                    tupleJPQLQuery.where(customer.membershipCustomerPhone.like("%" + keyword + "%"));
                     break;
-                case "customerName" :
-                    tupleJPQLQuery.where(customer.customerName.like("%" + keyword + "%"));
+                case "customerName":
+                    tupleJPQLQuery.where(customer.membershipCustomerName.like("%" + keyword + "%"));
                     break;
             }
         }
@@ -106,18 +106,18 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
 
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
                 customer.membershipCustomerNo,    //멤버쉽고객번호0
-                customer.customerPhone, //고객전화번호1
+                customer.membershipCustomerPhone, //고객전화번호1
                 store.storeId,  //매장아이디2
                 store.storeName,    //가맹점명3
-                customer.customerGradeTypeCode, //고객등급4
+                customer.membershipCustomerGradeTypeCode, //고객등급4
                 customerVisitHistory.customerVisitHistoryNo.countDistinct(),    //방문횟수5
                 giftReceiveHistory.giftReceiveHistoryNo.countDistinct(),    //선물구매수6
-                customer.customerReceiveGiftCnt,    //받은선물수7
+                customer.membershipCustomerReceiveGiftCnt,    //받은선물수7
                 useCouponBox.couponBoxNo.countDistinct(),   //사용한쿠폰수8
                 notUsecouponBox.couponBoxNo.countDistinct(),    //사용안햔쿠폰수9
-                customer.customerBenefitTypeCode,   //고객혜택타입10
-                customer.customerBenefitValue,  //고객혜택값11
-                customer.customerBirth, //고객생일12
+                customer.membershipCustomerBenefitTypeCode,   //고객혜택타입10
+                customer.membershipCustomerBenefitValue,  //고객혜택값11
+                customer.membershipCustomerBirth, //고객생일12
                 customer.membershipCustomerRegdate    //고객 가입일시13
         );
 
@@ -125,7 +125,7 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
         tupleJPQLQuery.join(store).on(customer.storeId.eq(store.storeId))
                 .leftJoin(giftReceiveHistory).on(customer.membershipCustomerNo.eq(giftReceiveHistory.membershipCustomerNo))
                 .leftJoin(customerVisitHistory).on(customer.membershipCustomerNo.eq(customerVisitHistory.membershipCustomerNo))
-                .leftJoin(useCouponBox).on(customer.membershipCustomerNo.eq(useCouponBox.membershipCustomerNo).and(useCouponBox.couponUseCode.eq(1)))
+                .leftJoin(useCouponBox).on(customer.membershipCustomerNo.eq(useCouponBox.membershipCustomerNo).and(useCouponBox.cbCouponUseCode.eq(1)))
                 .leftJoin(notUsecouponBox).on(customer.membershipCustomerNo.eq(notUsecouponBox.membershipCustomerNo));
 
         //조건식
@@ -161,15 +161,15 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
                 stampHistory.stampHistoryNo,    //도장내역번호0
                 customer.membershipCustomerNo,    //멤버쉽고객번호1
-                customer.customerPhone, //고객전화번호2
-                customer.customerName,  //고객명3
-                stampHistory.stampSavingCnt,    //적립도장4
-                stampHistory.stampDeductCnt,    //차감도장5
-                stampHistory.stampCnt,  //누적도장6
-                stampHistory.stampNowCnt,   //현재도장7
-                stampHistory.stampCouponPublishedCnt,   //쿠폰발급횟수8
+                customer.membershipCustomerPhone, //고객전화번호2
+                customer.membershipCustomerName,  //고객명3
+                stampHistory.shStampSavingCnt,    //적립도장4
+                stampHistory.shStampDeductCnt,    //차감도장5
+                stampHistory.shStampCnt,  //누적도장6
+                stampHistory.shStampNowCnt,   //현재도장7
+                stampHistory.shStampCouponPublishedCnt,   //쿠폰발급횟수8
                 stampHistory.stampHistoryRegdate,    //일시9
-                stampHistory.stampEarningWay    //도장적립경로10
+                stampHistory.shStampEarningWay    //도장적립경로10
         );
 
         //조인문
@@ -203,15 +203,15 @@ public class CustomBenefitRepositoryImpl extends QuerydslRepositorySupport imple
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
                 pointHistory.pointHistoryNo,    //포인트내역번호0
                 customer.membershipCustomerNo,    //멤버쉽고객번호1
-                customer.customerPhone, //고객전화번호2
-                customer.customerName,  //고객명3
-                pointHistory.pointSavingCnt,    //적립포인트4
-                pointHistory.pointDeductCnt,    //차감포인트5
-                pointHistory.pointExtinctionCnt,    //소멸포인트6
-                pointHistory.pointNowCnt,   //현재포인트7
-                pointHistory.pointEarningWay,   //적립경로8
+                customer.membershipCustomerPhone, //고객전화번호2
+                customer.membershipCustomerName,  //고객명3
+                pointHistory.phPointSavingCnt,    //적립포인트4
+                pointHistory.phPointDeductCnt,    //차감포인트5
+                pointHistory.phPointExtinctionCnt,    //소멸포인트6
+                pointHistory.phPointNowCnt,   //현재포인트7
+                pointHistory.phPointEarningWay,   //적립경로8
                 pointHistory.pointHistoryRegdate,    //일시9
-                pointHistory.pointCnt   //누적포인트10
+                pointHistory.phPointCnt   //누적포인트10
         );
 
         //조인문

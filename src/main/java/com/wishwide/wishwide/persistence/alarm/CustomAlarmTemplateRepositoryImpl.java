@@ -28,40 +28,40 @@ public class CustomAlarmTemplateRepositoryImpl extends QuerydslRepositorySupport
         JPQLQuery<AlarmTemplate> query = from(alarmTemplate);
 
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
-                alarmTemplate.alarmTemplateNo,  //알림템플릿번호0
-                alarmTemplate.alarmTypeCode,    //알림유형코드1
-                alarmTemplate.alarmTemplateUpdatedate,    //2
-                alarmTemplate.alarmPurposeCode, //알림목적코드3
-                alarmTemplate.alarmPurposeName, //알림목적명4
-                alarmTemplate.alarmSendPointCode,   //알림발송시점코드5
-                alarmTemplate.alarmSendPointName,   //알림발송시점명6
-                alarmTemplate.alarmTargetTypeCode,  //알림대상자코드7
-                alarmTemplate.alarmTemplateRegdate,  //알림템플릿등록일8
-                alarmTemplate.alarmMessage  //알림메시지9
+                alarmTemplate.alarmTpNo,  //알림템플릿번호0
+                alarmTemplate.alarmTpTypeCode,    //알림유형코드1
+                alarmTemplate.alarmTpUpdatedate,    //2
+                alarmTemplate.alarmTpPurposeCode, //알림목적코드3
+                alarmTemplate.alarmTpPurposeName, //알림목적명4
+                alarmTemplate.alarmTpSendPointCode,   //알림발송시점코드5
+                alarmTemplate.alarmTpSendPointName,   //알림발송시점명6
+                alarmTemplate.alarmTpTargetTypeCode,  //알림대상자코드7
+                alarmTemplate.alarmTpRegdate,  //알림템플릿등록일8
+                alarmTemplate.alarmTpMessage  //알림메시지9
         );
 
         //검색조건 : 알림유형코드
         if(!alarmTypeCode.equals("ALL")){
-            tupleJPQLQuery.where(alarmTemplate.alarmTypeCode.eq(alarmTypeCode));
+            tupleJPQLQuery.where(alarmTemplate.alarmTpTypeCode.eq(alarmTypeCode));
         }
         //검색조건 : 알림목적코드
         if(!alarmPurposeCode.equals("ALL")){
-            tupleJPQLQuery.where(alarmTemplate.alarmPurposeCode.eq(alarmPurposeCode));
+            tupleJPQLQuery.where(alarmTemplate.alarmTpPurposeCode.eq(alarmPurposeCode));
         }
         //검색조건 : 알림대상자코드
         if(!alarmTargetTypeCode.equals("ALL")){
-            tupleJPQLQuery.where(alarmTemplate.alarmTargetTypeCode.eq(alarmTargetTypeCode));
+            tupleJPQLQuery.where(alarmTemplate.alarmTpTargetTypeCode.eq(alarmTargetTypeCode));
         }
 
         //검색조건 : 알림목적, 발송시점, 대상자
         if(keyword != null) {
-            tupleJPQLQuery.where(alarmTemplate.alarmPurposeName.like("%" + keyword + "%")
-                    .or(alarmTemplate.alarmSendPointName.like("%" + keyword + "%"))
+            tupleJPQLQuery.where(alarmTemplate.alarmTpPurposeName.like("%" + keyword + "%")
+                    .or(alarmTemplate.alarmTpSendPointName.like("%" + keyword + "%"))
             );
         }
 
         //정렬
-        tupleJPQLQuery.orderBy(alarmTemplate.alarmTemplateRegdate.desc());
+        tupleJPQLQuery.orderBy(alarmTemplate.alarmTpRegdate.desc());
 
         //페이징
         tupleJPQLQuery
@@ -110,25 +110,25 @@ public class CustomAlarmTemplateRepositoryImpl extends QuerydslRepositorySupport
     }
 
     @Override
-    public Object[] getAlarmTemplateDetail(Long alarmTemplateNo) {
+    public Object[] getAlarmTemplateDetail(Long alarmTpNo) {
         QAlarmTemplate alarmTemplate = QAlarmTemplate.alarmTemplate;
 
         JPQLQuery<AlarmTemplate> query = from(alarmTemplate);
 
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
-                alarmTemplate.alarmTemplateNo,  //알림템플릿번호0
-                alarmTemplate.alarmTypeCode,    //알림유형코드1
-                alarmTemplate.alarmTemplateRegdate,    //2
-                alarmTemplate.alarmPurposeCode, //알림목적코드3
-                alarmTemplate.alarmPurposeName, //알림목적명4
-                alarmTemplate.alarmSendPointCode,   //알림발송시점코드5
-                alarmTemplate.alarmSendPointName,   //알림발송시점명6
-                alarmTemplate.alarmTargetTypeCode,  //알림대상자코드7
-                alarmTemplate.alarmMessage  //알림메시지8
+                alarmTemplate.alarmTpNo,  //알림템플릿번호0
+                alarmTemplate.alarmTpTypeCode,    //알림유형코드1
+                alarmTemplate.alarmTpRegdate,    //2
+                alarmTemplate.alarmTpPurposeCode, //알림목적코드3
+                alarmTemplate.alarmTpPurposeName, //알림목적명4
+                alarmTemplate.alarmTpSendPointCode,   //알림발송시점코드5
+                alarmTemplate.alarmTpSendPointName,   //알림발송시점명6
+                alarmTemplate.alarmTpTargetTypeCode,  //알림대상자코드7
+                alarmTemplate.alarmTpMessage  //알림메시지8
         );
 
         //조건식
-        tupleJPQLQuery.where(alarmTemplate.alarmTemplateNo.eq(alarmTemplateNo));
+        tupleJPQLQuery.where(alarmTemplate.alarmTpNo.eq(alarmTpNo));
 
         //한 레코드만 반환
         Tuple tuple = tupleJPQLQuery.fetchOne();

@@ -51,10 +51,10 @@ public class MsgQueue {
     @Column(length = 4000, nullable = false, name = "text",columnDefinition="varchar2(4000)")
     private String text;
 
-    @Column(length = 4000, name = "text2",columnDefinition="varchar2(4000)")
+    @Column(length = 4000, name = "text2", columnDefinition="varchar2(4000)")
     private String text2;
 
-    @Column(length = 8, name = "expiretime",columnDefinition="number(8)")
+    @Column(length = 8, name = "expiretime", columnDefinition="number(8)")
     private int expiretime = 86400;
 
     @Column(length = 30, name = "k_template_code",columnDefinition="varchar2(30)")

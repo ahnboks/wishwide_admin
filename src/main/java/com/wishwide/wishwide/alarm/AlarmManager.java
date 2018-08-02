@@ -46,7 +46,7 @@ public class AlarmManager {
 
     //GET 매장 알림발송설정 여부(storeId)
     public Alarm getStoreAlarmSetCode(String storeId, String alarmCode) {
-        log.info("매장아이디 : "+storeId+" 코드 : "+alarmCode);
+        log.info("매장아이디 : " + storeId + " 코드 : " + alarmCode);
 
         log.info("알림 정보" + customAlarmSetRepository.findByAlarmSetByStoreId(storeId));
 
@@ -67,33 +67,32 @@ public class AlarmManager {
         }
 
 
-
         return alarm;
     }
 
     //SAVE 알림발송내역 & 알림발송로그(VO)
-    public void saveAlarmHistoryAndLog(MembershipCustomer membershipCustomer, Alarm alarmVO){
+    public void saveAlarmHistoryAndLog(MembershipCustomer membershipCustomer, Alarm alarmVO) {
         //내역 저장
         AlarmSendHistory alarmSendHistory = new AlarmSendHistory();
         alarmSendHistory.setMembershipCustomerNo(membershipCustomer.getMembershipCustomerNo());
-        alarmSendHistory.setCustomerPhone(membershipCustomer.getCustomerPhone());
-        alarmSendHistory.setCustomerGradeTypeCode(membershipCustomer.getCustomerGradeTypeCode());
-        alarmSendHistory.setCustomerName(membershipCustomer.getCustomerName());
-        alarmSendHistory.setAlarmMessage(alarmVO.getAlarmMessage());
+        alarmSendHistory.setAshCustomerPhone(membershipCustomer.getMembershipCustomerPhone());
+        alarmSendHistory.setAshCustomerGradeTypeCode(membershipCustomer.getMembershipCustomerGradeTypeCode());
+        alarmSendHistory.setAshCustomerName(membershipCustomer.getMembershipCustomerName());
+        alarmSendHistory.setAshAlarmMessage(alarmVO.getAlarmMessage());
         alarmSendHistory.setStoreId(alarmVO.getStoreId());
-        alarmSendHistory.setAlarmSendTypeCode(alarmVO.getAlarmSendTypeCode());
-        alarmSendHistory.setAlarmSendPointCode(alarmVO.getAlarmSendPointCode());
-        alarmSendHistory.setAlarmPurposeCode(alarmVO.getAlarmPurposeCode());
-        alarmSendHistory.setAlarmTypeCode(alarmVO.getAlarmTypeCode());
-        alarmSendHistory.setAlarmTemplateNo(alarmVO.getAlarmTemplateNo());
-        alarmSendHistory.setAlarmTargetTypeCode(alarmVO.getAlarmTargetTypeCode());
-        alarmSendHistory.setAlarmSendWayCode(alarmVO.getAlarmSendWayCode());
-        alarmSendHistory.setAlarmSendPointName(alarmVO.getAlarmSendPointName());
-        alarmSendHistory.setAlarmPurposeName(alarmVO.getAlarmPurposeName());
-        alarmSendHistory.setAlarmMessageUpdateCode(alarmVO.getAlarmMessageUpdateCode());
+        alarmSendHistory.setAshAlarmSendTypeCode(alarmVO.getAlarmSendTypeCode());
+        alarmSendHistory.setAshAlarmSendPointCode(alarmVO.getAlarmSendPointCode());
+        alarmSendHistory.setAshAlarmPurposeCode(alarmVO.getAlarmPurposeCode());
+        alarmSendHistory.setAshAlarmTypeCode(alarmVO.getAlarmTypeCode());
+        alarmSendHistory.setAlarmTpNo(alarmVO.getAlarmTpNo());
+        alarmSendHistory.setAshAlarmTargetTypeCode(alarmVO.getAlarmTargetTypeCode());
+        alarmSendHistory.setAshAlarmSendWayCode(alarmVO.getAlarmSendWayCode());
+        alarmSendHistory.setAshAlarmSendPointName(alarmVO.getAlarmSendPointName());
+        alarmSendHistory.setAshAlarmPurposeName(alarmVO.getAlarmPurposeName());
+        alarmSendHistory.setAshAlarmMessageUpdateCode(alarmVO.getAlarmMessageUpdateCode());
 
-        if(alarmVO.getAlarmReservationTime() != null) {
-            alarmSendHistory.setAlarmReservationTime(alarmVO.getAlarmReservationTime());
+        if (alarmVO.getAlarmReservationTime() != null) {
+            alarmSendHistory.setAshAlarmReservationTime(alarmVO.getAlarmReservationTime());
         }
 
         customAlarmSendHistoryRepository.save(alarmSendHistory);
@@ -101,40 +100,39 @@ public class AlarmManager {
         //로그 저장
         AlarmSendLog alarmSendLog = new AlarmSendLog();
         alarmSendLog.setMembershipCustomerNo(membershipCustomer.getMembershipCustomerNo());
-        alarmSendLog.setCustomerPhone(membershipCustomer.getCustomerPhone());
-        alarmSendLog.setCustomerGradeTypeCode(membershipCustomer.getCustomerGradeTypeCode());
-        alarmSendLog.setCustomerName(membershipCustomer.getCustomerName());
-        alarmSendLog.setAlarmMessage(alarmVO.getAlarmMessage());
+        alarmSendLog.setAslCustomerPhone(membershipCustomer.getMembershipCustomerPhone());
+        alarmSendLog.setAslCustomerGradeTypeCode(membershipCustomer.getMembershipCustomerGradeTypeCode());
+        alarmSendLog.setAslCustomerName(membershipCustomer.getMembershipCustomerName());
+        alarmSendLog.setAslAlarmMessage(alarmVO.getAlarmMessage());
         alarmSendLog.setStoreId(alarmVO.getStoreId());
-        alarmSendLog.setAlarmSendTypeCode(alarmVO.getAlarmSendTypeCode());
-        alarmSendLog.setAlarmSendPointCode(alarmVO.getAlarmSendPointCode());
-        alarmSendLog.setAlarmPurposeCode(alarmVO.getAlarmPurposeCode());
-        alarmSendLog.setAlarmTypeCode(alarmVO.getAlarmTypeCode());
-        alarmSendLog.setAlarmTemplateNo(alarmVO.getAlarmTemplateNo());
-        alarmSendLog.setAlarmTargetTypeCode(alarmVO.getAlarmTargetTypeCode());
-        alarmSendLog.setAlarmSendWayCode(alarmVO.getAlarmSendWayCode());
-        alarmSendLog.setAlarmSendPointName(alarmVO.getAlarmSendPointName());
-        alarmSendLog.setAlarmPurposeName(alarmVO.getAlarmPurposeName());
-        alarmSendLog.setAlarmMessageUpdateCode(alarmVO.getAlarmMessageUpdateCode());
+        alarmSendLog.setAslAlarmSendTypeCode(alarmVO.getAlarmSendTypeCode());
+        alarmSendLog.setAslAlarmSendPointCode(alarmVO.getAlarmSendPointCode());
+        alarmSendLog.setAslAlarmPurposeCode(alarmVO.getAlarmPurposeCode());
+        alarmSendLog.setAslAlarmTypeCode(alarmVO.getAlarmTypeCode());
+        alarmSendLog.setAlarmTpNo(alarmVO.getAlarmTpNo());
+        alarmSendLog.setAslAlarmTargetTypeCode(alarmVO.getAlarmTargetTypeCode());
+        alarmSendLog.setAslAlarmSendWayCode(alarmVO.getAlarmSendWayCode());
+        alarmSendLog.setAslAlarmSendPointName(alarmVO.getAlarmSendPointName());
+        alarmSendLog.setAslAlarmPurposeName(alarmVO.getAlarmPurposeName());
+        alarmSendLog.setAslAlarmMessageUpdateCode(alarmVO.getAlarmMessageUpdateCode());
 
-        if(alarmVO.getAlarmReservationTime() != null) {
-            alarmSendLog.setAlarmReservationTime(alarmVO.getAlarmReservationTime());
+        if (alarmVO.getAlarmReservationTime() != null) {
+            alarmSendLog.setAslAlarmReservationTime(alarmVO.getAlarmReservationTime());
         }
 
         log.info("내역 & 로그 저장 완료");
 
-       alarmSendLogRepository.save(alarmSendLog);
+        alarmSendLogRepository.save(alarmSendLog);
     }
 
     //SAVE 알림(VO)
-    public void saveMsgQueue(String alarmMessage, String customerPhone, LocalDateTime reservationTime){
+    public void saveMsgQueue(String alarmMessage, String customerPhone, LocalDateTime reservationTime) {
         MsgQueue msgQueue = new MsgQueue();
 
         //알림메시지 바이트 크기가 81이 넘을 경우 LMS로 전송.
-        if(alarmMessage.getBytes().length < 81){
+        if (alarmMessage.getBytes().length < 81) {
             msgQueue.setMsg_type("1");
-        }
-        else{
+        } else {
             msgQueue.setMsg_type("3");
             msgQueue.setFilecnt(0);
         }
@@ -145,7 +143,7 @@ public class AlarmManager {
         //나중에 매장번호로 수정해야 할 부분
         msgQueue.setCallback("01088041229");
 
-        if(reservationTime != null)
+        if (reservationTime != null)
             msgQueue.setRequest_time(reservationTime);
         else
             msgQueue.setRequest_time(LocalDateTime.now());
@@ -153,7 +151,7 @@ public class AlarmManager {
 
         log.info("msg_queue 저장 완료");
 
-       msgQueueRepository.save(msgQueue);
+        msgQueueRepository.save(msgQueue);
     }
 
 //    //SET 쿠폰 알림메시지
@@ -219,11 +217,11 @@ public class AlarmManager {
 
         Alarm alarm = getStoreAlarmSetCode(coupon.getStoreId(), alarmCode);
 
-        log.info("매장 알림 정보 : "+alarm);
+        log.info("매장 알림 정보 : " + alarm);
 
         alarmMessage = "";
 
-        if(alarm != null){
+        if (alarm != null) {
             alarmMessage = alarm.getAlarmMessage();
 
             //알림메시지 set
@@ -242,10 +240,10 @@ public class AlarmManager {
                                     customCouponRepository.findById(coupon.getCouponNo()).get().getCouponFinishdate().toString());
                         }
                         if (alarmMessageVariable.getAlarmVariableCode().equals("RN")) {
-                            if(membershipCustomer.getCustomerName() != null)
-                                alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerName());
+                            if (membershipCustomer.getMembershipCustomerName() != null)
+                                alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getMembershipCustomerName());
                             else
-                                alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerPhone());
+                                alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getMembershipCustomerPhone());
                         }
                     });
 
@@ -257,99 +255,11 @@ public class AlarmManager {
             saveAlarmHistoryAndLog(membershipCustomer, alarm);
 
             //msg_queue 저장
-            saveMsgQueue(alarmMessage, membershipCustomer.getCustomerPhone(), alarm.getAlarmReservationTime());
+            saveMsgQueue(alarmMessage, membershipCustomer.getMembershipCustomerPhone(), alarm.getAlarmReservationTime());
 
             log.info("쿠폰 알림 발송 완료");
-        }
-        else{
-            log.info("쿠폰 알림 발송 미설정");
-        }
-
-    }
-
-    //SET 혜택적립 알림
-    public void sendBenefitAlarmMessage(Coupon coupon, MembershipCustomer membershipCustomer, String alarmCode) {
-        //#{매장명}  #{수신자명} 님.
-        //도장이 적립되셨습니다.
-        //#{적립도장수}개가 적립되셔서
-        //현재 적립된 총 도장수는 #{총도장수} 개 입니다.
-        //감사합니다.
-
-        Alarm alarm = getStoreAlarmSetCode(coupon.getStoreId(), alarmCode);
-
-        log.info("매장 알림 정보 : " + alarm);
-        alarmMessage = "";
-
-        if (alarm != null) {
-            alarmMessage = alarm.getAlarmMessage();
-
-            //도장 적립 시
-            if (coupon.getCouponTypeNo() == 2) {
-                //알림메시지 set
-                alarmMessageVariableRepository.findAlarmMessageVariableByAlarmNo(alarm.getAlarmNo())
-                        .forEach(alarmMessageVariable -> {
-                            String benefitValue = String.valueOf(customCustomerRepository.findById(membershipCustomer.getMembershipCustomerNo()).get().getCustomerBenefitValue());
-
-                            if (alarmMessageVariable.getAlarmVariableCode().equals("SN")) {
-                                alarmMessage = alarmMessage.replace("#{매장명}",
-                                        customStoreRepository.findById(alarmMessageVariable.getStoreId()).get().getStoreName());
-                            }
-                            if (alarmMessageVariable.getAlarmVariableCode().equals("4S")) {
-                                alarmMessage = alarmMessage.replace("#{적립도장수}",
-                                        String.valueOf(coupon.getCouponBenefitValue()) + "개");
-                            }
-                            if (alarmMessageVariable.getAlarmVariableCode().equals("AS")) {
-                                alarmMessage = alarmMessage.replace("#{총도장수}",
-                                        (benefitValue + "개"));
-                            }
-                            if (alarmMessageVariable.getAlarmVariableCode().equals("RN")) {
-                                if (membershipCustomer.getCustomerName() != null)
-                                    alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerName());
-                                else
-                                    alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerPhone());
-                            }
-                        });
-            }
-            //포인트 적립 시
-            else if (coupon.getCouponTypeNo() == 3) {
-                //알림메시지 set
-                alarmMessageVariableRepository.findAlarmMessageVariableByAlarmNo(alarm.getAlarmNo())
-                        .forEach(alarmMessageVariable -> {
-                            if (alarmMessageVariable.getAlarmVariableCode().equals("SN")) {
-                                alarmMessage = alarmMessage.replace("#{매장명}",
-                                        customStoreRepository.findById(alarmMessageVariable.getStoreId()).get().getStoreName());
-                            }
-                            if (alarmMessageVariable.getAlarmVariableCode().equals("4P")) {
-                                alarmMessage = alarmMessage.replace("#{적립포인트}",
-                                        String.valueOf(coupon.getCouponBenefitValue()) + "P");
-                            }
-                            if (alarmMessageVariable.getAlarmVariableCode().equals("AP")) {
-                                alarmMessage = alarmMessage.replace("#{총포인트}",
-                                        String.valueOf(customCustomerRepository.findById(membershipCustomer.getMembershipCustomerNo()).get().getCustomerBenefitValue()) + "P");
-                            }
-                            if (alarmMessageVariable.getAlarmVariableCode().equals("RN")) {
-                                if (membershipCustomer.getCustomerName() != null)
-                                    alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerName());
-                                else
-                                    alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getCustomerPhone());
-                            }
-                        });
-            }
-
-            log.info("변환된 알림메시지 : " + alarmMessage);
-
-            //알림발송내역 & 알림발송로그 저장
-            AlarmSendHistory alarmSendHistory = new AlarmSendHistory();
-            alarmSendHistory.setAlarmMessage(alarmMessage);
-
-            saveAlarmHistoryAndLog(membershipCustomer, alarm);
-
-            //msg_queue 저장
-            saveMsgQueue(alarmMessage, membershipCustomer.getCustomerPhone(), alarm.getAlarmReservationTime());
-
-            log.info("혜택적립 알림 발송 완료");
         } else {
-            log.info("혜택적립 알림 발송 미설정");
+            log.info("쿠폰 알림 발송 미설정");
         }
 
     }
@@ -564,3 +474,89 @@ public class AlarmManager {
 
     }
 }
+//SET 혜택적립 알림
+//    public void sendBenefitAlarmMessage(Coupon coupon, MembershipCustomer membershipCustomer, String alarmCode) {
+//        //#{매장명}  #{수신자명} 님.
+//        //도장이 적립되셨습니다.
+//        //#{적립도장수}개가 적립되셔서
+//        //현재 적립된 총 도장수는 #{총도장수} 개 입니다.
+//        //감사합니다.
+//
+//        Alarm alarm = getStoreAlarmSetCode(coupon.getStoreId(), alarmCode);
+//
+//        log.info("매장 알림 정보 : " + alarm);
+//        alarmMessage = "";
+//
+//        if (alarm != null) {
+//            alarmMessage = alarm.getAlarmMessage();
+//
+//            //도장 적립 시
+//            if (coupon.getCouponTypeNo() == 2) {
+//                //알림메시지 set
+//                alarmMessageVariableRepository.findAlarmMessageVariableByAlarmNo(alarm.getAlarmNo())
+//                        .forEach(alarmMessageVariable -> {
+//                            String benefitValue = String.valueOf(customCustomerRepository.findById(membershipCustomer.getMembershipCustomerNo()).get().getCustomerBenefitValue());
+//
+//                            if (alarmMessageVariable.getAlarmVariableCode().equals("SN")) {
+//                                alarmMessage = alarmMessage.replace("#{매장명}",
+//                                        customStoreRepository.findById(alarmMessageVariable.getStoreId()).get().getStoreName());
+//                            }
+//                            if (alarmMessageVariable.getAlarmVariableCode().equals("4S")) {
+//                                alarmMessage = alarmMessage.replace("#{적립도장수}",
+//                                        String.valueOf(coupon.getCouponBenefitValue()) + "개");
+//                            }
+//                            if (alarmMessageVariable.getAlarmVariableCode().equals("AS")) {
+//                                alarmMessage = alarmMessage.replace("#{총도장수}",
+//                                        (benefitValue + "개"));
+//                            }
+//                            if (alarmMessageVariable.getAlarmVariableCode().equals("RN")) {
+//                                if (membershipCustomer.membershipCustomer.getMembershipCustomerName() != null)
+//                                    alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.membershipCustomer.getMembershipCustomerName());
+//                                else
+//                                    alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getMembershipCustomerPhone());
+//                            }
+//                        });
+//            }
+//            //포인트 적립 시
+//            else if (coupon.getCouponTypeNo() == 3) {
+//                //알림메시지 set
+//                alarmMessageVariableRepository.findAlarmMessageVariableByAlarmNo(alarm.getAlarmNo())
+//                        .forEach(alarmMessageVariable -> {
+//                            if (alarmMessageVariable.getAlarmVariableCode().equals("SN")) {
+//                                alarmMessage = alarmMessage.replace("#{매장명}",
+//                                        customStoreRepository.findById(alarmMessageVariable.getStoreId()).get().getStoreName());
+//                            }
+//                            if (alarmMessageVariable.getAlarmVariableCode().equals("4P")) {
+//                                alarmMessage = alarmMessage.replace("#{적립포인트}",
+//                                        String.valueOf(coupon.getCouponBenefitValue()) + "P");
+//                            }
+//                            if (alarmMessageVariable.getAlarmVariableCode().equals("AP")) {
+//                                alarmMessage = alarmMessage.replace("#{총포인트}",
+//                                        String.valueOf(customCustomerRepository.findById(membershipCustomer.getMembershipCustomerNo()).get().getCustomerBenefitValue()) + "P");
+//                            }
+//                            if (alarmMessageVariable.getAlarmVariableCode().equals("RN")) {
+//                                if (membershipCustomer.membershipCustomer.getMembershipCustomerName() != null)
+//                                    alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.membershipCustomer.getMembershipCustomerName());
+//                                else
+//                                    alarmMessage = alarmMessage.replace("#{수신자명}", membershipCustomer.getMembershipCustomerPhone());
+//                            }
+//                        });
+//            }
+//
+//            log.info("변환된 알림메시지 : " + alarmMessage);
+//
+//            //알림발송내역 & 알림발송로그 저장
+//            AlarmSendHistory alarmSendHistory = new AlarmSendHistory();
+//            alarmSendHistory.setAshAlarmMessage(alarmMessage);
+//
+//            saveAlarmHistoryAndLog(membershipCustomer, alarm);
+//
+//            //msg_queue 저장
+//            saveMsgQueue(alarmMessage, membershipCustomer.getMembershipCustomerPhone(), alarm.getAlarmReservationTime());
+//
+//            log.info("혜택적립 알림 발송 완료");
+//        } else {
+//            log.info("혜택적립 알림 발송 미설정");
+//        }
+//
+//    }

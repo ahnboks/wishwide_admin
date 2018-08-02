@@ -35,7 +35,7 @@ public class CustomAlarmSetRepositoryImpl extends QuerydslRepositorySupport impl
                 alarm.alarmNo,  //알림번호0
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
-                alarm.alarmTemplateNo,  //알림템플릿번호3
+                alarm.alarmTpNo,  //알림템플릿번호3
                 alarm.alarmTypeCode,    //알림유형코드4
                 alarm.alarmUpdatedate,    //5
                 alarm.alarmPurposeCode, //알림목적코드6
@@ -115,7 +115,7 @@ public class CustomAlarmSetRepositoryImpl extends QuerydslRepositorySupport impl
                 alarm.alarmNo,  //알림번호0
                 store.storeId,  //매장아이디1
                 store.storeName,    //가맹점명2
-                alarm.alarmTemplateNo,  //알림템플릿번호3
+                alarm.alarmTpNo,  //알림템플릿번호3
                 alarm.alarmTypeCode,    //알림유형코드4
                 alarm.alarmUpdatedate,    //5
                 alarm.alarmPurposeCode, //알림목적코드6
@@ -160,8 +160,8 @@ public class CustomAlarmSetRepositoryImpl extends QuerydslRepositorySupport impl
         JPQLQuery<AlarmTemplate> query = from(alarmTemplate);
 
         JPQLQuery<Tuple> tupleJPQLQuery = query.select(
-                alarmTemplate.alarmTemplateNo,
-                alarmTemplate.alarmMessage
+                alarmTemplate.alarmTpNo,
+                alarmTemplate.alarmTpMessage
         );
 
         //패치
@@ -177,13 +177,13 @@ public class CustomAlarmSetRepositoryImpl extends QuerydslRepositorySupport impl
     }
 
 //    @Override
-//    public Object[] getAlarmTemplateDetail(Long alarmTemplateNo) {
+//    public Object[] getAlarmTemplateDetail(Long alarmTpNo) {
 //        QAlarmTemplate alarmTemplate = QAlarmTemplate.alarmTemplate;
 //
 //        JPQLQuery<AlarmTemplate> query = from(alarmTemplate);
 //
 //        JPQLQuery<Tuple> tupleJPQLQuery = query.select(
-//                alarmTemplate.alarmTemplateNo,  //알림템플릿번호0
+//                alarmTemplate.alarmTpNo,  //알림템플릿번호0
 //                alarmTemplate.alarmTypeCode,    //알림유형코드1
 //                alarmTemplate.alarmPurposeCode, //알림목적코드3
 //                alarmTemplate.alarmPurposeName, //알림목적명4
@@ -194,7 +194,7 @@ public class CustomAlarmSetRepositoryImpl extends QuerydslRepositorySupport impl
 //        );
 //
 //        //조건식
-//        tupleJPQLQuery.where(alarmTemplate.alarmTemplateNo.eq(alarmTemplateNo));
+//        tupleJPQLQuery.where(alarmTemplate.alarmTpNo.eq(alarmTpNo));
 //
 //        //한 레코드만 반환
 //        Tuple tuple = tupleJPQLQuery.fetchOne();

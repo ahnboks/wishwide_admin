@@ -314,6 +314,15 @@
             $('a[name="updateAlarmVisibleCode"]').click(function (e) {
                 e.preventDefault();
 
+//                var alarmVisibleCode = $(this).children().eq(0).attr('value');
+//
+//                if (alarmVisibleCode == 0){
+//                    if (confirm('알림 설정 상태로 변경됩니다. 변경하시겠습니까?') != true) return false;
+//                }
+//                else{
+//                    if (confirm('알림 미설정 상태로 변경됩니다. 변경하시겠습니까?') != true) return false;
+//                }
+
                 if (confirm('알림 설정 상태가 변경됩니다. 변경하시겠습니까?') != true) return false;
 
                 console.log($(this));
@@ -334,7 +343,7 @@
                         if (data == '1') {
                             console.log(node);
                             node.empty();
-                            node.html('<span class="text-success" value="1" >설정</span>');
+                            node.html('<span class="text-success" value="1">설정</span>');
                             alert('알림 설정 상태로 변경되었습니다.');
                         }
                         else {

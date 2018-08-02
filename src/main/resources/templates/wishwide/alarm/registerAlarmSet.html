@@ -86,7 +86,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">메시지 입력<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
-                                <textarea class="form-control input-textarea" name="alarmMessage" rows="10"></textarea>
+                                <textarea class="form-control input-textarea" name="ashAlarmMessageeCode" rows="10"></textarea>
                                 <span class="textarea-limit-validation"></span>
                             </div>
                             <!--<div>-->
@@ -102,11 +102,11 @@
                             <div class="col-sm-6" >
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label class="radio-inline"><input type="radio" name="alarmSendTypeCode" value="IMME" checked="checked">즉시발송</label>
-                                        <label class="radio-inline"><input type="radio" name="alarmSendTypeCode" value="RESERVE">예약발송</label>
+                                        <label class="radio-inline"><input type="radio" name="ashAlarmSendTypeCode" value="IMME" checked="checked">즉시발송</label>
+                                        <label class="radio-inline"><input type="radio" name="ashAlarmSendTypeCode" value="RESERVE">예약발송</label>
                                     </div>
                                     <div class="hr-line-dashed"></div>
-                                    <div class="col-md-9" id="alarmReservationTime" style="display:none;">
+                                    <div class="col-md-9" id="ashAlarmReservationTime" style="display:none;">
                                         <label class="col-md-3 control-label">예약발송시간</label>
                                         <span class="col-md-4 input-group date">
                                             <input type="text" class="form-control" value="" name="reserveDate">
@@ -132,8 +132,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">발송수단<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-3" >
-                                <label class="radio-inline"><input type="radio" name="alarmSendWayCode" value="TM" checked="checked">알림톡우선</label>
-                                <label class="radio-inline"><input type="radio" name="alarmSendWayCode" value="M">문자</label>
+                                <label class="radio-inline"><input type="radio" name="ashAlarmSendWayCode" value="TM" checked="checked">알림톡우선</label>
+                                <label class="radio-inline"><input type="radio" name="ashAlarmSendWayCode" value="M">문자</label>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -282,16 +282,16 @@
             });
 
             //발송유형 코드에 따른 CSS
-            registerForm.find('[name="alarmSendTypeCode"]').change(function () {
-                var alarmSendTypeCode = registerForm.find('[name="alarmSendTypeCode"]:checked').val();
+            registerForm.find('[name="ashAlarmSendTypeCode"]').change(function () {
+                var ashAlarmSendTypeCode = registerForm.find('[name="ashAlarmSendTypeCode"]:checked').val();
 
-                console.log(alarmSendTypeCode + '값');
+                console.log(ashAlarmSendTypeCode + '값');
 
-                if(alarmSendTypeCode == 'RESERVE'){
-                    $('#alarmReservationTime').css('display','block');
+                if(ashAlarmSendTypeCode == 'RESERVE'){
+                    $('#ashAlarmReservationTime').css('display','block');
                 }
                 else{
-                    $('#alarmReservationTime').css('display','none');
+                    $('#ashAlarmReservationTime').css('display','none');
                 }
             });
 
@@ -313,9 +313,9 @@
                 }
 
                 var storeId = registerForm.find('#storeId').val();
-                var alarmMessage = registerForm.find('[name="alarmMessage"]').val();
+                var ashAlarmMessageeCode = registerForm.find('[name="ashAlarmMessageeCode"]').val();
 
-                if(alarmMessage == ''){
+                if(ashAlarmMessageeCode == ''){
                     alert('메시지를 입력해주세요.');
                     return false;
                 }
@@ -333,7 +333,7 @@
                     data:{
                         "storeId" : storeId,
                         "dstaddr" : dstaddr,
-                        "alarmMessage" : alarmMessage
+                        "ashAlarmMessageeCode" : ashAlarmMessageeCode
                     },
                     success: function (data) {
                         console.log(data);
@@ -433,10 +433,10 @@
 
                 if (confirm('발송하시겠습니까?') != true) return false;
 
-                var alarmMessage = registerForm.find('[name="alarmMessage"]').val();
+                var ashAlarmMessageeCode = registerForm.find('[name="ashAlarmMessageeCode"]').val();
                 var storeId = registerForm.find('#storeId').val();
                 var membershipCustomerNo = registerForm.find('[name="membershipCustomerNo"]:checked').val();
-                var alarmSendTypeCode = registerForm.find('[name="alarmSendTypeCode"]:checked').val();
+                var ashAlarmSendTypeCode = registerForm.find('[name="ashAlarmSendTypeCode"]:checked').val();
                 var reserveDate = registerForm.find('[name="reserveDate"]').val();
                 var reserveTime = registerForm.find('[name="reserveTime"]').val();
 
@@ -446,7 +446,7 @@
                     alert('가맹점을 선택해주세요.');
                     return false;
                 }
-                if(alarmMessage == ''){
+                if(ashAlarmMessageeCode == ''){
                     alert('메시지를 입력해주세요.');
                     return false;
                 }
@@ -455,7 +455,7 @@
                     return false;
                 }
 
-                if (alarmSendTypeCode == 'RESERVE') {
+                if (ashAlarmSendTypeCode == 'RESERVE') {
                     if (reserveDate == '' || reserveTime == ""){
                         alert('예약날짜와 시간을 모두 선택해주세요.');
                         return false;

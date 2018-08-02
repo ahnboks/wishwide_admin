@@ -104,7 +104,7 @@
                                 <tbody>
                                 <tr th:each="vo:${alarmTemplate.content}" name="table">
                                     <td>
-                                        <a th:href="@{/wishwide/alarm/detailAlarmTemplate/{alarmTemplateNo}(alarmTemplateNo=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
+                                        <a th:href="@{/wishwide/alarm/detailAlarmTemplate/{alarmTpNo}(alarmTpNo=${vo[0]}, page=${pageVO.page}, size=${pageVO.size}, type=${pageVO.type}, keyword=${pageVO.keyword})}" th:value="${vo[0]}">
                                             <img src="/img/menu.png" style="width: 35px; height: 35px;">
                                         </a>
                                     </td>
@@ -213,12 +213,12 @@
                 $('#modalAlarmMessage').modal('show');
 
                 var parentNode = $(this).parent().parent();
-                var alarmTemplateNo = parentNode.children().eq(0).children().eq(0).attr('value');
+                var alarmTpNo = parentNode.children().eq(0).children().eq(0).attr('value');
 
-                console.log('번호 : '+alarmTemplateNo );
+                console.log('번호 : '+alarmTpNo );
 
                 $.ajax({
-                    url: "/wishwide/alarm/selectAlarmTemplate/" + alarmTemplateNo,
+                    url: "/wishwide/alarm/selectAlarmTemplate/" + alarmTpNo,
                     type: 'get',
                     contentType: 'application/json',
                     success: function (data) {

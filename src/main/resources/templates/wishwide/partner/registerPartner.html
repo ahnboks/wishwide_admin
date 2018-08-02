@@ -53,7 +53,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">파트너명<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
-                                <input type="text" maxlength="20" class="form-control title-input-validation" name="partnerName">
+                                <input type="text" maxlength="20" class="form-control president-name-input-validation" name="partnerName">
+                                <span class="msg-president-name-input-validation"></span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -62,8 +63,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">담당자명<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
-                                <input type="text" maxlength="20" class="form-control" name="partnerOperatorName">
-                                <span class="msg-operator-name-input-validation"/>
+                                <input type="text" maxlength="20" class="form-control operator-name-input-validation" name="partnerOperatorName">
+                                <span class="msg-operator-name-input-validation"></span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -72,8 +73,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">담당자 연락처<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
-                                <input type="text" maxlength="11" class="form-control phone-number-input-validation" name="partnerOperatorPhone" placeholder="ex) 01012345678">
-                                <span class="msg-phone-number-input-validation"></span>
+                                <input type="text" maxlength="11" class="form-control operator-phone-number-input-validation" name="partnerOperatorPhone" placeholder="ex) 01012345678" onkeypress="InputOnlyNumber(this);">
+                                <span class="msg-operator-phone-number-input-validation"></span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -83,8 +84,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">담당자 이메일<label class="notnull-mark-color"> *</label></label>
                             <div class="col-sm-2">
-                                <input type="email" maxlength="40" placeholder="이메일 @ sample.com" class="form-control email-input-validation" name="partnerOperatorEmail">
-                                <span class="msg-email-input-validation"></span>
+                                <input type="email" maxlength="40" placeholder="이메일 @ sample.com" class="form-control operator-email-input-validation" name="partnerOperatorEmail">
+                                <span class="msg-operator-email-input-validation"></span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -199,9 +200,9 @@
                                         '<tr>' +
                                         '<td><input class="store-check-validation" name="storeId" type="checkbox" value="' + item[0] + '"></td>' +
                                         '<td>' + item[1] + '</td>' +
+                                        '<td>' + item[11] + '</td>' +
                                         '<td>' + item[9] + '</td>' +
                                         '<td>' + item[10] + '</td>' +
-                                        '<td>' + item[11] + '</td>' +
                                         '<td>' + item[12] + '</td>' +
                                         '<td>' + item[13] + '</td>' +
                                         '<td>' + storeServiceOperationCode + '</td>' +
@@ -224,22 +225,58 @@
             });
 
             $('#btnSubmit').click(function () {
-                var checkStore = $('.store-check-validation');
-                var isStoreCheckedCnt = 0;
-                console.log(checkStore);
+                //                e.preventDefault();
 
-                if(checkStore.length != 0){
-                    for (var i = 0; i < checkStore.length; i++) {
-                        if (checkStore.eq(i).prop('checked')) {
-                            isStoreCheckedCnt++;
-                        }
-                    }
+                if (confirm('등록하시겠습니까?') != true) return false;
 
-                    if(isStoreCheckedCnt == 0){
-                        alert('가맹점을 선택해주세요.');
-                        return false;
-                    }
+                var storeId = registerForm.find('[name="storeId"]:checked').val();
+                var presidentNameValue = $('.president-name-input-validation').val();
+                var presidentNameMsg = $('.msg-president-name-input-validation');
+                var operatorNameValue = $('.operator-name-input-validation').val();
+                var operatorNameMsg = $('.msg-operator-name-input-validation');
+                var operatorPhoneNumberValue = $('.operator-phone-number-input-validation').val();
+                var operatorPhoneNumberMsg = $('.msg-operator-phone-number-input-validation');
+                var operatorEmailValue = $('.operator-email-input-validation').val();
+                var operatorEmailMsg = $('.msg-operator-email-input-validation');
 
+                if (checkIdValidation() != true){
+                    alert('아이디를 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkPasswordValidation() != true){
+                    alert('비밀번호를 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkPasswordConfirmValidation() != true){
+                    alert('비밀번호확인을 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidName(1, presidentNameValue, presidentNameMsg) != true){
+                    alert('파트너명을 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidName(1, operatorNameValue, operatorNameMsg) != true){
+                    alert('담당자명을 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidPhoneNumber(1,operatorPhoneNumberValue, operatorPhoneNumberMsg ) != true){
+                    alert('담당자연락처를 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (checkValidEmail(operatorEmailValue, operatorEmailMsg) != true){
+                    alert('담당자이메일을 바르게 입력해주세요.');
+                    return false;
+                }
+
+                if (storeId == undefined){
+                    alert('가맹점을 선택해주세요.');
+                    return false;
                 }
             });
 
